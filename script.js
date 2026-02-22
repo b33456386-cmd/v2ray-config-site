@@ -13,14 +13,19 @@ fetch("data.json")
       "⏱ آخرین آپدیت: " + iranTime;
 
     data.countries.forEach(country => {
+      // دکمه کشور
       const btn = document.createElement("button");
       btn.className = "country-btn";
       btn.innerHTML = `${country.flag} ${country.name} (${country.configs.length})`;
 
+      // لیست
       const list = document.createElement("div");
       list.className = "config-list";
 
-      // 🎲 دکمه رندوم
+      // 🔥 باکس دکمه‌ها
+      const topButtons = document.createElement("div");
+
+      // 🎲 رندوم
       const randomBtn = document.createElement("button");
       randomBtn.innerText = "🎲 رندوم";
       randomBtn.onclick = () => {
@@ -29,7 +34,7 @@ fetch("data.json")
         copyConfig(random);
       };
 
-      // 📡 سابسکرایب (همه کانفیگ‌ها)
+      // 📡 سابسکرایب
       const subBtn = document.createElement("button");
       subBtn.innerText = "📡 Subscribe";
       subBtn.onclick = () => {
@@ -37,9 +42,12 @@ fetch("data.json")
         copyConfig(allConfigs);
       };
 
-      list.appendChild(randomBtn);
-      list.appendChild(subBtn);
+      topButtons.appendChild(randomBtn);
+      topButtons.appendChild(subBtn);
 
+      list.appendChild(topButtons);
+
+      // لیست کانفیگ‌ها
       country.configs.forEach(cfg => {
         const item = document.createElement("div");
         item.className = "config-item";
@@ -55,6 +63,7 @@ fetch("data.json")
       btn.onclick = () => {
         const all = document.querySelectorAll(".config-list");
         all.forEach(el => (el.style.display = "none"));
+
         list.style.display =
           list.style.display === "block" ? "none" : "block";
       };
