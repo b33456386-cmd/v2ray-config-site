@@ -1,79 +1,59 @@
-fetch("data.json")
+let allConfigs = [];
+
+fetch("configs.json")
   .then(res => res.json())
   .then(data => {
-    const container = document.getElementById("countries");
 
-    const iranTime = new Date(data.last_update).toLocaleString("fa-IR", {
-      timeZone: "Asia/Tehran",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    document.getElementById("lastUpdate").innerText =
+      "آخرین آپدیت: " + data.last_update;
 
-    document.getElementById("update").innerText =
-      "⏱ آخرین آپدیت: " + iranTime;
+    let container = document.getElementById("countries");
 
     data.countries.forEach(country => {
-      // دکمه کشور
-      const btn = document.createElement("button");
-      btn.className = "country-btn";
-      btn.innerHTML = `${country.flag} ${country.name} (${country.configs.length})`;
 
-      // لیست
-      const list = document.createElement("div");
-      list.className = "config-list";
+      let box = document.createElement("div");
+      box.className = "country";
 
-      // 🔥 باکس دکمه‌ها
-      const topButtons = document.createElement("div");
+      let btn = document.createElement("button");
+      btn.innerText = `${country.flag} ${country.name} (${country.count})`;
 
-      // 🎲 رندوم
-      const randomBtn = document.createElement("button");
-      randomBtn.innerText = "🎲 رندوم";
-      randomBtn.onclick = () => {
-        const random =
-          country.configs[Math.floor(Math.random() * country.configs.length)];
-        copyConfig(random);
+      let list = document.createElement("div");
+      list.style.display = "none";
+
+      btn.onclick = () => {
+        list.style.display =
+          list.style.display === "none" ? "block" : "none";
       };
 
-      // 📡 سابسکرایب
-      const subBtn = document.createElement("button");
-      subBtn.innerText = "📡 Subscribe";
-      subBtn.onclick = () => {
-        const allConfigs = country.configs.join("\n");
-        copyConfig(allConfigs);
-      };
-
-      topButtons.appendChild(randomBtn);
-      topButtons.appendChild(subBtn);
-
-      list.appendChild(topButtons);
-
-      // لیست کانفیگ‌ها
       country.configs.forEach(cfg => {
-        const item = document.createElement("div");
-        item.className = "config-item";
+        allConfigs.push(cfg);
 
-        item.innerHTML = `
-          <span>V2raying_config</span>
+        let div = document.createElement("div");
+        div.className = "config";
+
+        div.innerHTML = `
+          <span>${cfg.substring(0, 40)}...</span>
           <button onclick="copyConfig('${cfg}')">📋</button>
         `;
 
-        list.appendChild(item);
+        list.appendChild(div);
       });
 
-      btn.onclick = () => {
-        const all = document.querySelectorAll(".config-list");
-        all.forEach(el => (el.style.display = "none"));
-
-        list.style.display =
-          list.style.display === "block" ? "none" : "block";
-      };
-
-      container.appendChild(btn);
-      container.appendChild(list);
+      box.appendChild(btn);
+      box.appendChild(list);
+      container.appendChild(box);
     });
   });
 
-function copyConfig(config) {
-  navigator.clipboard.writeText(config);
+function copyConfig(text) {
+  navigator.clipboard.writeText(text);
   alert("کپی شد ✅");
+}
+
+function randomConfig() {
+  if (allConfigs.length === 0) return;
+
+  let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
+  navigator.clipboard.writeText(random);
+  alert("یک کانفیگ رندوم کپی شد 🎲");
 }
