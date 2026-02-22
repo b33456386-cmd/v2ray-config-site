@@ -1,94 +1,71 @@
 import requests
 import json
 from datetime import datetime
-import re
 
-# سورس گیت‌هاب
-GITHUB_URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt"
+# سورس کانفیگ
+URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt"
 
-# کانال‌های معروف تلگرام
-TELEGRAM_CHANNELS = [
-    "https://t.me/s/v2rayng_fast",
-    "https://t.me/s/v2ray_configs_pool",
-    "https://t.me/s/freev2rays",
-    "https://t.me/s/vmess_protocol",
-]
+# گرفتن دیتا
+res = requests.get(URL)
+lines = res.text.split("\n")
 
-all_lines = []
-
-# گرفتن از گیت‌هاب
-try:
-    res = requests.get(GITHUB_URL, timeout=20)
-    all_lines += res.text.split("\n")
-except:
-    print("GitHub error")
-
-# گرفتن از تلگرام
-for url in TELEGRAM_CHANNELS:
-    try:
-        res = requests.get(url, timeout=20)
-        html = res.text
-
-        configs = re.findall(r'(vmess://[^\s<"]+|vless://[^\s<"]+)', html)
-        all_lines += configs
-
-    except:
-        print("Telegram error:", url)
-
-# کشورها (فقط ۲ تا)
+# تعریف کشورها
 countries = {
-    "آلمان": {
-        "flag": "🇩🇪",
-        "keywords": ["de", "germany"]
-    },
-    "آمریکا": {
+    "USA": {
+        "name": "آمریکا",
         "flag": "🇺🇸",
-        "keywords": ["us", "usa", "america"]
+        "keywords": ["US", "USA", "United States"]
+    },
+    "Germany": {
+        "name": "آلمان",
+        "flag": "🇩🇪",
+        "keywords": ["DE", "Germany"]
     }
 }
 
-result = {
-    "آلمان": [],
-    "آمریکا": []
-}
+# ساخت خروجی
+result = {}
 
-# پردازش
-for line in all_lines:
+for key in countries:
+    result[key] = {
+        "name": countries[key]["name"],
+        "flag": countries[key]["flag"],
+        "configs": []
+    }
+
+# پردازش کانفیگ‌ها
+for line in lines:
     line = line.strip()
 
-    if not (line.startswith("vmess://") or line.startswith("vless://")):
+    if not line:
         continue
 
-    lower = line.lower()
+    if not line.startswith("vless://") and not line.startswith("vmess://") and not line.startswith("trojan://"):
+        continue
 
-    if any(k in lower for k in countries["آلمان"]["keywords"]):
-        result["آلمان"].append(line)
+    for country_key, data in countries.items():
+        for keyword in data["keywords"]:
+            if keyword.lower() in line.lower():
+                result[country_key]["configs"].append(line)
+                break
 
-    elif any(k in lower for k in countries["آمریکا"]["keywords"]):
-        result["آمریکا"].append(line)
-
-# حذف تکراری‌ها
-for k in result:
-    result[k] = list(set(result[k]))
-
-# خروجی
+# ساخت خروجی نهایی
 output = {
-    "last_update": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    "last_update": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
     "countries": []
 }
 
-for name, configs in result.items():
-    if len(configs) == 0:
+for key, data in result.items():
+    if len(data["configs"]) == 0:
         continue
 
     output["countries"].append({
-        "name": name,
-        "flag": countries[name]["flag"],
-        "configs": configs[:150]
+        "name": data["name"],
+        "flag": data["flag"],
+        "count": len(data["configs"]),
+        "configs": data["configs"][:100]  # محدود برای سرعت
     })
 
-# ذخیره
-with open("data.json", "w", encoding="utf-8") as f:
-    json.dump(output, f, ensure_ascii=False, indent=2)
-
-print("OK ✅ Multi-source فعال شد")
+# ذخیره فایل
+with open("configs.json", "w", encoding="utf-8") as f:
+    json.dump(output, f, indent=2, ensure_ascii=False)
