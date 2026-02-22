@@ -1,117 +1,33 @@
 body {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
   font-family: sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
   color: white;
   text-align: center;
-  padding: 40px;
 }
 
-/* هدر */
-.header {
-  margin-bottom: 40px;
-}
-
-.logo-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.icon {
-  font-size: 45px;
-}
-
-/* لوگو */
-.logo {
-  font-size: 65px;
-  font-weight: bold;
-  background: linear-gradient(90deg, #00f5ff, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(0,255,255,0.6);
-}
-
-.subtitle {
-  font-size: 18px;
-  opacity: 0.8;
-  margin-top: 10px;
-}
-
-h2 {
-  margin-bottom: 30px;
-}
-
-/* دکمه کشور */
-.country-btn {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 15px 25px;
-  margin: 10px;
-  border-radius: 15px;
-  cursor: pointer;
-  color: white;
-  font-size: 18px;
-  transition: 0.3s;
-}
-
-.country-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.05);
-}
-
-/* لیست کانفیگ */
-.config-list {
-  display: none;
+.title {
+  font-size: 40px;
   margin-top: 20px;
-  background: rgba(255,255,255,0.05);
-  padding: 20px;
-  border-radius: 15px;
 }
 
-/* آیتم کانفیگ */
-.config-item {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  background: rgba(255,255,255,0.08);
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.country {
+  margin: 15px;
+}
+
+.config {
+  background: rgba(255,255,255,0.05);
+  margin: 5px;
   padding: 10px;
   border-radius: 10px;
-}
-
-/* دکمه‌ها */
-button {
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* 🎲 و 📡 */
-.config-list button {
-  margin: 5px;
-  background: #7c3aed;
-  color: white;
-}
-
-.config-list button:hover {
-  background: #5b21b6;
-}
-
-/* زمان */
-.update {
-  margin-top: 20px;
-  opacity: 0.7;
-}
-
-/* تلگرام */
-.telegram {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #0088cc;
-  border-radius: 10px;
-  color: white;
-  text-decoration: none;
 }
