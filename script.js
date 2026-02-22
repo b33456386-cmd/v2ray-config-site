@@ -35,12 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
           let div = document.createElement("div");
           div.className = "config";
 
-          let short = cfg.substring(0, 60);
+          let text = document.createElement("span");
+          text.innerText = cfg.substring(0, 60) + "...";
 
-          div.innerHTML = `
-            <span>${short}...</span>
-            <button onclick="copyConfig('${cfg}')">📋 کپی</button>
-          `;
+          let copyBtn = document.createElement("button");
+          copyBtn.innerText = "📋 کپی";
+
+          // ✅ این مهمه (بدون onclick HTML)
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(cfg);
+            alert("کپی شد ✅");
+          });
+
+          div.appendChild(text);
+          div.appendChild(copyBtn);
 
           list.appendChild(div);
         });
@@ -76,9 +84,3 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 });
-
-// 📋 کپی
-function copyConfig(text) {
-  navigator.clipboard.writeText(text);
-  alert("کپی شد ✅");
-}
