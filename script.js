@@ -12,24 +12,33 @@ fetch("configs.json?v=" + new Date().getTime())
 
     data.countries.forEach(country => {
 
+      // دکمه کشور
       let btn = document.createElement("button");
       btn.innerText = `${country.flag} ${country.name} (${country.count})`;
 
+      // لیست کانفیگ‌ها
       let list = document.createElement("div");
-      list.className = "country-list";
+      list.style.display = "none"; // مهم
 
       btn.onclick = () => {
-        list.classList.toggle("open");
+        if (list.style.display === "none") {
+          list.style.display = "block";
+        } else {
+          list.style.display = "none";
+        }
       };
 
+      // کانفیگ‌ها
       country.configs.forEach(cfg => {
         allConfigs.push(cfg);
 
         let div = document.createElement("div");
         div.className = "config";
 
+        let short = cfg.substring(0, 50);
+
         div.innerHTML = `
-          <span>${cfg.substring(0,40)}...</span>
+          <span>${short}...</span>
           <button onclick="copyConfig('${cfg}')">📋</button>
         `;
 
