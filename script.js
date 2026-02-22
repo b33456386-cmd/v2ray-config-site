@@ -58,7 +58,13 @@ fetch("data.json")
         configsDiv.appendChild(c);
       });
 
+      // 👇 فقط یکی باز باشه
       btn.onclick = () => {
+
+        document.querySelectorAll(".configs").forEach(el => {
+          if (el !== configsDiv) el.style.display = "none";
+        });
+
         configsDiv.style.display =
           configsDiv.style.display === "block" ? "none" : "block";
       };
