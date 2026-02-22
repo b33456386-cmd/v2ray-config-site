@@ -2,10 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let allConfigs = [];
 
-  const searchInput = document.getElementById("searchInput");
-  const themeBtn = document.getElementById("themeBtn");
-  const randomBtn = document.getElementById("randomBtn");
-
   fetch("configs.json?v=" + new Date().getTime())
     .then(res => res.json())
     .then(data => {
@@ -19,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data.countries.forEach(country => {
 
         let btn = document.createElement("button");
-        btn.innerText = `${country.flag} ${country.name} (${country.count})`;
+        btn.innerText = country.flag + " " + country.name + " (" + country.count + ")";
 
         let list = document.createElement("div");
         list.style.display = "none";
@@ -33,19 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
           allConfigs.push(cfg);
 
           let div = document.createElement("div");
-          div.className = "config";
+          div.style.margin = "10px";
+          div.style.padding = "10px";
+          div.style.border = "1px solid gray";
+          div.style.borderRadius = "10px";
 
-          let text = document.createElement("span");
-          text.innerText = cfg.substring(0, 60) + "...";
+          let text = document.createElement("p");
+          text.innerText = cfg;
 
           let copyBtn = document.createElement("button");
           copyBtn.innerText = "📋 کپی";
+          copyBtn.style.background = "green";
+          copyBtn.style.color = "white";
+          copyBtn.style.marginTop = "5px";
 
-          // ✅ این مهمه (بدون onclick HTML)
-          copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(cfg);
+          copyBtn.onclick = () => {
+            // روش قدیمی (همه جا کار می‌کنه)
+            let temp = document.createElement("textarea");
+            temp.value = cfg;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+
             alert("کپی شد ✅");
-          });
+          };
 
           div.appendChild(text);
           div.appendChild(copyBtn);
@@ -57,30 +65,5 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(list);
       });
     });
-
-  // 🔍 سرچ
-  searchInput.addEventListener("input", () => {
-    let value = searchInput.value.toLowerCase();
-
-    document.querySelectorAll(".config").forEach(el => {
-      el.style.display = el.innerText.toLowerCase().includes(value)
-        ? "block"
-        : "none";
-    });
-  });
-
-  // 🌙 دارک مود
-  themeBtn.onclick = () => {
-    document.body.classList.toggle("light");
-  };
-
-  // 🎲 رندوم
-  randomBtn.onclick = () => {
-    if (allConfigs.length === 0) return;
-
-    let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
-    navigator.clipboard.writeText(random);
-    alert("رندوم کپی شد 🎲");
-  };
 
 });
