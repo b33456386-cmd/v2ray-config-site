@@ -34,7 +34,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           let div = document.createElement("div");
           div.className = "config";
-          div.innerText = cfg;
+
+          let short = cfg.substring(0, 60);
+
+          div.innerHTML = `
+            <span>${short}...</span>
+            <button onclick="copyConfig('${cfg}')">📋 کپی</button>
+          `;
 
           list.appendChild(div);
         });
@@ -44,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // سرچ
+  // 🔍 سرچ
   searchInput.addEventListener("input", () => {
     let value = searchInput.value.toLowerCase();
 
@@ -55,12 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // دارک مود
+  // 🌙 دارک مود
   themeBtn.onclick = () => {
     document.body.classList.toggle("light");
   };
 
-  // رندوم
+  // 🎲 رندوم
   randomBtn.onclick = () => {
     if (allConfigs.length === 0) return;
 
@@ -70,3 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 });
+
+// 📋 کپی
+function copyConfig(text) {
+  navigator.clipboard.writeText(text);
+  alert("کپی شد ✅");
+}
