@@ -1,11 +1,15 @@
 import requests
 import json
 from datetime import datetime
+import pytz
 
 URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt"
 
 res = requests.get(URL, timeout=20)
 lines = res.text.split("\n")
+
+tehran = pytz.timezone("Asia/Tehran")
+now = datetime.now(tehran)
 
 countries = {
     "USA": {
@@ -45,7 +49,7 @@ for line in lines:
                 break
 
 output = {
-    "last_update": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+    "last_update": now.strftime("%Y-%m-%d | %H:%M (IR)"),
     "countries": []
 }
 
