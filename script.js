@@ -1,69 +1,72 @@
-let allConfigs = [];
+document.addEventListener("DOMContentLoaded", () => {
 
-const searchInput = document.getElementById("searchInput");
-const themeBtn = document.getElementById("themeBtn");
-const randomBtn = document.getElementById("randomBtn");
+  let allConfigs = [];
 
-fetch("configs.json?v=" + new Date().getTime())
-  .then(res => res.json())
-  .then(data => {
+  const searchInput = document.getElementById("searchInput");
+  const themeBtn = document.getElementById("themeBtn");
+  const randomBtn = document.getElementById("randomBtn");
 
-    document.getElementById("lastUpdate").innerText =
-      "آخرین آپدیت: " + data.last_update;
+  fetch("configs.json?v=" + new Date().getTime())
+    .then(res => res.json())
+    .then(data => {
 
-    let container = document.getElementById("countries");
-    container.innerHTML = "";
+      document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + data.last_update;
 
-    data.countries.forEach(country => {
+      let container = document.getElementById("countries");
+      container.innerHTML = "";
 
-      let btn = document.createElement("button");
-      btn.innerText = `${country.flag} ${country.name} (${country.count})`;
+      data.countries.forEach(country => {
 
-      let list = document.createElement("div");
-      list.style.display = "none";
+        let btn = document.createElement("button");
+        btn.innerText = `${country.flag} ${country.name} (${country.count})`;
 
-      btn.onclick = () => {
-        list.style.display =
-          list.style.display === "none" ? "block" : "none";
-      };
+        let list = document.createElement("div");
+        list.style.display = "none";
 
-      country.configs.forEach(cfg => {
-        allConfigs.push(cfg);
+        btn.onclick = () => {
+          list.style.display =
+            list.style.display === "none" ? "block" : "none";
+        };
 
-        let div = document.createElement("div");
-        div.className = "config";
+        country.configs.forEach(cfg => {
+          allConfigs.push(cfg);
 
-        div.innerText = cfg;
+          let div = document.createElement("div");
+          div.className = "config";
+          div.innerText = cfg;
 
-        list.appendChild(div);
+          list.appendChild(div);
+        });
+
+        container.appendChild(btn);
+        container.appendChild(list);
       });
+    });
 
-      container.appendChild(btn);
-      container.appendChild(list);
+  // 🔍 سرچ
+  searchInput.addEventListener("input", () => {
+    let value = searchInput.value.toLowerCase();
+
+    document.querySelectorAll(".config").forEach(el => {
+      el.style.display = el.innerText.toLowerCase().includes(value)
+        ? "block"
+        : "none";
     });
   });
 
-// 🔍 سرچ واقعی
-searchInput.addEventListener("input", () => {
-  let value = searchInput.value.toLowerCase();
+  // 🌙 دارک مود
+  themeBtn.onclick = () => {
+    document.body.classList.toggle("light");
+  };
 
-  document.querySelectorAll(".config").forEach(el => {
-    el.style.display = el.innerText.toLowerCase().includes(value)
-      ? "block"
-      : "none";
-  });
+  // 🎲 رندوم
+  randomBtn.onclick = () => {
+    if (allConfigs.length === 0) return;
+
+    let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
+    navigator.clipboard.writeText(random);
+    alert("رندوم کپی شد 🎲");
+  };
+
 });
-
-// 🌙 دارک مود
-themeBtn.onclick = () => {
-  document.body.classList.toggle("light");
-};
-
-// 🎲 رندوم
-randomBtn.onclick = () => {
-  if (allConfigs.length === 0) return;
-
-  let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
-  navigator.clipboard.writeText(random);
-  alert("رندوم کپی شد 🎲");
-};
