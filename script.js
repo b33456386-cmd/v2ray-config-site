@@ -1,6 +1,6 @@
 let allConfigs = [];
 
-fetch("configs.json")
+fetch("configs.json?v=" + new Date().getTime())
   .then(res => res.json())
   .then(data => {
 
@@ -8,6 +8,7 @@ fetch("configs.json")
       "آخرین آپدیت: " + data.last_update;
 
     let container = document.getElementById("countries");
+    container.innerHTML = "";
 
     data.countries.forEach(country => {
 
@@ -46,6 +47,8 @@ function copyConfig(text) {
 }
 
 function randomConfig() {
+  if (allConfigs.length === 0) return;
+
   let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
   navigator.clipboard.writeText(random);
   alert("رندوم کپی شد 🎲");
