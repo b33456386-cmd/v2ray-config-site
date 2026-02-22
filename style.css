@@ -2,18 +2,29 @@ body {
   background: #0f172a;
   color: white;
   font-family: sans-serif;
-  text-align: center;
-  transition: 0.3s;
+  margin: 0;
+  padding: 0;
 }
 
+/* کانتینر اصلی */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* عنوان */
 .title {
-  font-size: 45px;
+  font-size: 55px;
+  text-align: center;
   margin-top: 20px;
 }
 
 /* تلگرام */
 .telegram {
-  margin-top: 10px;
+  text-align: center;
+  margin: 15px 0;
 }
 
 .telegram a {
@@ -23,71 +34,45 @@ body {
   text-decoration: none;
   color: white;
   background: rgba(255,255,255,0.1);
-  padding: 10px 18px;
-  border-radius: 14px;
-  transition: 0.3s;
+  padding: 12px 20px;
+  border-radius: 15px;
   backdrop-filter: blur(10px);
-}
-
-.telegram a:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.05);
-}
-
-.telegram img {
-  width: 26px;
-  height: 26px;
-}
-
-/* دکمه‌ها */
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  transition: 0.3s;
-  backdrop-filter: blur(8px);
-}
-
-button:hover {
-  background: rgba(255,255,255,0.2);
 }
 
 /* سرچ */
 .search {
-  padding: 12px;
-  width: 60%;
+  display: block;
+  width: 80%;
+  margin: 20px auto;
+  padding: 15px;
+  font-size: 16px;
   border-radius: 12px;
   border: none;
 }
 
+/* دکمه‌ها */
+button {
+  padding: 12px 25px;
+  margin: 10px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 /* کانفیگ */
 .config {
+  margin: 15px auto;
+  padding: 15px;
+  width: 90%;
   background: rgba(255,255,255,0.1);
-  margin: 6px;
-  padding: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
+  text-align: left;
+  word-break: break-all;
 }
 
 /* لایت مود */
 body.light {
   background: #f1f5f9;
-  color: black;
-}
-
-body.light button {
-  background: rgba(0,0,0,0.1);
-  color: black;
-}
-
-body.light .config {
-  background: rgba(0,0,0,0.1);
-}
-
-body.light .telegram a {
-  background: rgba(0,0,0,0.1);
   color: black;
 }
