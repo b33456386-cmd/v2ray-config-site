@@ -2,7 +2,6 @@ import requests
 import json
 from datetime import datetime
 
-# سورس کانفیگ (می‌تونی بعدا عوض کنی)
 URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt"
 
 res = requests.get(URL)
@@ -10,26 +9,16 @@ lines = res.text.split("\n")
 
 countries = {}
 
-def get_country(ip):
-    try:
-        r = requests.get(f"http://ip-api.com/json/{ip}")
-        data = r.json()
-        return data.get("country", "Unknown")
-    except:
-        return "Unknown"
+for line in lines[:50]:  # محدود برای سرعت
+    if line.strip() == "":
+        continue
 
-for line in lines:
-    if "@" in line:
-        try:
-            ip = line.split("@")[1].split(":")[0]
-            country = get_country(ip)
+    country = "Unknown"
 
-            if country not in countries:
-                countries[country] = []
+    if country not in countries:
+        countries[country] = []
 
-            countries[country].append(line)
-        except:
-            pass
+    countries[country].append(line)
 
 output = {
     "last_update": str(datetime.now()),
