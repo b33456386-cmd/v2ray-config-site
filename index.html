@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>V2Ray Configs</title>
+</head>
+<body style="font-family:sans-serif; background:#111; color:white;">
+
+<h1>🌍 V2Ray Configs</h1>
+<p id="update"></p>
+<div id="list"></div>
+
+<script>
+fetch('data.json')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("update").innerText = "Last update: " + data.last_update;
+
+    let html = "";
+
+    data.countries.forEach(c => {
+      html += "<h2>" + c.flag + " " + c.name + "</h2>";
+
+      c.configs.forEach(cfg => {
+        html += `
+          <div style="background:#222;padding:10px;margin:5px;border-radius:8px;">
+            <button onclick="copy('${cfg}')">📋 Copy</button>
+            <p style="word-break:break-all;">${cfg}</p>
+          </div>
+        `;
+      });
+    });
+
+    document.getElementById("list").innerHTML = html;
+  });
+
+function copy(text) {
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
+}
+</script>
+
+</body>
+</html>
