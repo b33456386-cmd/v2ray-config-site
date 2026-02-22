@@ -3,23 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <title>VPN Panel</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>انتخاب کشور</h2>
+<h2>🌍 انتخاب کشور</h2>
 
-<button class="country-btn" data-country="germany">🇩🇪 آلمان</button>
-<button class="country-btn" data-country="usa">🇺🇸 آمریکا</button>
+<div class="buttons">
+  <button class="country-btn" onclick="toggleCountry('germany')">
+    🇩🇪 آلمان <span>(2)</span>
+  </button>
 
-<div id="germany" class="config-list" style="display:none;">
-  <p>vless://germany-1</p>
-  <p>vless://germany-2</p>
+  <button class="country-btn" onclick="toggleCountry('usa')">
+    🇺🇸 آمریکا <span>(2)</span>
+  </button>
 </div>
 
-<div id="usa" class="config-list" style="display:none;">
-  <p>vless://usa-1</p>
-  <p>vless://usa-2</p>
+<!-- آلمان -->
+<div id="germany" class="config-list">
+  <div class="config-item">
+    <span>V2raying_config</span>
+    <button onclick="copyConfig('vless://germany-1')">📋 کپی</button>
+  </div>
+
+  <div class="config-item">
+    <span>V2raying_config</span>
+    <button onclick="copyConfig('vless://germany-2')">📋 کپی</button>
+  </div>
 </div>
+
+<!-- آمریکا -->
+<div id="usa" class="config-list">
+  <div class="config-item">
+    <span>V2raying_config</span>
+    <button onclick="copyConfig('vless://usa-1')">📋 کپی</button>
+  </div>
+
+  <div class="config-item">
+    <span>V2raying_config</span>
+    <button onclick="copyConfig('vless://usa-2')">📋 کپی</button>
+  </div>
+</div>
+
+<p class="update">⏱ آخرین آپدیت: 15:14</p>
+
+<a class="telegram" href="https://t.me/V2raying_config" target="_blank">
+📢 کانال تلگرام
+</a>
 
 <script src="script.js"></script>
 </body>
