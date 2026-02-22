@@ -2,50 +2,24 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>VPN Panel</title>
+  <title>NovaConfig</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<div class="header">
+  <div class="logo-box">
+    <span class="icon">🚀</span>
+    <h1 class="logo">NovaConfig</h1>
+  </div>
+  <p class="subtitle">پنل حرفه‌ای کانفیگ‌های V2Ray</p>
+</div>
+
 <h2>🌍 انتخاب کشور</h2>
 
-<div class="buttons">
-  <button class="country-btn" onclick="toggleCountry('germany')">
-    🇩🇪 آلمان <span>(2)</span>
-  </button>
+<div id="countries"></div>
 
-  <button class="country-btn" onclick="toggleCountry('usa')">
-    🇺🇸 آمریکا <span>(2)</span>
-  </button>
-</div>
-
-<!-- آلمان -->
-<div id="germany" class="config-list">
-  <div class="config-item">
-    <span>V2raying_config</span>
-    <button onclick="copyConfig('vless://germany-1')">📋 کپی</button>
-  </div>
-
-  <div class="config-item">
-    <span>V2raying_config</span>
-    <button onclick="copyConfig('vless://germany-2')">📋 کپی</button>
-  </div>
-</div>
-
-<!-- آمریکا -->
-<div id="usa" class="config-list">
-  <div class="config-item">
-    <span>V2raying_config</span>
-    <button onclick="copyConfig('vless://usa-1')">📋 کپی</button>
-  </div>
-
-  <div class="config-item">
-    <span>V2raying_config</span>
-    <button onclick="copyConfig('vless://usa-2')">📋 کپی</button>
-  </div>
-</div>
-
-<p class="update">⏱ آخرین آپدیت: 15:14</p>
+<p id="update" class="update"></p>
 
 <a class="telegram" href="https://t.me/V2raying_config" target="_blank">
 📢 کانال تلگرام
