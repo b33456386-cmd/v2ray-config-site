@@ -1,15 +1,16 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelectorAll(".country-btn");
+function toggleCountry(country) {
+  const all = document.querySelectorAll(".config-list");
 
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      const country = button.getAttribute("data-country");
-
-      document.querySelectorAll(".config-list").forEach(list => {
-        list.style.display = "none";
-      });
-
-      document.getElementById(country).style.display = "block";
-    });
+  all.forEach(el => {
+    if (el.id === country) {
+      el.style.display = el.style.display === "block" ? "none" : "block";
+    } else {
+      el.style.display = "none";
+    }
   });
-});
+}
+
+function copyConfig(config) {
+  navigator.clipboard.writeText(config);
+  alert("کپی شد ✅");
+}
