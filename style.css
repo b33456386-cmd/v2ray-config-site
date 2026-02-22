@@ -1,8 +1,10 @@
+/* حالت پیش‌فرض (دارک) */
 body {
-  font-family: sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: #0f172a;
   color: white;
+  font-family: sans-serif;
   text-align: center;
+  transition: 0.3s;
 }
 
 .title {
@@ -12,22 +14,33 @@ body {
 
 button {
   padding: 10px 20px;
-  margin: 10px;
+  margin: 5px;
+  border-radius: 10px;
   border: none;
-  border-radius: 15px;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  backdrop-filter: blur(10px);
   cursor: pointer;
 }
 
-.country {
-  margin: 15px;
+.search {
+  padding: 10px;
+  width: 60%;
+  border-radius: 10px;
+  border: none;
 }
 
+/* کانفیگ */
 .config {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.1);
   margin: 5px;
   padding: 10px;
   border-radius: 10px;
+}
+
+/* ☀️ حالت لایت */
+body.light {
+  background: #f1f5f9;
+  color: black;
+}
+
+body.light .config {
+  background: rgba(0,0,0,0.1);
 }
