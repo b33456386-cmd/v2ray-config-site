@@ -1,42 +1,173 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>V2Ray Configs</title>
+<meta charset="UTF-8">
+<title>V2Ray Configs</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* تلگرام */
+.telegram-box {
+  margin:20px 0;
+  padding:15px;
+  border-radius:15px;
+  backdrop-filter: blur(12px);
+  background: rgba(0,136,204,0.15);
+  border:1px solid rgba(255,255,255,0.2);
+  text-align:center;
+}
+
+.telegram-btn {
+  display:inline-block;
+  margin-top:10px;
+  text-decoration:none;
+  padding:10px 18px;
+  border-radius:12px;
+  background: rgba(0,136,204,0.4);
+  color:white;
+  border:1px solid rgba(255,255,255,0.3);
+}
+
+/* آپدیت */
+.update {
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* کشور */
+.country {
+  margin-top: 30px;
+}
+
+.country-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* دکمه */
+.btn {
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left:5px;
+}
+
+/* کارت */
+.card {
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  padding: 12px;
+  margin: 10px 0;
+}
+</style>
+
 </head>
-<body style="font-family:sans-serif; background:#111; color:white;">
+
+<body>
+
+<div class="container">
 
 <h1>🌍 V2Ray Configs</h1>
-<p id="update"></p>
+
+<div class="telegram-box">
+  <p>📢 کانال تلگرام</p>
+  <a href="https://t.me/V2raying_config" target="_blank" class="telegram-btn">
+    🔗 عضویت
+  </a>
+</div>
+
+<p class="update">⚡ آپدیت خودکار | هر 3 ساعت</p>
+<p class="update" id="update"></p>
+
 <div id="list"></div>
+
+</div>
 
 <script>
 fetch('data.json')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("update").innerText = "Last update: " + data.last_update;
+.then(res => res.json())
+.then(data => {
 
-    let html = "";
+  document.getElementById("update").innerText =
+    "⏱ آخرین آپدیت: " + data.last_update;
 
-    data.countries.forEach(c => {
-      html += "<h2>" + c.flag + " " + c.name + "</h2>";
+  let html = "";
 
-      c.configs.forEach(cfg => {
-        html += `
-          <div style="background:#222;padding:10px;margin:5px;border-radius:8px;">
-            <button onclick="copy('${cfg}')">📋 Copy</button>
-            <p style="word-break:break-all;">${cfg}</p>
+  data.countries.forEach(c => {
+
+    html += `
+      <div class="country">
+        <div class="country-header">
+          <h2>${c.flag} ${c.name} (${c.configs.length})</h2>
+
+          <div>
+            <button class="btn" onclick="randomConfig(${JSON.stringify(c.configs).replace(/"/g, '&quot;')})">
+              🎲 رندوم
+            </button>
+
+            <button class="btn" onclick="subscribe('${c.name}')">
+              🔗 سابسکرایب
+            </button>
           </div>
-        `;
-      });
+        </div>
+    `;
+
+    let i = 1;
+
+    c.configs.forEach(cfg => {
+      html += `
+        <div class="card">
+          <button class="btn" onclick="copy('${cfg}')">📋 کپی</button>
+          <p>📡 V2raying_config #${i}</p>
+        </div>
+      `;
+      i++;
     });
 
-    document.getElementById("list").innerHTML = html;
+    html += `</div>`;
   });
 
+  document.getElementById("list").innerHTML = html;
+});
+
+// کپی
 function copy(text) {
   navigator.clipboard.writeText(text);
-  alert("Copied!");
+  alert("کپی شد!");
+}
+
+// رندوم
+function randomConfig(configs) {
+  let random = configs[Math.floor(Math.random() * configs.length)];
+  navigator.clipboard.writeText(random);
+  alert("یک کانفیگ رندوم کپی شد 🎯");
+}
+
+// سابسکرایب (فعلاً لینک ثابت)
+function subscribe(country) {
+  window.open("https://t.me/V2raying_config", "_blank");
 }
 </script>
 
