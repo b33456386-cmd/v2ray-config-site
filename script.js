@@ -20,6 +20,26 @@ fetch("data.json")
       const list = document.createElement("div");
       list.className = "config-list";
 
+      // 🎲 دکمه رندوم
+      const randomBtn = document.createElement("button");
+      randomBtn.innerText = "🎲 رندوم";
+      randomBtn.onclick = () => {
+        const random =
+          country.configs[Math.floor(Math.random() * country.configs.length)];
+        copyConfig(random);
+      };
+
+      // 📡 سابسکرایب (همه کانفیگ‌ها)
+      const subBtn = document.createElement("button");
+      subBtn.innerText = "📡 Subscribe";
+      subBtn.onclick = () => {
+        const allConfigs = country.configs.join("\n");
+        copyConfig(allConfigs);
+      };
+
+      list.appendChild(randomBtn);
+      list.appendChild(subBtn);
+
       country.configs.forEach(cfg => {
         const item = document.createElement("div");
         item.className = "config-item";
