@@ -11,18 +11,14 @@ fetch("configs.json")
 
     data.countries.forEach(country => {
 
-      let box = document.createElement("div");
-      box.className = "country";
-
       let btn = document.createElement("button");
       btn.innerText = `${country.flag} ${country.name} (${country.count})`;
 
       let list = document.createElement("div");
-      list.style.display = "none";
+      list.className = "country-list";
 
       btn.onclick = () => {
-        list.style.display =
-          list.style.display === "none" ? "block" : "none";
+        list.classList.toggle("open");
       };
 
       country.configs.forEach(cfg => {
@@ -32,16 +28,15 @@ fetch("configs.json")
         div.className = "config";
 
         div.innerHTML = `
-          <span>${cfg.substring(0, 40)}...</span>
+          <span>${cfg.substring(0,40)}...</span>
           <button onclick="copyConfig('${cfg}')">📋</button>
         `;
 
         list.appendChild(div);
       });
 
-      box.appendChild(btn);
-      box.appendChild(list);
-      container.appendChild(box);
+      container.appendChild(btn);
+      container.appendChild(list);
     });
   });
 
@@ -51,9 +46,17 @@ function copyConfig(text) {
 }
 
 function randomConfig() {
-  if (allConfigs.length === 0) return;
-
   let random = allConfigs[Math.floor(Math.random() * allConfigs.length)];
   navigator.clipboard.writeText(random);
-  alert("یک کانفیگ رندوم کپی شد 🎲");
+  alert("رندوم کپی شد 🎲");
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("light");
+}
+
+function searchConfig(query) {
+  document.querySelectorAll(".config").forEach(el => {
+    el.style.display = el.innerText.includes(query) ? "block" : "none";
+  });
 }
