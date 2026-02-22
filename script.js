@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // 🔍 سرچ
+  // سرچ
   searchInput.addEventListener("input", () => {
     let value = searchInput.value.toLowerCase();
 
@@ -55,12 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 🌙 دارک مود
+  // دارک مود
   themeBtn.onclick = () => {
     document.body.classList.toggle("light");
   };
 
-  // 🎲 رندوم
+  // رندوم
   randomBtn.onclick = () => {
     if (allConfigs.length === 0) return;
 
