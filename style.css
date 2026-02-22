@@ -10,9 +10,13 @@ h2 {
   margin-bottom: 30px;
 }
 
+.buttons {
+  margin-bottom: 20px;
+}
+
 .country-btn {
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.2);
   padding: 15px 25px;
   margin: 10px;
@@ -23,14 +27,51 @@ h2 {
   transition: 0.3s;
 }
 
+.country-btn span {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
 .country-btn:hover {
   background: rgba(255,255,255,0.2);
   transform: scale(1.05);
 }
 
 .config-list {
+  display: none;
   margin-top: 20px;
   background: rgba(255,255,255,0.05);
   padding: 20px;
   border-radius: 15px;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  background: rgba(255,255,255,0.08);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+button {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.update {
+  margin-top: 20px;
+  opacity: 0.7;
+}
+
+.telegram {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #0088cc;
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
 }
