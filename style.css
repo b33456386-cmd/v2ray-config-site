@@ -1,3 +1,4 @@
+/* کل صفحه */
 body {
   background: #0f172a;
   color: white;
@@ -6,17 +7,16 @@ body {
   padding: 0;
 }
 
-/* کانتینر اصلی */
+/* فول اسکرین واقعی */
 .container {
   width: 100%;
-  max-width: 1200px;
-  margin: auto;
+  margin: 0;
   padding: 20px;
 }
 
 /* عنوان */
 .title {
-  font-size: 55px;
+  font-size: 60px;
   text-align: center;
   margin-top: 20px;
 }
@@ -37,12 +37,23 @@ body {
   padding: 12px 20px;
   border-radius: 15px;
   backdrop-filter: blur(10px);
+  transition: 0.3s;
+}
+
+.telegram a:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
+}
+
+.telegram img {
+  width: 28px;
+  height: 28px;
 }
 
 /* سرچ */
 .search {
   display: block;
-  width: 80%;
+  width: 85%;
   margin: 20px auto;
   padding: 15px;
   font-size: 16px;
@@ -58,13 +69,21 @@ button {
   border: none;
   cursor: pointer;
   font-size: 16px;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  backdrop-filter: blur(8px);
+  transition: 0.3s;
 }
 
-/* کانفیگ */
+button:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* کانفیگ‌ها */
 .config {
   margin: 15px auto;
   padding: 15px;
-  width: 90%;
+  width: 95%;
   background: rgba(255,255,255,0.1);
   border-radius: 12px;
   text-align: left;
@@ -74,5 +93,19 @@ button {
 /* لایت مود */
 body.light {
   background: #f1f5f9;
+  color: black;
+}
+
+body.light button {
+  background: rgba(0,0,0,0.1);
+  color: black;
+}
+
+body.light .config {
+  background: rgba(0,0,0,0.1);
+}
+
+body.light .telegram a {
+  background: rgba(0,0,0,0.1);
   color: black;
 }
