@@ -9,11 +9,24 @@ lines = res.text.split("\n")
 
 countries = {}
 
-for line in lines[:50]:  # محدود برای سرعت
+def guess_country(text):
+    text = text.lower()
+    if "de" in text:
+        return "Germany 🇩🇪"
+    elif "us" in text:
+        return "USA 🇺🇸"
+    elif "fr" in text:
+        return "France 🇫🇷"
+    elif "tr" in text:
+        return "Turkey 🇹🇷"
+    else:
+        return "Other 🌍"
+
+for line in lines[:50]:
     if line.strip() == "":
         continue
 
-    country = "Unknown"
+    country = guess_country(line)
 
     if country not in countries:
         countries[country] = []
@@ -28,7 +41,7 @@ output = {
 for c in countries:
     output["countries"].append({
         "name": c,
-        "flag": "🌍",
+        "flag": "",
         "configs": countries[c][:10]
     })
 
