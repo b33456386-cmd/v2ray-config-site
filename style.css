@@ -1,111 +1,79 @@
-/* کل صفحه */
-body {
-  background: #0f172a;
-  color: white;
-  font-family: sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-/* فول اسکرین واقعی */
+//* کانتینر اصلی */
 .container {
+  max-width: 100%;
+  padding: 16px;
+}
+
+/* کارت کشور */
+.country-card {
   width: 100%;
-  margin: 0;
-  padding: 20px;
+  border-radius: 20px;
+  padding: 18px;
+  margin: 12px 0;
+  background: linear-gradient(135deg, #d8cfff, #c4b5fd);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-/* عنوان */
-.title {
-  font-size: 60px;
-  text-align: center;
-  margin-top: 20px;
+/* عنوان کشور */
+.country-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-/* تلگرام */
-.telegram {
-  text-align: center;
-  margin: 15px 0;
-}
-
-.telegram a {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: white;
-  background: rgba(255,255,255,0.1);
-  padding: 12px 20px;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  transition: 0.3s;
-}
-
-.telegram a:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.05);
-}
-
-.telegram img {
-  width: 28px;
-  height: 28px;
-}
-
-/* سرچ */
-.search {
-  display: block;
-  width: 85%;
-  margin: 20px auto;
-  padding: 15px;
-  font-size: 16px;
-  border-radius: 12px;
+/* دکمه سابسکریپشن */
+.sub-btn {
+  background: linear-gradient(45deg, #6a5cff, #ff7a18);
   border: none;
-}
-
-/* دکمه‌ها */
-button {
-  padding: 12px 25px;
-  margin: 10px;
+  padding: 10px 14px;
   border-radius: 12px;
-  border: none;
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 15px;
   cursor: pointer;
-  font-size: 16px;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  backdrop-filter: blur(8px);
-  transition: 0.3s;
 }
 
-button:hover {
-  background: rgba(255,255,255,0.2);
+/* کارت کانفیگ */
+.config-card {
+  width: 100%;
+  border-radius: 18px;
+  padding: 16px;
+  margin: 14px 0;
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  position: relative;
 }
 
-/* کانفیگ‌ها */
-.config {
-  margin: 15px auto;
-  padding: 15px;
-  width: 95%;
-  background: rgba(255,255,255,0.1);
-  border-radius: 12px;
-  text-align: left;
+/* متن کانفیگ */
+.config-text {
+  font-size: 13px;
+  line-height: 1.6;
   word-break: break-all;
+  padding-bottom: 10px;
 }
 
-/* لایت مود */
-body.light {
-  background: #f1f5f9;
-  color: black;
+/* دکمه کپی */
+.copy-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: linear-gradient(45deg, #6a5cff, #ff7a18);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
 }
 
-body.light button {
-  background: rgba(0,0,0,0.1);
-  color: black;
-}
+/* حالت موبایل */
+@media (max-width: 600px) {
+  .country-title {
+    font-size: 20px;
+  }
 
-body.light .config {
-  background: rgba(0,0,0,0.1);
-}
-
-body.light .telegram a {
-  background: rgba(0,0,0,0.1);
-  color: black;
+  .config-text {
+    font-size: 12px;
+  }
 }
