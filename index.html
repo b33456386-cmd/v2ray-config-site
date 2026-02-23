@@ -3,124 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ V2Ray</title>
 
-<style>
-body {
-    background:#0b132b;
-    color:white;
-    font-family:sans-serif;
-    margin:0;
-}
+<title>V2Ray Configs</title>
 
-.container {
-    padding:15px;
-}
-
-input {
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:none;
-    margin-bottom:10px;
-}
-
-.controls {
-    display:flex;
-    gap:10px;
-    margin-bottom:10px;
-}
-
-button {
-    flex:1;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-}
-
-#autoBtn {
-    background:red;
-    color:white;
-}
-
-.tabs {
-    display:flex;
-    gap:10px;
-    margin:15px 0;
-}
-
-.tab {
-    flex:1;
-    padding:10px;
-    border-radius:10px;
-    background:#1c2541;
-    text-align:center;
-    cursor:pointer;
-}
-
-.active {
-    background:#3a86ff;
-}
-
-.card {
-    background:#1c2541;
-    padding:10px;
-    border-radius:10px;
-    margin:10px 0;
-}
-
-pre {
-    white-space:pre-wrap;
-    word-break:break-all;
-}
-
-.copyAll {
-    width:100%;
-    margin-top:10px;
-    background:linear-gradient(45deg,purple,orange);
-    color:white;
-}
-
-.telegram {
-    position:fixed;
-    bottom:15px;
-    right:15px;
-    background:#0088cc;
-    color:white;
-    padding:12px 15px;
-    border-radius:50px;
-    text-decoration:none;
-}
-</style>
-
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<input id="search" placeholder="🔍 جستجو...">
+<h2>🌍 کانفیگ‌ها</h2>
+
+<input id="search" placeholder="🔍 جستجو کشور...">
 
 <div class="controls">
-    <button onclick="manualUpdate()">🔄 آپدیت</button>
-    <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
+    <button onclick="loadData()">🔄 آپدیت</button>
 </div>
 
 <div id="lastUpdate"></div>
 
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('de')">🇩🇪 آلمان</div>
-    <div class="tab" onclick="switchTab('us')">🇺🇸 آمریکا</div>
-</div>
+<div id="countries"></div>
 
-<button class="copyAll" onclick="copyAll()">📋 کپی همه کانفیگ‌ها</button>
-
-<div id="app"></div>
+<div id="configs"></div>
 
 </div>
 
-<a class="telegram" href="https://t.me/V2raying_config">📢</a>
+<a href="https://t.me/V2raying_config" class="telegram">📢</a>
 
 <script src="script.js"></script>
 
