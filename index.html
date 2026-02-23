@@ -2,72 +2,137 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-
-  <!-- مهم برای بزرگ شدن در موبایل -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>لیست کانفیگ‌ها</title>
-
-  <!-- فونت -->
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
-
-  <!-- استایل -->
+  <title>V2Ray Configs</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="container">
+<header class="header">
+  <h1>🌐 کانفیگ‌های V2Ray</h1>
 
-    <!-- هدر -->
-    <div class="header">
-      <h2>آخرین آپدیت: 10:19 23-02-2026</h2>
+  <div class="top-bar">
+    <input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
+
+    <div class="controls">
+      <button id="darkToggle">🌙</button>
+      <button id="updateBtn">🔄 آپدیت</button>
+      <label class="switch">
+        <input type="checkbox" id="autoUpdate">
+        <span>آپدیت خودکار</span>
+      </label>
     </div>
-
-    <!-- سرچ -->
-    <input type="text" class="search-box" placeholder="جستجو: کشور یا کانفیگ...">
-
-    <!-- دکمه ریلود -->
-    <button class="button">🔄 بارگذاری مجدد</button>
-
-    <!-- تعداد کشور -->
-    <p>تعداد کشورها: 33</p>
-
-    <!-- دکمه بازگشت -->
-    <button class="button">بازگشت به لیست کشورها</button>
-
-    <!-- کارت کشور -->
-    <div class="country-card">
-
-      <div class="country-title">
-        🇩🇪 Germany (7)
-      </div>
-
-      <!-- کانفیگ -->
-      <div class="config-card">
-        vless://example-config-1
-        <button class="copy-btn">کپی</button>
-      </div>
-
-      <div class="config-card">
-        vless://example-config-2
-        <button class="copy-btn">کپی</button>
-      </div>
-
-      <div class="config-card">
-        ss://example-config-3
-        <button class="copy-btn">کپی</button>
-      </div>
-
-    </div>
-
-    <!-- فوتر -->
-    <div class="footer">
-      <a href="#">GitHub</a>
-      <a href="#">کانال تلگرام</a>
-    </div>
-
   </div>
+
+  <div class="info">
+    <span id="time"></span>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- 🇺🇸 آمریکا -->
+  <section class="country">
+    <h2>🇺🇸 آمریکا (<span id="usCount">0</span>)</h2>
+    <div class="configs" id="usConfigs"></div>
+  </section>
+
+  <!-- 🇩🇪 آلمان -->
+  <section class="country">
+    <h2>🇩🇪 آلمان (<span id="deCount">0</span>)</h2>
+    <div class="configs" id="deConfigs"></div>
+  </section>
+
+</main>
+
+<!-- تلگرام -->
+<footer class="footer">
+  <a href="https://t.me/V2raying_config" target="_blank" class="telegram">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
+    کانال تلگرام
+  </a>
+</footer>
+
+<script>
+const usConfigs = [
+  "config-us-1",
+  "config-us-2"
+];
+
+const deConfigs = [
+  "config-de-1",
+  "config-de-2"
+];
+
+function renderConfigs() {
+  const usBox = document.getElementById("usConfigs");
+  const deBox = document.getElementById("deConfigs");
+
+  usBox.innerHTML = "";
+  deBox.innerHTML = "";
+
+  usConfigs.forEach(c => {
+    usBox.innerHTML += createCard(c);
+  });
+
+  deConfigs.forEach(c => {
+    deBox.innerHTML += createCard(c);
+  });
+
+  document.getElementById("usCount").innerText = usConfigs.length;
+  document.getElementById("deCount").innerText = deConfigs.length;
+}
+
+function createCard(config) {
+  return `
+    <div class="card">
+      <p>${config}</p>
+      <button onclick="copyConfig('${config}')">📋 کپی</button>
+    </div>
+  `;
+}
+
+function copyConfig(text) {
+  navigator.clipboard.writeText(text);
+  alert("کپی شد ✅");
+}
+
+// سرچ
+document.getElementById("search").addEventListener("input", function() {
+  const value = this.value.toLowerCase();
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = card.innerText.toLowerCase().includes(value) ? "block" : "none";
+  });
+});
+
+// دارک مود
+document.getElementById("darkToggle").onclick = () => {
+  document.body.classList.toggle("dark");
+};
+
+// ساعت ایران
+function updateTime() {
+  const now = new Date().toLocaleString("fa-IR", { timeZone: "Asia/Tehran" });
+  document.getElementById("time").innerText = "🕒 " + now;
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// دکمه آپدیت
+document.getElementById("updateBtn").onclick = () => {
+  renderConfigs();
+};
+
+// آپدیت خودکار
+setInterval(() => {
+  if (document.getElementById("autoUpdate").checked) {
+    renderConfigs();
+  }
+}, 10000);
+
+renderConfigs();
+</script>
 
 </body>
 </html>
