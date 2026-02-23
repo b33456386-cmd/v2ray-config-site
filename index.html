@@ -1,141 +1,183 @@
-<script>
+<!DOCTYPE html><html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کانفیگ ها</title><style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#0b132b;
+    color:#fff;
+    direction: rtl;
+}
+.container{
+    padding:15px;
+    max-width:500px;
+    margin:auto;
+}
+h1{text-align:center;}
 
-let data = [];
-let opened = null;
-
-function openTelegram(){
-    window.open("https://t.me/V2raying_config","_blank");
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
 }
 
-function getIranTime(){
-    return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
+    color:#fff;
 }
 
-function safeDecode(text){
-    try{
-        return atob(text.trim());
-    }catch{
-        return text; // اگر base64 نبود
-    }
+.update{background:linear-gradient(45deg,#00c6ff,#0072ff);}
+.country{background:linear-gradient(45deg,#ff7e5f,#feb47b);}
+.telegram{background:linear-gradient(45deg,#0088cc,#00aced);}
+.card{
+    display:flex;
+    justify-content:space-between;
+    background:#1c2541;
+    margin:8px 0;
+    padding:10px;
+    border-radius:15px;
+    font-size:12px;
+}
+.copy{background:linear-gradient(45deg,#7f00ff,#e100ff);}
+
+.list{
+    max-height:0;
+    overflow:hidden;
+    transition:0.4s;
+}
+.list.open{max-height:1000px;}
+</style></head><body><div class="container">
+<h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="window.open('https://t.me/V2raying_config')">
+📢 کانال تلگرام
+</button><input id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()"><button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
+
+<div id="lastUpdate"></div>
+<div id="countries"></div>
+</div><script>
+
+let data=[];
+let opened=null;
+
+function getTime(){
+return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
+}
+
+function safeDecode(t){
+try{return atob(t.trim())}catch{return t}
 }
 
 async function loadConfigs(){
 
-    document.getElementById("countries").innerHTML = "⏳ در حال دریافت...";
+document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
-    try{
+try{
 
-        const proxy = "https://api.allorigins.win/raw?url=";
+const urls=[
+"https://raw.githubusercontent.com/v2fly/free-nodes/main/sub",
+"https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
+];
 
-        const urls = [
-            "https://raw.githubusercontent.com/v2fly/free-nodes/main/sub",
-            "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
-        ];
+let all=[];
 
-        let allConfigs = [];
-
-        for(let u of urls){
-            try{
-                const res = await fetch(proxy + encodeURIComponent(u));
-                const text = await res.text();
-
-                const decoded = safeDecode(text);
-
-                allConfigs = allConfigs.concat(decoded.split("\n"));
-            }catch(e){
-                console.log("خطا در یکی از سورس‌ها:", u);
-            }
-        }
-
-        allConfigs = allConfigs.filter(x=>x.startsWith("vmess") || x.startsWith("vless") || x.startsWith("trojan"));
-
-        allConfigs = [...new Set(allConfigs)];
-
-        let usa=[], germany=[];
-
-        allConfigs.forEach(cfg=>{
-            let c = cfg.toLowerCase();
-            if(c.includes("us")) usa.push(cfg);
-            if(c.includes("de")) germany.push(cfg);
-        });
-
-        data = [
-            {name:"آمریکا",configs:usa.slice(0,50)},
-            {name:"آلمان",configs:germany.slice(0,50)}
-        ];
-
-        showTime();
-        showCountries();
-
-    }catch(e){
-        document.getElementById("countries").innerHTML = "❌ خطای کامل در دریافت";
-        console.log(e);
-    }
+for(let u of urls){
+try{
+let r=await fetch(u);
+let t=await r.text();
+t=safeDecode(t);
+all=all.concat(t.split("\n"));
+}catch{}
 }
 
-function showTime(){
-    document.getElementById("lastUpdate").innerText =
-    "آخرین آپدیت: "+getIranTime();
+all=all.filter(x=>x.startsWith("vmess")||x.startsWith("vless")||x.startsWith("trojan"));
+
+let usa=[],de=[];
+
+all.forEach(c=>{
+let x=c.toLowerCase();
+if(x.includes("us")) usa.push(c);
+if(x.includes("de")) de.push(c);
+});
+
+data=[
+{name:"آمریکا",configs:usa.slice(0,50)},
+{name:"آلمان",configs:de.slice(0,50)}
+];
+
+document.getElementById("lastUpdate").innerText="آخرین آپدیت: "+getTime();
+
+show();
+
+}catch(e){
+document.getElementById("countries").innerHTML="❌ خطا";
+console.log(e);
+}
 }
 
-function showCountries(){
-    const div=document.getElementById("countries");
-    div.innerHTML="";
+function show(){
+let div=document.getElementById("countries");
+div.innerHTML="";
 
-    data.forEach(c=>{
-        const wrap=document.createElement("div");
-        const btn=document.createElement("button");
+data.forEach(c=>{
+let wrap=document.createElement("div");
 
-        let flag=c.name.includes("آمریکا")?"🇺🇸 ":"🇩🇪 ";
-        btn.className="country";
-        btn.innerText=flag+c.name+" ("+c.configs.length+")";
+let btn=document.createElement("button");
+btn.className="country";
+btn.innerText=(c.name==="آمریکا"?"🇺🇸 ":"🇩🇪 ")+c.name+" ("+c.configs.length+")";
 
-        const list=document.createElement("div");
-        list.className="list";
+let list=document.createElement("div");
+list.className="list";
 
-        btn.onclick=()=>{
-            if(opened&&opened!==list) opened.classList.remove("open");
-            list.classList.toggle("open");
-            opened=list;
-        };
+btn.onclick=()=>{
+if(opened&&opened!==list) opened.classList.remove("open");
+list.classList.toggle("open");
+opened=list;
+};
 
-        const allBtn=document.createElement("button");
-        allBtn.className="update";
-        allBtn.innerText="📋 کپی همه";
-        allBtn.onclick=()=>{navigator.clipboard.writeText(c.configs.join("\n"));alert("کپی شد");};
-        list.appendChild(allBtn);
+let allBtn=document.createElement("button");
+allBtn.className="update";
+allBtn.innerText="📋 کپی همه";
+allBtn.onclick=()=>navigator.clipboard.writeText(c.configs.join("\n"));
+list.appendChild(allBtn);
 
-        c.configs.forEach(cfg=>{
-            const card=document.createElement("div");
-            card.className="card";
+c.configs.forEach(cfg=>{
+let card=document.createElement("div");
+card.className="card";
 
-            const text=document.createElement("div");
-            text.className="text";
-            text.innerText=cfg;
+let t=document.createElement("div");
+t.innerText=cfg;
 
-            const copy=document.createElement("button");
-            copy.className="copy";
-            copy.innerText="کپی";
-            copy.onclick=()=>{navigator.clipboard.writeText(cfg);alert("کپی شد");};
+let copy=document.createElement("button");
+copy.className="copy";
+copy.innerText="کپی";
+copy.onclick=()=>navigator.clipboard.writeText(cfg);
 
-            card.appendChild(text);
-            card.appendChild(copy);
-            list.appendChild(card);
-        });
+card.appendChild(t);
+card.appendChild(copy);
+list.appendChild(card);
+});
 
-        wrap.appendChild(btn);
-        wrap.appendChild(list);
-        div.appendChild(wrap);
-    });
+wrap.appendChild(btn);
+wrap.appendChild(list);
+div.appendChild(wrap);
+});
 }
 
 function searchConfigs(){
-    const v=document.getElementById("search").value.toLowerCase();
-    document.querySelectorAll("#countries > div").forEach(w=>{
-        w.style.display = w.innerText.toLowerCase().includes(v) ? "block":"none";
-    });
+let v=document.getElementById("search").value.toLowerCase();
+document.querySelectorAll("#countries > div").forEach(w=>{
+w.style.display=w.innerText.toLowerCase().includes(v)?"block":"none";
+});
 }
 
 loadConfigs();
 
-            </script>
+</script></body>
+</html>
