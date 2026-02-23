@@ -1,29 +1,4 @@
-<!DOCTYPE html><html lang="fa">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ ها</title><style>
-body{margin:0;font-family:sans-serif;background:#0b132b;color:#fff;direction: rtl;}
-.container{padding:15px;max-width:500px;margin:auto;}
-h1{text-align:center;}
-input{width:100%;padding:12px;border:none;border-radius:20px;margin-bottom:10px;}
-button{width:100%;padding:12px;border:none;border-radius:20px;margin-bottom:10px;color:#fff;cursor:pointer;}
-.update{background:linear-gradient(45deg,#00c6ff,#0072ff);}
-.country{background:linear-gradient(45deg,#ff7e5f,#feb47b);}
-.telegram{background:linear-gradient(45deg,#0088cc,#00aced);}
-.card{display:flex;justify-content:space-between;align-items:center;background:#1c2541;margin:8px 0;padding:10px;border-radius:15px;font-size:12px;}
-.text{width:70%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.copy{background:linear-gradient(45deg,#7f00ff,#e100ff);}
-.list{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
-.list.open{max-height:2000px;}
-</style></head><body><div class="container">
-<h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
-
-<input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()"><button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
-
-<div id="lastUpdate"></div>
-<div id="countries"></div>
-</div><script>
+<script>
 
 let data = [];
 let opened = null;
@@ -34,6 +9,14 @@ function openTelegram(){
 
 function getIranTime(){
     return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
+}
+
+function safeDecode(text){
+    try{
+        return atob(text.trim());
+    }catch{
+        return text; // اگر base64 نبود
+    }
 }
 
 async function loadConfigs(){
@@ -52,11 +35,19 @@ async function loadConfigs(){
         let allConfigs = [];
 
         for(let u of urls){
-            const res = await fetch(proxy + encodeURIComponent(u));
-            const text = await res.text();
-            const decoded = atob(text.trim());
-            allConfigs = allConfigs.concat(decoded.split("\n"));
+            try{
+                const res = await fetch(proxy + encodeURIComponent(u));
+                const text = await res.text();
+
+                const decoded = safeDecode(text);
+
+                allConfigs = allConfigs.concat(decoded.split("\n"));
+            }catch(e){
+                console.log("خطا در یکی از سورس‌ها:", u);
+            }
         }
+
+        allConfigs = allConfigs.filter(x=>x.startsWith("vmess") || x.startsWith("vless") || x.startsWith("trojan"));
 
         allConfigs = [...new Set(allConfigs)];
 
@@ -77,7 +68,7 @@ async function loadConfigs(){
         showCountries();
 
     }catch(e){
-        document.getElementById("countries").innerHTML = "❌ خطا در دریافت";
+        document.getElementById("countries").innerHTML = "❌ خطای کامل در دریافت";
         console.log(e);
     }
 }
@@ -147,5 +138,4 @@ function searchConfigs(){
 
 loadConfigs();
 
-</script></body>
-</html>
+            </script>
