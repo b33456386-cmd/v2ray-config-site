@@ -1,86 +1,8 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NovaConfig</title>
-
-<style>
-body {
-    font-family: sans-serif;
-    background: linear-gradient(135deg,#1e1e2f,#2a2a40);
-    color: white;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-}
-
-h1 {
-    margin-top: 20px;
-    font-size: 28px;
-}
-
-#lastUpdate {
-    margin-top: 10px;
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-input {
-    width: 80%;
-    padding: 12px;
-    border-radius: 20px;
-    border: none;
-    margin-top: 15px;
-}
-
-button {
-    margin-top: 15px;
-    padding: 12px 20px;
-    border-radius: 20px;
-    border: none;
-    background: linear-gradient(45deg,#ff7a18,#ff3d3d);
-    color: white;
-    font-size: 16px;
-}
-
-.country {
-    margin: 20px;
-    padding: 15px;
-    border-radius: 20px;
-    background: linear-gradient(45deg,#6a11cb,#2575fc);
-    cursor: pointer;
-}
-
-.configBox {
-    background: #2f2f3f;
-    margin: 10px;
-    padding: 15px;
-    border-radius: 15px;
-}
-</style>
-</head>
-
-<body>
-
-<h1>🌐 NovaConfig</h1>
-
-<div id="lastUpdate"></div>
-
-<input type="text" placeholder="جستجو کشور یا کانفیگ..." id="search">
-
-<br>
-
-<button onclick="loadConfigs()">🔄 بارگذاری مجدد</button>
-
-<div id="app"></div>
-
 <script>
 
 // ⏰ ساعت ایران
 function updateTime(){
     const now = new Date();
-
     const iranTime = now.toLocaleString("fa-IR", {
         timeZone: "Asia/Tehran",
         hour: "2-digit",
@@ -96,12 +18,36 @@ function updateTime(){
 
 updateTime();
 
-// دیتا نمونه (بعدا از generate.json میاد)
-const data = {
-    "آمریکا": ["config-us-1","config-us-2"],
-    "آلمان": ["config-de-1","config-de-2"]
-};
+let data = {};
 
+// 🔥 گرفتن دیتا از generate.json
+async function fetchConfigs(){
+    try{
+        const res = await fetch("generate.json?" + new Date().getTime());
+        const json = await res.json();
+
+        data = {};
+
+        json.forEach(cfg=>{
+            let country = "نامشخص";
+
+            if(cfg.includes("US") || cfg.includes("America"))
+                country = "آمریکا 🇺🇸";
+            else if(cfg.includes("DE") || cfg.includes("Germany"))
+                country = "آلمان 🇩🇪";
+
+            if(!data[country]) data[country] = [];
+            data[country].push(cfg);
+        });
+
+        loadConfigs();
+
+    }catch(e){
+        document.getElementById("app").innerHTML = "خطا در دریافت کانفیگ ❌";
+    }
+}
+
+// نمایش کشورها
 function loadConfigs(){
     const app = document.getElementById("app");
     app.innerHTML = "";
@@ -110,7 +56,7 @@ function loadConfigs(){
         let div = document.createElement("div");
         div.className = "country";
         div.innerText = country + " (" + data[country].length + ")";
-        
+
         div.onclick = ()=>{
             showConfigs(country);
         };
@@ -119,6 +65,7 @@ function loadConfigs(){
     }
 }
 
+// نمایش کانفیگ‌ها
 function showConfigs(country){
     const app = document.getElementById("app");
     app.innerHTML = `<h2>${country}</h2>`;
@@ -128,7 +75,7 @@ function showConfigs(country){
         box.className = "configBox";
 
         box.innerHTML = `
-        <p>${cfg}</p>
+        <p style="word-break: break-all;">${cfg}</p>
         <button onclick="copyConfig('${cfg}')">📋 کپی</button>
         `;
 
@@ -141,14 +88,36 @@ function showConfigs(country){
     app.appendChild(back);
 }
 
+// کپی
 function copyConfig(text){
     navigator.clipboard.writeText(text);
     alert("کپی شد ✅");
 }
 
-loadConfigs();
+// سرچ
+document.getElementById("search").addEventListener("input", function(){
+    const value = this.value.toLowerCase();
+
+    const app = document.getElementById("app");
+    app.innerHTML = "";
+
+    for(let country in data){
+        if(country.toLowerCase().includes(value)){
+            let div = document.createElement("div");
+            div.className = "country";
+            div.innerText = country + " (" + data[country].length + ")";
+            div.onclick = ()=> showConfigs(country);
+            app.appendChild(div);
+        }
+    }
+});
+
+// دکمه رفرش
+function loadConfigsButton(){
+    fetchConfigs();
+}
+
+// اجرای اولیه
+fetchConfigs();
 
 </script>
-
-</body>
-</html>
