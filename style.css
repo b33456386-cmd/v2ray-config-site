@@ -1,20 +1,43 @@
 body {
-    background: #0b132b;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color: white;
     font-family: sans-serif;
     padding: 10px;
 }
 
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+/* سرچ */
 #search {
     width: 100%;
-    padding: 12px;
-    border-radius: 15px;
+    padding: 14px;
+    border-radius: 20px;
     border: none;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* دکمه‌ها */
+.controls {
+    display: flex;
+    gap: 10px;
     margin-bottom: 10px;
 }
 
+.controls button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 15px;
+    border: none;
+    font-size: 16px;
+}
+
+/* کشور */
 .countryCard {
-    background: linear-gradient(45deg,#4facfe,#00f2fe);
+    background: linear-gradient(45deg,#ff6a00,#ee0979);
     padding: 15px;
     margin: 10px 0;
     border-radius: 20px;
@@ -28,8 +51,9 @@ body {
     transform: scale(1.05);
 }
 
+/* کپی همه */
 .copyAll {
-    background: linear-gradient(45deg,#ff7e5f,#feb47b);
+    background: linear-gradient(45deg,#00c6ff,#0072ff);
     padding: 15px;
     border-radius: 20px;
     text-align: center;
@@ -38,9 +62,10 @@ body {
     font-weight: bold;
 }
 
+/* کانفیگ */
 .configBox {
     background: #1c2541;
-    padding: 10px;
+    padding: 12px;
     border-radius: 15px;
     margin: 10px 0;
 }
@@ -50,6 +75,7 @@ body {
     word-break: break-all;
 }
 
+/* دکمه کپی */
 .copyBtn {
     margin-top: 10px;
     background: #00c9a7;
@@ -59,6 +85,7 @@ body {
     color: white;
 }
 
+/* برگشت */
 .backBtn {
     margin-top: 20px;
     width: 100%;
@@ -67,4 +94,27 @@ body {
     border: none;
     background: #ff4b2b;
     color: white;
+}
+
+/* انیمیشن */
+.fadeIn {
+    animation: fade 0.4s ease-in;
+}
+
+@keyframes fade {
+    from {opacity:0; transform: translateY(10px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* 🔥 دکمه تلگرام شناور */
+.telegramBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #0088cc;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 20px;
+    text-decoration: none;
 }
