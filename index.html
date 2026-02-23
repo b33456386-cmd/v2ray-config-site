@@ -1,14 +1,79 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>V2Ray Configs</title>
 
-<!-- ✅ اتصال CSS -->
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+    margin:0;
+    font-family:tahoma;
+    background:#eef1f5;
+    text-align:center;
+}
+
+.container{
+    padding:20px;
+}
+
+h1{
+    background: linear-gradient(90deg,#5f2c82,#f2994a);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+input{
+    width:90%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin:10px 0;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    margin:5px;
+    cursor:pointer;
+}
+
+#app div{
+    background: linear-gradient(90deg,#fc466b,#3f5efb);
+    margin:10px;
+    padding:15px;
+    border-radius:30px;
+    color:#000;
+    font-weight:bold;
+}
+
+/* footer */
+.footer{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#fff;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:10px 0;
+    box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.footer a{
+    text-decoration:none;
+    color:#000;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:14px;
+}
+
+.footer img{
+    width:22px;
+}
+</style>
 
 </head>
 
@@ -16,26 +81,36 @@
 
 <div class="container">
 
-    <h1>🌐 کانفیگ‌های V2Ray</h1>
+<h1>V2Ray کانفیگ‌های رایگان</h1>
 
-    <!-- 🔍 سرچ -->
-    <input id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
+<input id="search" placeholder="🔍 جستجو کشور...">
 
-    <!-- 🎛 کنترل‌ها -->
-    <div class="controls">
-        <button onclick="manualUpdate()">🔄 آپدیت</button>
-        <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
-    </div>
+<div class="controls">
+    <button onclick="manualUpdate()">🔄 آپدیت</button>
+    <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
+</div>
 
-    <!-- ⏰ آخرین آپدیت -->
-    <div id="lastUpdate">در حال دریافت زمان...</div>
+<div id="lastUpdate"></div>
 
-    <!-- 📦 لیست -->
-    <div id="app"></div>
+<div id="app"></div>
 
 </div>
 
-<!-- ✅ اتصال JS -->
+<!-- footer -->
+<div class="footer">
+
+    <a href="https://t.me/V2raying_config" target="_blank">
+        <span>کانال تلگرام</span>
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+    </a>
+
+    <a href="https://github.com/" target="_blank">
+        <span>GitHub</span>
+        <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png">
+    </a>
+
+</div>
+
 <script src="script.js"></script>
 
 </body>
