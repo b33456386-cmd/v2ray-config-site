@@ -28,12 +28,16 @@ button{
     border-radius:20px;
     margin-bottom:10px;
     color:#fff;
+    cursor:pointer;
 }
 .update{
     background:linear-gradient(45deg,#00c6ff,#0072ff);
 }
 .country{
     background:linear-gradient(45deg,#ff7e5f,#feb47b);
+}
+.telegram{
+    background:linear-gradient(45deg,#0088cc,#00aced);
 }
 .card{
     display:flex;
@@ -54,6 +58,9 @@ button{
 .copy{
     background:linear-gradient(45deg,#7f00ff,#e100ff);
 }
+.hidden{
+    display:none;
+}
 </style>
 </head>
 
@@ -62,17 +69,22 @@ button{
 <div class="container">
     <h1>🌍 کانفیگ ها</h1>
 
+    <button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
+
     <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
     <div id="lastUpdate"></div>
 
     <div id="countries"></div>
-
-    <div id="configs"></div>
 </div>
 
 <script>
 let data = [];
+let opened = null;
+
+function openTelegram(){
+    window.open("https://t.me/V2raying_config","_blank");
+}
 
 function getIranTime(){
     return new Date().toLocaleTimeString("fa-IR", {
@@ -107,7 +119,9 @@ function showCountries(){
     const div = document.getElementById("countries");
     div.innerHTML = "";
 
-    data.forEach(c=>{
+    data.forEach((c,index)=>{
+        const wrapper = document.createElement("div");
+
         const btn = document.createElement("button");
 
         let flag = "";
@@ -117,45 +131,55 @@ function showCountries(){
         btn.className = "country";
         btn.innerText = flag + c.name + " ("+c.count+")";
 
-        btn.onclick = ()=> showConfigs(c);
+        const list = document.createElement("div");
+        list.className = "hidden";
 
-        div.appendChild(btn);
-    });
-}
-
-function showConfigs(country){
-    const div = document.getElementById("configs");
-    div.innerHTML = "";
-
-    const allBtn = document.createElement("button");
-    allBtn.className = "update";
-    allBtn.innerText = "📋 کپی همه";
-    allBtn.onclick = ()=>{
-        navigator.clipboard.writeText(country.configs.join("\n"));
-        alert("کپی شد");
-    };
-    div.appendChild(allBtn);
-
-    country.configs.forEach(c=>{
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const text = document.createElement("div");
-        text.className = "text";
-        text.innerText = c;
-
-        const btn = document.createElement("button");
-        btn.className = "copy";
-        btn.innerText = "کپی";
         btn.onclick = ()=>{
-            navigator.clipboard.writeText(c);
-            alert("کپی شد");
+            if(opened && opened !== list){
+                opened.classList.add("hidden");
+            }
+
+            list.classList.toggle("hidden");
+            opened = list;
         };
 
-        card.appendChild(text);
-        card.appendChild(btn);
+        // دکمه کپی همه
+        const allBtn = document.createElement("button");
+        allBtn.className = "update";
+        allBtn.innerText = "📋 کپی همه";
+        allBtn.onclick = ()=>{
+            navigator.clipboard.writeText(c.configs.join("\n"));
+            alert("کپی شد");
+        };
+        list.appendChild(allBtn);
 
-        div.appendChild(card);
+        // کانفیگ ها
+        c.configs.forEach(cfg=>{
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const text = document.createElement("div");
+            text.className = "text";
+            text.innerText = cfg;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy";
+            copyBtn.innerText = "کپی";
+            copyBtn.onclick = ()=>{
+                navigator.clipboard.writeText(cfg);
+                alert("کپی شد");
+            };
+
+            card.appendChild(text);
+            card.appendChild(copyBtn);
+
+            list.appendChild(card);
+        });
+
+        wrapper.appendChild(btn);
+        wrapper.appendChild(list);
+
+        div.appendChild(wrapper);
     });
 }
 
