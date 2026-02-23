@@ -1,149 +1,71 @@
-// ⏰ ساعت ایران
-function updateTime(){
-    const now = new Date();
-    const iranTime = now.toLocaleString("fa-IR", {
-        timeZone: "Asia/Tehran",
-        hour: "2-digit",
-        minute: "2-digit",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    });
+let auto = false;
+let interval;
 
-    document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + iranTime + " ⏰";
-}
+const API = "https://raw.githubusercontent.com/2raycrow/v2ray-configs/main/generate.json";
 
-// دیتا
-let data = {};
-let autoInterval = null;
-
-// 🔥 گرفتن دیتا (نسخه بدون خطا)
-async function fetchConfigs(){
-    try{
-        const res = await fetch("generate.json?" + Date.now());
-
-        if(!res.ok) throw new Error("fetch error");
-
-        const json = await res.json();
-
-        data = {};
-
-        json.forEach(cfg=>{
-            let country = "نامشخص 🌍";
-
-            if(cfg.includes("US") || cfg.includes("America"))
-                country = "آمریکا 🇺🇸";
-            else if(cfg.includes("DE") || cfg.includes("Germany"))
-                country = "آلمان 🇩🇪";
-
-            if(!data[country]) data[country] = [];
-            data[country].push(cfg);
-        });
-
-        loadConfigs();
-        updateTime();
-
-    }catch(e){
-        console.log(e);
-
-        // ❗ fallback (که صفحه سفید نشه)
-        data = {
-            "آمریکا 🇺🇸": ["sample-config-us"],
-            "آلمان 🇩🇪": ["sample-config-de"]
-        };
-
-        loadConfigs();
+async function fetchData() {
+    try {
+        const res = await fetch(API + "?t=" + Date.now());
+        const data = await res.json();
 
         document.getElementById("lastUpdate").innerText =
-            "خطا در دریافت ❌ (نمایش تست)";
+            "آخرین آپدیت: " + new Date().toLocaleString("fa-IR");
+
+        render(data);
+    } catch (e) {
+        document.getElementById("lastUpdate").innerHTML =
+            "❌ خطا در دریافت";
     }
 }
 
-// نمایش کشورها
-function loadConfigs(){
+function render(data) {
     const app = document.getElementById("app");
     app.innerHTML = "";
 
-    for(let country in data){
-        let div = document.createElement("div");
-        div.className = "country";
-        div.innerText = `${country} (${data[country].length})`;
+    let grouped = {};
 
-        div.onclick = ()=>{
-            showConfigs(country);
-        };
+    data.forEach(item => {
+        let country = item.country || "نامشخص";
 
-        app.appendChild(div);
-    }
-}
-
-// نمایش کانفیگ‌ها
-function showConfigs(country){
-    const app = document.getElementById("app");
-    app.innerHTML = `<h2>${country}</h2>`;
-
-    data[country].forEach(cfg=>{
-        let box = document.createElement("div");
-        box.className = "configBox";
-
-        box.innerHTML = `
-        <p style="word-break: break-all;">${cfg}</p>
-        <button onclick="copyConfig(\`${cfg}\`)">📋 کپی</button>
-        `;
-
-        app.appendChild(box);
+        if (!grouped[country]) grouped[country] = [];
+        grouped[country].push(item);
     });
 
-    let back = document.createElement("button");
-    back.innerText = "🔙 بازگشت";
-    back.onclick = loadConfigs;
-    app.appendChild(back);
+    Object.keys(grouped).forEach(country => {
+        let div = document.createElement("div");
+        div.className = "card";
+        div.innerText = country + " (" + grouped[country].length + ")";
+        app.appendChild(div);
+    });
 }
 
-// کپی
-function copyConfig(text){
-    navigator.clipboard.writeText(text);
-    alert("کپی شد ✅");
+function manualUpdate() {
+    fetchData();
 }
 
-// 🔍 سرچ
-document.getElementById("search").addEventListener("input", function(){
-    const value = this.value.toLowerCase();
-
-    const app = document.getElementById("app");
-    app.innerHTML = "";
-
-    for(let country in data){
-        if(country.toLowerCase().includes(value)){
-            let div = document.createElement("div");
-            div.className = "country";
-            div.innerText = `${country} (${data[country].length})`;
-            div.onclick = ()=> showConfigs(country);
-            app.appendChild(div);
-        }
-    }
-});
-
-// 🔄 آپدیت دستی
-function manualUpdate(){
-    fetchConfigs();
-}
-
-// 🤖 اتو آپدیت
-function toggleAuto(){
+function toggleAuto() {
+    auto = !auto;
     const btn = document.getElementById("autoBtn");
 
-    if(autoInterval){
-        clearInterval(autoInterval);
-        autoInterval = null;
-        btn.innerText = "🔴 Auto OFF";
-    }else{
-        autoInterval = setInterval(fetchConfigs, 15000);
+    if (auto) {
         btn.innerText = "🟢 Auto ON";
+        interval = setInterval(fetchData, 10000);
+    } else {
+        btn.innerText = "🔴 Auto OFF";
+        clearInterval(interval);
     }
 }
 
-// اجرای اولیه
-fetchConfigs();
-updateTime();
+document.getElementById("search").addEventListener("input", function () {
+    let val = this.value.toLowerCase();
+    let cards = document.querySelectorAll(".card");
+
+    cards.forEach(c => {
+        c.style.display = c.innerText.toLowerCase().includes(val)
+            ? "block"
+            : "none";
+    });
+});
+
+// اجرا در شروع
+fetchData();
