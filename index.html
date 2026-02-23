@@ -21,6 +21,13 @@ body{
 h1{
     text-align:center;
 }
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
+}
 button{
     width:100%;
     padding:12px;
@@ -58,8 +65,15 @@ button{
 .copy{
     background:linear-gradient(45deg,#7f00ff,#e100ff);
 }
-.hidden{
-    display:none;
+
+/* انیمیشن */
+.list{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s ease;
+}
+.list.open{
+    max-height:1000px;
 }
 </style>
 </head>
@@ -70,6 +84,8 @@ button{
     <h1>🌍 کانفیگ ها</h1>
 
     <button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
+
+    <input type="text" id="search" placeholder="🔍 جستجوی کانفیگ..." oninput="searchConfigs()">
 
     <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
@@ -119,7 +135,7 @@ function showCountries(){
     const div = document.getElementById("countries");
     div.innerHTML = "";
 
-    data.forEach((c,index)=>{
+    data.forEach((c)=>{
         const wrapper = document.createElement("div");
 
         const btn = document.createElement("button");
@@ -132,18 +148,17 @@ function showCountries(){
         btn.innerText = flag + c.name + " ("+c.count+")";
 
         const list = document.createElement("div");
-        list.className = "hidden";
+        list.className = "list";
 
         btn.onclick = ()=>{
             if(opened && opened !== list){
-                opened.classList.add("hidden");
+                opened.classList.remove("open");
             }
 
-            list.classList.toggle("hidden");
+            list.classList.toggle("open");
             opened = list;
         };
 
-        // دکمه کپی همه
         const allBtn = document.createElement("button");
         allBtn.className = "update";
         allBtn.innerText = "📋 کپی همه";
@@ -153,7 +168,6 @@ function showCountries(){
         };
         list.appendChild(allBtn);
 
-        // کانفیگ ها
         c.configs.forEach(cfg=>{
             const card = document.createElement("div");
             card.className = "card";
@@ -182,6 +196,23 @@ function showCountries(){
         div.appendChild(wrapper);
     });
 }
+
+// جستجو
+function searchConfigs(){
+    const value = document.getElementById("search").value.toLowerCase();
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach(card=>{
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(value) ? "flex" : "none";
+    });
+}
+
+// آپدیت خودکار هر ۳ ساعت
+setInterval(()=>{
+    loadConfigs();
+    console.log("Auto Updated ⏱");
+}, 3 * 60 * 60 * 1000);
 
 // اجرا
 loadConfigs();
