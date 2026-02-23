@@ -3,84 +3,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>کانفیگ ها</title><style>
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:#0b132b;
-    color:#fff;
-    direction: rtl;
-}
-.container{
-    padding:15px;
-    max-width:500px;
-    margin:auto;
-}
-h1{
-    text-align:center;
-}
-input{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-}
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-    color:#fff;
-    cursor:pointer;
-}
-.update{
-    background:linear-gradient(45deg,#00c6ff,#0072ff);
-}
-.country{
-    background:linear-gradient(45deg,#ff7e5f,#feb47b);
-}
-.telegram{
-    background:linear-gradient(45deg,#0088cc,#00aced);
-}
-.card{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#1c2541;
-    margin:8px 0;
-    padding:10px;
-    border-radius:15px;
-    font-size:12px;
-}
-.text{
-    width:70%;
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-}
-.copy{
-    background:linear-gradient(45deg,#7f00ff,#e100ff);
-}
-.list{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height 0.4s ease;
-}
-.list.open{
-    max-height:2000px;
-}
+body{margin:0;font-family:sans-serif;background:#0b132b;color:#fff;direction: rtl;}
+.container{padding:15px;max-width:500px;margin:auto;}
+h1{text-align:center;}
+input{width:100%;padding:12px;border:none;border-radius:20px;margin-bottom:10px;}
+button{width:100%;padding:12px;border:none;border-radius:20px;margin-bottom:10px;color:#fff;cursor:pointer;}
+.update{background:linear-gradient(45deg,#00c6ff,#0072ff);}
+.country{background:linear-gradient(45deg,#ff7e5f,#feb47b);}
+.telegram{background:linear-gradient(45deg,#0088cc,#00aced);}
+.card{display:flex;justify-content:space-between;align-items:center;background:#1c2541;margin:8px 0;padding:10px;border-radius:15px;font-size:12px;}
+.text{width:70%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.copy{background:linear-gradient(45deg,#7f00ff,#e100ff);}
+.list{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+.list.open{max-height:2000px;}
 </style></head><body><div class="container">
-    <h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
+<h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
 
-<input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchConfigs()">
-
-<button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
+<input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()"><button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
 <div id="lastUpdate"></div>
-
 <div id="countries"></div>
-
 </div><script>
 
 let data = [];
@@ -91,9 +33,7 @@ function openTelegram(){
 }
 
 function getIranTime(){
-    return new Date().toLocaleTimeString("fa-IR", {
-        timeZone: "Asia/Tehran"
-    });
+    return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
 }
 
 async function loadConfigs(){
@@ -102,40 +42,35 @@ async function loadConfigs(){
 
     try{
 
-        const sources = [
+        const proxy = "https://api.allorigins.win/raw?url=";
+
+        const urls = [
             "https://raw.githubusercontent.com/v2fly/free-nodes/main/sub",
             "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
         ];
 
         let allConfigs = [];
 
-        for(let url of sources){
-            const res = await fetch(url);
+        for(let u of urls){
+            const res = await fetch(proxy + encodeURIComponent(u));
             const text = await res.text();
             const decoded = atob(text.trim());
-            const list = decoded.split("\n");
-            allConfigs = allConfigs.concat(list);
+            allConfigs = allConfigs.concat(decoded.split("\n"));
         }
 
         allConfigs = [...new Set(allConfigs)];
 
-        let usa = [];
-        let germany = [];
+        let usa=[], germany=[];
 
         allConfigs.forEach(cfg=>{
-            const lower = cfg.toLowerCase();
-
-            if(lower.includes("us") || lower.includes("usa")){
-                usa.push(cfg);
-            }
-            if(lower.includes("de") || lower.includes("germany")){
-                germany.push(cfg);
-            }
+            let c = cfg.toLowerCase();
+            if(c.includes("us")) usa.push(cfg);
+            if(c.includes("de")) germany.push(cfg);
         });
 
         data = [
-            { name: "آمریکا", configs: usa.slice(0,50) },
-            { name: "آلمان", configs: germany.slice(0,50) }
+            {name:"آمریکا",configs:usa.slice(0,50)},
+            {name:"آلمان",configs:germany.slice(0,50)}
         ];
 
         showTime();
@@ -149,93 +84,68 @@ async function loadConfigs(){
 
 function showTime(){
     document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + getIranTime();
+    "آخرین آپدیت: "+getIranTime();
 }
 
 function showCountries(){
-    const div = document.getElementById("countries");
-    div.innerHTML = "";
+    const div=document.getElementById("countries");
+    div.innerHTML="";
 
-    data.forEach((c)=>{
-        const wrapper = document.createElement("div");
+    data.forEach(c=>{
+        const wrap=document.createElement("div");
+        const btn=document.createElement("button");
 
-        const btn = document.createElement("button");
+        let flag=c.name.includes("آمریکا")?"🇺🇸 ":"🇩🇪 ";
+        btn.className="country";
+        btn.innerText=flag+c.name+" ("+c.configs.length+")";
 
-        let flag = "";
-        if(c.name.includes("آمریکا")) flag = "🇺🇸 ";
-        if(c.name.includes("آلمان")) flag = "🇩🇪 ";
+        const list=document.createElement("div");
+        list.className="list";
 
-        btn.className = "country";
-        btn.innerText = flag + c.name + " ("+c.configs.length+")";
-
-        const list = document.createElement("div");
-        list.className = "list";
-
-        btn.onclick = ()=>{
-            if(opened && opened !== list){
-                opened.classList.remove("open");
-            }
+        btn.onclick=()=>{
+            if(opened&&opened!==list) opened.classList.remove("open");
             list.classList.toggle("open");
-            opened = list;
+            opened=list;
         };
 
-        const allBtn = document.createElement("button");
-        allBtn.className = "update";
-        allBtn.innerText = "📋 کپی همه";
-        allBtn.onclick = ()=>{
-            navigator.clipboard.writeText(c.configs.join("\n"));
-            alert("کپی شد");
-        };
+        const allBtn=document.createElement("button");
+        allBtn.className="update";
+        allBtn.innerText="📋 کپی همه";
+        allBtn.onclick=()=>{navigator.clipboard.writeText(c.configs.join("\n"));alert("کپی شد");};
         list.appendChild(allBtn);
 
         c.configs.forEach(cfg=>{
-            const card = document.createElement("div");
-            card.className = "card";
+            const card=document.createElement("div");
+            card.className="card";
 
-            const text = document.createElement("div");
-            text.className = "text";
-            text.innerText = cfg;
+            const text=document.createElement("div");
+            text.className="text";
+            text.innerText=cfg;
 
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy";
-            copyBtn.innerText = "کپی";
-            copyBtn.onclick = ()=>{
-                navigator.clipboard.writeText(cfg);
-                alert("کپی شد");
-            };
+            const copy=document.createElement("button");
+            copy.className="copy";
+            copy.innerText="کپی";
+            copy.onclick=()=>{navigator.clipboard.writeText(cfg);alert("کپی شد");};
 
             card.appendChild(text);
-            card.appendChild(copyBtn);
+            card.appendChild(copy);
             list.appendChild(card);
         });
 
-        wrapper.appendChild(btn);
-        wrapper.appendChild(list);
-        div.appendChild(wrapper);
+        wrap.appendChild(btn);
+        wrap.appendChild(list);
+        div.appendChild(wrap);
     });
 }
 
 function searchConfigs(){
-    const value = document.getElementById("search").value.toLowerCase();
-
-    const wrappers = document.querySelectorAll("#countries > div");
-
-    wrappers.forEach(wrapper=>{
-        const countryText = wrapper.innerText.toLowerCase();
-
-        if(countryText.includes(value)){
-            wrapper.style.display = "block";
-        }else{
-            wrapper.style.display = "none";
-        }
+    const v=document.getElementById("search").value.toLowerCase();
+    document.querySelectorAll("#countries > div").forEach(w=>{
+        w.style.display = w.innerText.toLowerCase().includes(v) ? "block":"none";
     });
 }
 
-// اجرا
 loadConfigs();
-
-// آپدیت خودکار هر ۳ ساعت
-setInterval(loadConfigs, 3 * 60 * 60 * 1000);
 
 </script></body>
 </html>
