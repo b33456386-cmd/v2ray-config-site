@@ -1,79 +1,41 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ‌های V2Ray</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کانفیگ رایگان</title>
 
-<style>
-body{
-    font-family: sans-serif;
-    background:#0f172a;
-    color:white;
-    margin:0;
-    padding:15px;
-    text-align:center;
-}
-
-h1{
-    margin-bottom:10px;
-}
-
-#search{
-    width:90%;
-    padding:12px;
-    border-radius:15px;
-    border:none;
-    margin:10px 0;
-    font-size:16px;
-}
-
-#lastUpdate{
-    margin:10px;
-    font-size:14px;
-    opacity:0.8;
-}
-
-.country{
-    background: linear-gradient(45deg,#7c3aed,#f97316);
-    padding:15px;
-    margin:10px 0;
-    border-radius:15px;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.configBox{
-    background:#1e293b;
-    padding:15px;
-    margin:10px 0;
-    border-radius:15px;
-}
-
-button{
-    padding:10px 15px;
-    border:none;
-    border-radius:10px;
-    background:#22c55e;
-    color:white;
-    margin-top:10px;
-    cursor:pointer;
-}
-</style>
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>🌐 کانفیگ‌های V2Ray</h1>
+<div class="container">
 
-<div id="lastUpdate"></div>
+    <!-- سرچ -->
+    <input id="search" placeholder="🔍 جستجو کشور (آمریکا / آلمان)">
 
-<input id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
+    <!-- دکمه‌ها -->
+    <div class="controls">
+        <button onclick="manualUpdate()">🔄 آپدیت</button>
+        <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
+    </div>
 
-<div id="app"></div>
+    <!-- آخرین آپدیت -->
+    <div id="lastUpdate">در حال دریافت...</div>
 
-<!-- فقط همین اسکریپت باشه -->
+    <!-- لیست -->
+    <div id="app"></div>
+
+    <!-- تلگرام -->
+    <div style="text-align:center; margin-top:30px;">
+        <a href="https://t.me/V2raying_config" target="_blank" style="color:white; text-decoration:none; font-size:18px;">
+            📢 کانال تلگرام
+        </a>
+    </div>
+
+</div>
+
 <script src="script.js"></script>
 
 </body>
