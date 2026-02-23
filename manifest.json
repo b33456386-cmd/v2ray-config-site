@@ -1,0 +1,15 @@
+{
+  "name": "V2Ray Config",
+  "short_name": "V2Ray",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b132b",
+  "theme_color": "#0b132b",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/906/906175.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
