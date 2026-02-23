@@ -2,24 +2,19 @@ let data = {};
 
 // گرفتن دیتا
 async function loadData(){
-    const res = await fetch("generate.json?v=" + Date.now());
+    const res = await fetch("configs.json?v=" + Date.now());
     const json = await res.json();
 
-    data = {
-        "آمریکا 🇺🇸": [],
-        "آلمان 🇩🇪": []
-    };
+    data = {};
 
-    json.forEach(cfg=>{
-        if(cfg.includes("US"))
-            data["آمریکا 🇺🇸"].push(cfg);
-
-        else if(cfg.includes("DE"))
-            data["آلمان 🇩🇪"].push(cfg);
+    json.countries.forEach(c=>{
+        if(c.name.includes("آمریکا") || c.name.includes("آلمان")){
+            data[c.name + " " + c.flag] = c.configs;
+        }
     });
 
     document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + new Date().toLocaleString("fa-IR");
+        "آخرین آپدیت: " + json.last_update;
 
     showCountries();
 }
@@ -47,6 +42,15 @@ function showCountries(){
 function showConfigs(country){
     const configs = document.getElementById("configs");
     configs.innerHTML = `<h3>${country}</h3>`;
+
+    // 🔥 دکمه کپی همه
+    const allBtn = document.createElement("button");
+    allBtn.innerText = "📋 کپی همه";
+    allBtn.onclick = ()=>{
+        navigator.clipboard.writeText(data[country].join("\n"));
+        alert("همه کپی شد ✅");
+    };
+    configs.appendChild(allBtn);
 
     data[country].forEach(cfg=>{
         const div = document.createElement("div");
