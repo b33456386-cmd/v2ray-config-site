@@ -1,96 +1,82 @@
-let auto = false;
-let interval;
+let data = {};
 
 // گرفتن دیتا
 async function loadData(){
-    const res = await fetch("configs.json?v=" + Date.now());
-    const data = await res.json();
+    const res = await fetch("generate.json?v=" + Date.now());
+    const json = await res.json();
+
+    data = {
+        "آمریکا 🇺🇸": [],
+        "آلمان 🇩🇪": []
+    };
+
+    json.forEach(cfg=>{
+        if(cfg.includes("US"))
+            data["آمریکا 🇺🇸"].push(cfg);
+
+        else if(cfg.includes("DE"))
+            data["آلمان 🇩🇪"].push(cfg);
+    });
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت: " + data.last_update;
+        "آخرین آپدیت: " + new Date().toLocaleString("fa-IR");
 
-    const app = document.getElementById("app");
-    app.innerHTML = "";
+    showCountries();
+}
 
-    data.countries.forEach(c=>{
-        const div = document.createElement("div");
-        div.className = "countryCard fadeIn";
-        div.innerHTML = `${c.flag} ${c.name} (${c.count})`;
-        div.onclick = ()=> showConfigs(c);
-        app.appendChild(div);
-    });
+// نمایش کشورها
+function showCountries(){
+    const div = document.getElementById("countries");
+    const configs = document.getElementById("configs");
+
+    div.innerHTML = "";
+    configs.innerHTML = "";
+
+    for(let c in data){
+        const box = document.createElement("div");
+        box.className = "country";
+        box.innerText = c + " (" + data[c].length + ")";
+
+        box.onclick = ()=> showConfigs(c);
+
+        div.appendChild(box);
+    }
 }
 
 // نمایش کانفیگ‌ها
 function showConfigs(country){
-    const app = document.getElementById("app");
-    app.innerHTML = "";
+    const configs = document.getElementById("configs");
+    configs.innerHTML = `<h3>${country}</h3>`;
 
-    // 🔥 کپی همه
-    const allBtn = document.createElement("div");
-    allBtn.className = "copyAll fadeIn";
-    allBtn.innerText = "📋 کپی همه کانفیگ‌ها";
-    allBtn.onclick = ()=>{
-        navigator.clipboard.writeText(country.configs.join("\n"));
-        alert("همه کپی شد ✅");
-    };
-    app.appendChild(allBtn);
+    data[country].forEach(cfg=>{
+        const div = document.createElement("div");
+        div.className = "config";
 
-    // لیست
-    country.configs.forEach(cfg=>{
-        const box = document.createElement("div");
-        box.className = "configBox fadeIn";
-
-        box.innerHTML = `
-            <div class="configText">${cfg}</div>
-            <button class="copyBtn">کپی</button>
+        div.innerHTML = `
+            <div>${cfg}</div>
+            <button onclick="copy('${cfg}')">کپی</button>
         `;
 
-        box.querySelector("button").onclick = ()=>{
-            navigator.clipboard.writeText(cfg);
-            alert("کپی شد ✅");
-        };
-
-        app.appendChild(box);
+        configs.appendChild(div);
     });
+}
 
-    // برگشت
-    const back = document.createElement("button");
-    back.className = "backBtn fadeIn";
-    back.innerText = "🔙 بازگشت";
-    back.onclick = loadData;
-
-    app.appendChild(back);
+// کپی
+function copy(text){
+    navigator.clipboard.writeText(text);
+    alert("کپی شد ✅");
 }
 
 // سرچ
 document.getElementById("search").addEventListener("input", function(){
     const value = this.value.toLowerCase();
-    const cards = document.querySelectorAll(".countryCard");
 
-    cards.forEach(c=>{
-        c.style.display = c.innerText.toLowerCase().includes(value)
+    document.querySelectorAll(".country").forEach(c=>{
+        c.style.display =
+            c.innerText.toLowerCase().includes(value)
             ? "block" : "none";
     });
 });
 
-// آپدیت دستی
-function manualUpdate(){
-    loadData();
-}
-
-// 🔥 Auto Update
-function toggleAuto(){
-    auto = !auto;
-    const btn = document.getElementById("autoBtn");
-
-    if(auto){
-        btn.innerText = "🟢 Auto ON";
-        interval = setInterval(loadData, 30000); // هر 30 ثانیه
-    }else{
-        btn.innerText = "🔴 Auto OFF";
-        clearInterval(interval);
-    }
-}
-
+// اجرا
 loadData();
