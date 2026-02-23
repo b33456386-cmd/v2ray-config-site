@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ رایگان</title>
+
+<title>کانفیگ‌های V2Ray</title>
 
 <style>
 body{
@@ -11,17 +12,17 @@ body{
     font-family:sans-serif;
     background:#0b132b;
     color:#fff;
+    direction: rtl;
 }
 
 .container{
-    padding:20px;
+    padding:15px;
     max-width:500px;
     margin:auto;
 }
 
 h1{
     text-align:center;
-    margin-bottom:20px;
 }
 
 input{
@@ -29,7 +30,7 @@ input{
     padding:12px;
     border:none;
     border-radius:20px;
-    margin-bottom:15px;
+    margin-bottom:10px;
 }
 
 button{
@@ -38,12 +39,12 @@ button{
     border:none;
     border-radius:20px;
     margin-bottom:10px;
+    color:#fff;
     font-size:16px;
-    cursor:pointer;
 }
 
 .update{
-    background:linear-gradient(45deg,#4facfe,#00f2fe);
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
 }
 
 .country{
@@ -51,20 +52,32 @@ button{
 }
 
 .card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
     background:#1c2541;
+    margin:8px 0;
     padding:10px;
     border-radius:15px;
-    margin-top:10px;
+    font-size:12px;
+}
+
+.text{
+    width:75%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
 .copy{
-    background:#6a11cb;
-    color:#fff;
-    padding:5px 10px;
+    background:linear-gradient(45deg,#7f00ff,#e100ff);
+    border:none;
+    padding:8px 12px;
     border-radius:10px;
-    float:left;
+    color:#fff;
 }
 </style>
+
 </head>
 
 <body>
@@ -73,126 +86,89 @@ button{
 
 <h1>🌍 کانفیگ‌ها</h1>
 
-<input id="search" placeholder="🔍 جستجو...">
+<input type="text" id="search" placeholder="جستجو...">
 
 <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
-<div id="lastUpdate"></div>
-
 <div id="countries"></div>
 
-<div id="app"></div>
+<div id="configs"></div>
 
 </div>
 
 <script>
-const URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt";
-
 let data = [];
 
-// ⏱ هر 1 ساعت آپدیت
-setInterval(loadConfigs, 3600000);
-
-function iranTime(){
-    return new Date().toLocaleString("fa-IR");
-}
-
 async function loadConfigs(){
-    document.getElementById("app").innerHTML="⏳ در حال دریافت...";
-    document.getElementById("countries").innerHTML="";
+    document.getElementById("countries").innerHTML = "در حال لود...";
+    document.getElementById("configs").innerHTML = "";
 
     try{
-        const res = await fetch(URL + "?t=" + Date.now());
-        const text = await res.text();
-        const decoded = atob(text);
+        const res = await fetch("configs.json?" + Date.now());
+        const json = await res.json();
 
-        const lines = decoded.split("\n");
-        const unique = [...new Set(lines)];
-
-        const us = unique.filter(c=>c.includes("US"));
-        const de = unique.filter(c=>c.includes("DE"));
-
-        data = [
-            {name:"🇺🇸 آمریکا", list:us},
-            {name:"🇩🇪 آلمان", list:de}
-        ];
+        // فقط آمریکا و آلمان
+        data = json.countries.filter(c => 
+            c.name.includes("آمریکا") || c.name.includes("آلمان")
+        );
 
         showCountries();
 
-        document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + iranTime();
-
-    }catch{
-        document.getElementById("app").innerText="❌ خطا";
+    }catch(e){
+        document.getElementById("countries").innerHTML = "خطا ❌";
     }
 }
 
 function showCountries(){
-    const box = document.getElementById("countries");
+    const div = document.getElementById("countries");
+    div.innerHTML = "";
 
-    data.forEach((c,i)=>{
+    data.forEach(c=>{
         const btn = document.createElement("button");
-        btn.className="country";
-        btn.innerText = c.name + " (" + c.list.length + ")";
-        btn.onclick = ()=>showConfigs(i);
-        box.appendChild(btn);
+        btn.className = "country";
+        btn.innerText = c.name + " ("+c.count+")";
+        btn.onclick = ()=> showConfigs(c);
+        div.appendChild(btn);
     });
 }
 
-function showConfigs(index){
-    const app = document.getElementById("app");
-    app.innerHTML="";
+function showConfigs(country){
+    const div = document.getElementById("configs");
+    div.innerHTML = "";
 
-    const country = data[index];
-
-    // 🔥 کپی همه
+    // دکمه کپی همه
     const allBtn = document.createElement("button");
-    allBtn.innerText="📋 کپی همه";
-    allBtn.onclick=()=>{
-        navigator.clipboard.writeText(country.list.join("\n"));
+    allBtn.className = "update";
+    allBtn.innerText = "📋 کپی همه";
+    allBtn.onclick = ()=>{
+        navigator.clipboard.writeText(country.configs.join("\n"));
         alert("کپی شد ✅");
     };
-    app.appendChild(allBtn);
+    div.appendChild(allBtn);
 
-    country.list.forEach(cfg=>{
-        const div = document.createElement("div");
-        div.className="card";
+    country.configs.forEach(c=>{
+        const card = document.createElement("div");
+        card.className = "card";
 
         const text = document.createElement("div");
-        text.innerText = cfg;
+        text.className = "text";
+        text.innerText = c;
 
         const btn = document.createElement("button");
-        btn.className="copy";
-        btn.innerText="کپی";
-        btn.onclick=()=>{
-            navigator.clipboard.writeText(cfg);
+        btn.className = "copy";
+        btn.innerText = "کپی";
+        btn.onclick = ()=>{
+            navigator.clipboard.writeText(c);
             alert("کپی شد");
         };
 
-        div.appendChild(text);
-        div.appendChild(btn);
-
-        app.appendChild(div);
+        card.appendChild(text);
+        card.appendChild(btn);
+        div.appendChild(card);
     });
 }
 
-// سرچ
-document.getElementById("search").addEventListener("input",function(){
-    const val = this.value.toLowerCase();
-    const filtered = data.filter(c=>c.name.toLowerCase().includes(val));
-
-    const box = document.getElementById("countries");
-    box.innerHTML="";
-
-    filtered.forEach((c,i)=>{
-        const btn = document.createElement("button");
-        btn.className="country";
-        btn.innerText = c.name + " (" + c.list.length + ")";
-        btn.onclick = ()=>showConfigs(i);
-        box.appendChild(btn);
-    });
-});
-
+// لود اولیه
 loadConfigs();
 </script>
 
