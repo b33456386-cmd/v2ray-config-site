@@ -1,55 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کانفیگ ها</title>
+
+<style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#0b132b;
+    color:#fff;
+    direction: rtl;
+}
+.container{
+    padding:15px;
+    max-width:500px;
+    margin:auto;
+}
+h1{
+    text-align:center;
+}
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
+    color:#fff;
+}
+.update{
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+}
+.country{
+    background:linear-gradient(45deg,#ff7e5f,#feb47b);
+}
+.card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#1c2541;
+    margin:8px 0;
+    padding:10px;
+    border-radius:15px;
+    font-size:12px;
+}
+.text{
+    width:70%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.copy{
+    background:linear-gradient(45deg,#7f00ff,#e100ff);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🌍 کانفیگ ها</h1>
+
+    <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
+
+    <div id="lastUpdate"></div>
+
+    <div id="countries"></div>
+
+    <div id="configs"></div>
+</div>
+
 <script>
 let data = [];
 
-// گرفتن زمان ایران
 function getIranTime(){
-    const now = new Date();
-    return now.toLocaleString("fa-IR", {
-        timeZone: "Asia/Tehran",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
+    return new Date().toLocaleTimeString("fa-IR", {
+        timeZone: "Asia/Tehran"
     });
 }
 
 async function loadConfigs(){
     document.getElementById("countries").innerHTML = "در حال لود...";
-    document.getElementById("configs").innerHTML = "";
 
     try{
         const res = await fetch("configs.json?" + Date.now());
         const json = await res.json();
 
-        // فقط آمریکا و آلمان
-        data = json.countries.filter(c => 
-            c.name.includes("آمریکا") || c.name.includes("آلمان")
-        );
+        data = json.countries;
 
+        showTime();
         showCountries();
-
-        // نمایش زمان آخرین آپدیت
-        showLastUpdate();
 
     }catch(e){
         document.getElementById("countries").innerHTML = "خطا ❌";
+        console.log(e);
     }
 }
 
-// نمایش زمان آپدیت
-function showLastUpdate(){
-    let old = document.getElementById("lastUpdate");
-    if(old) old.remove();
-
-    const div = document.createElement("div");
-    div.id = "lastUpdate";
-    div.style.textAlign = "center";
-    div.style.marginBottom = "10px";
-    div.style.fontSize = "12px";
-    div.style.color = "#ccc";
-
-    div.innerText = "آخرین آپدیت: " + getIranTime() + " 🇮🇷";
-
-    document.querySelector(".container").prepend(div);
+function showTime(){
+    document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + getIranTime() + " 🇮🇷";
 }
 
 function showCountries(){
@@ -58,16 +109,16 @@ function showCountries(){
 
     data.forEach(c=>{
         const btn = document.createElement("button");
-        btn.className = "country";
 
-        // اضافه کردن پرچم
         let flag = "";
         if(c.name.includes("آمریکا")) flag = "🇺🇸 ";
         if(c.name.includes("آلمان")) flag = "🇩🇪 ";
 
-        btn.innerText = flag + c.name.replace(/🇺🇸|🇩🇪/g, "") + " ("+c.count+")";
+        btn.className = "country";
+        btn.innerText = flag + c.name + " ("+c.count+")";
 
         btn.onclick = ()=> showConfigs(c);
+
         div.appendChild(btn);
     });
 }
@@ -76,13 +127,12 @@ function showConfigs(country){
     const div = document.getElementById("configs");
     div.innerHTML = "";
 
-    // دکمه کپی همه
     const allBtn = document.createElement("button");
     allBtn.className = "update";
     allBtn.innerText = "📋 کپی همه";
     allBtn.onclick = ()=>{
         navigator.clipboard.writeText(country.configs.join("\n"));
-        alert("کپی شد ✅");
+        alert("کپی شد");
     };
     div.appendChild(allBtn);
 
@@ -104,14 +154,14 @@ function showConfigs(country){
 
         card.appendChild(text);
         card.appendChild(btn);
+
         div.appendChild(card);
     });
 }
 
-// لود اولیه
+// اجرا
 loadConfigs();
-
-// هر ۳ ساعت آپدیت خودکار
-setInterval(loadConfigs, 3 * 60 * 60 * 1000);
-
 </script>
+
+</body>
+</html>
