@@ -1,94 +1,48 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V2Ray Configs</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: sans-serif;
-            background: #0b132b;
-            color: white;
-        }
+<title>کانفیگ V2Ray</title>
 
-        .container {
-            padding: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:first-child {
-            background: #ccc;
-        }
-
-        #autoBtn {
-            background: red;
-            color: white;
-        }
-
-        .card {
-            background: #1c2541;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .config {
-            background: #3a506b;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 5px;
-            font-size: 13px;
-            word-break: break-all;
-        }
-
-        #lastUpdate {
-            font-size: 12px;
-            margin-bottom: 10px;
-            color: #aaa;
-        }
-    </style>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-    <input id="search" placeholder="🔍 جستجو کشور...">
+<h1>کانفیگ‌های رایگان V2Ray</h1>
 
-    <div class="controls">
-        <button onclick="manualUpdate()">🔄 آپدیت</button>
-        <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
-    </div>
+<div id="lastUpdate">آخرین آپدیت: -</div>
 
-    <div id="lastUpdate"></div>
+<input id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
 
-    <div id="app"></div>
+<div class="controls">
+    <button onclick="manualUpdate()">🔄 آپدیت</button>
+    <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
+</div>
 
+<!-- آمریکا -->
+<div class="country-box">
+    <h2>🇺🇸 آمریکا (<span id="usCount">0</span>)</h2>
+    <div id="usList"></div>
+</div>
+
+<!-- آلمان -->
+<div class="country-box">
+    <h2>🇩🇪 آلمان (<span id="deCount">0</span>)</h2>
+    <div id="deList"></div>
+</div>
+
+</div>
+
+<!-- فوتر -->
+<div class="footer">
+    <a href="https://t.me/V2raying_config" target="_blank">
+        📩 کانال تلگرام
+    </a>
 </div>
 
 <script src="script.js"></script>
