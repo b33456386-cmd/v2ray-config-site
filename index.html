@@ -137,29 +137,25 @@ async function loadConfigs(){
 
 function updateTime(){
     lastUpdateTime = new Date();
-    updateRelativeTime();
-
-    setInterval(updateRelativeTime, 1000);
+    updateClock();
 }
 
-function updateRelativeTime(){
+function getIranTime(date){
+    return date.toLocaleTimeString("fa-IR", {
+        timeZone: "Asia/Tehran",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+}
+
+function updateClock(){
     if(!lastUpdateTime) return;
 
-    const now = new Date();
-    const diff = Math.floor((now - lastUpdateTime) / 1000);
-
-    let text = "";
-
-    if(diff < 60){
-        text = diff + " ثانیه پیش";
-    }else if(diff < 3600){
-        text = Math.floor(diff/60) + " دقیقه پیش";
-    }else{
-        text = Math.floor(diff/3600) + " ساعت پیش";
-    }
+    const iranTime = getIranTime(lastUpdateTime);
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت کانفیگ: " + text;
+        "🕒 آخرین آپدیت کانفیگ: " + iranTime;
 }
 
 function showCountries(){
