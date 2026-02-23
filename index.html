@@ -64,7 +64,6 @@ button{
     background:#06d6a0;
 }
 
-/* 🔥 دکمه تلگرام */
 .telegram-btn{
     display:block;
     width:85%;
@@ -91,14 +90,14 @@ button{
 
 <div id="countries">در حال دریافت...</div>
 
-<!-- 🔥 دکمه تلگرام حرفه‌ای -->
 <a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
-    🚀 عضویت در کانال تلگرام
+🚀 عضویت در کانال تلگرام
 </a>
 
 <script>
 let data = [];
 let originalData = [];
+let lastUpdateTime = null;
 
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
@@ -128,7 +127,7 @@ async function loadConfigs(){
 
         originalData = JSON.parse(JSON.stringify(data));
 
-        updateTime(); // 👈 زمان واقعی دریافت
+        updateTime();
         showCountries();
 
     }catch(e){
@@ -137,12 +136,30 @@ async function loadConfigs(){
 }
 
 function updateTime(){
+    lastUpdateTime = new Date();
+    updateRelativeTime();
+
+    setInterval(updateRelativeTime, 1000);
+}
+
+function updateRelativeTime(){
+    if(!lastUpdateTime) return;
+
     const now = new Date();
-    const time = now.toLocaleTimeString("fa-IR");
-    const date = now.toLocaleDateString("fa-IR");
+    const diff = Math.floor((now - lastUpdateTime) / 1000);
+
+    let text = "";
+
+    if(diff < 60){
+        text = diff + " ثانیه پیش";
+    }else if(diff < 3600){
+        text = Math.floor(diff/60) + " دقیقه پیش";
+    }else{
+        text = Math.floor(diff/3600) + " ساعت پیش";
+    }
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت کانفیگ: " + date + " - " + time;
+        "🕒 آخرین آپدیت کانفیگ: " + text;
 }
 
 function showCountries(){
@@ -219,7 +236,6 @@ function searchData(){
     showCountries();
 }
 
-// ⏱ هر ۳ ساعت
 setInterval(loadConfigs, 10800000);
 
 loadConfigs();
