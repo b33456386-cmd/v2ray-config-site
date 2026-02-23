@@ -1,197 +1,111 @@
-<!DOCTYPE html><html lang="fa">
+<!DOCTYPE html>
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>پنل کانفیگ</title><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل کانفیگ</title>
+
+<style>
 body{
-font-family:sans-serif;
-background:#111;
-color:#fff;
-padding:10px;
+    font-family:tahoma;
+    background:#0b132b;
+    color:white;
+    text-align:center;
+    margin:0;
 }
-.country{
-width:100%;
-padding:10px;
-margin-top:10px;
-background:#222;
-border:none;
-color:#fff;
-font-size:16px;
+h1{margin:20px;}
+button{
+    width:90%;
+    padding:15px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    background:#3a86ff;
+    color:white;
 }
-.list{display:none;}
-.list.open{display:block;}
-.card{
-background:#1a1a1a;
-margin:5px 0;
-padding:8px;
-border-radius:8px;
+.box{
+    background:#1c2541;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
 }
-.copy{
-margin-top:5px;
-background:#00c853;
-border:none;
-padding:5px;
-color:#fff;
-}
-.update{
-margin-top:5px;
-background:#2962ff;
-border:none;
-padding:5px;
-color:#fff;
-}
-input{
-width:100%;
-padding:8px;
-margin-top:10px;
-}
-</style></head><body><h3 id="lastUpdate">...</h3><input id="search" placeholder="جستجو..." oninput="searchConfigs()"><div id="countries">در حال لود...</div><script>
+</style>
+</head>
 
-let data=[];
-let opened=null;
+<body>
 
-function getTime(){
-return new Date().toLocaleTimeString("fa-IR");
-}
+<h1>🌍 پنل کانفیگ</h1>
 
-// کپی بدون باگ
-function copyText(text){
-let t=document.createElement("textarea");
-t.value=text;
-document.body.appendChild(t);
-t.select();
-document.execCommand("copy");
-document.body.removeChild(t);
-alert("کپی شد ✅");
-}
+<button onclick="loadConfigs()">🔄 آپدیت</button>
 
-function safeDecode(t){
-try{return atob(t.trim())}catch{return t}
-}
+<div id="countries">در حال دریافت...</div>
+
+<script>
+let data = [];
 
 async function loadConfigs(){
+    document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
-document.getElementById("countries").innerText="⏳ در حال دریافت...";
+    try{
+        // 🔥 سورس رایگان کانفیگ
+        const res = await fetch("https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt?" + Date.now());
+        const text = await res.text();
 
-try{
+        const lines = text.split("\n");
 
-const urls=[
-"https://raw.githubusercontent.com/v2fly/free-nodes/main/sub"
-];
+        let usa = [];
+        let germany = [];
 
-let all=[];
+        lines.forEach(line=>{
+            if(line.includes("US") || line.includes("United States")){
+                usa.push(line);
+            }
+            if(line.includes("DE") || line.includes("Germany")){
+                germany.push(line);
+            }
+        });
 
-for(let u of urls){
-let r=await fetch(u);
-let t=await r.text();
-t=safeDecode(t);
-all=all.concat(t.split("\n"));
+        data = [
+            {name:"🇺🇸 آمریکا", configs: usa.slice(0,10)},
+            {name:"🇩🇪 آلمان", configs: germany.slice(0,10)}
+        ];
+
+        showCountries();
+
+    }catch(e){
+        document.getElementById("countries").innerHTML="❌ خطا در دریافت";
+    }
 }
 
-all=all.filter(x=>x.startsWith("vmess")||x.startsWith("vless")||x.startsWith("trojan"));
+function showCountries(){
+    let html="";
 
-let usa=[],de=[];
+    data.forEach(country=>{
+        html+=`
+        <div class="box">
+            <h3>${country.name} (${country.configs.length})</h3>
+            <button onclick='showConfigs(${JSON.stringify(country.configs)})'>
+                نمایش کانفیگ‌ها
+            </button>
+        </div>
+        `;
+    });
 
-all.forEach(c=>{
-let x=c.toLowerCase();
-if(x.includes("us")) usa.push(c);
-if(x.includes("de")) de.push(c);
-});
-
-data=[
-{name:"آمریکا",configs:usa.slice(0,20)},
-{name:"آلمان",configs:de.slice(0,20)}
-];
-
-document.getElementById("lastUpdate").innerText="آپدیت: "+getTime();
-
-show();
-
-}catch(e){
-document.getElementById("countries").innerText="❌ خطا";
-console.log(e);
-}
+    document.getElementById("countries").innerHTML=html;
 }
 
-function show(filteredData){
-
-let div=document.getElementById("countries");
-div.innerHTML="";
-
-let listData=filteredData||data;
-
-listData.forEach(c=>{
-
-let wrap=document.createElement("div");
-
-let btn=document.createElement("button");
-btn.className="country";
-btn.innerText=c.name+" ("+c.configs.length+")";
-
-let list=document.createElement("div");
-list.className="list";
-
-btn.onclick=()=>{
-if(opened&&opened!==list) opened.classList.remove("open");
-list.classList.toggle("open");
-opened=list;
-};
-
-let allBtn=document.createElement("button");
-allBtn.className="update";
-allBtn.innerText="کپی همه";
-allBtn.onclick=()=>copyText(c.configs.join("\n"));
-list.appendChild(allBtn);
-
-c.configs.forEach(cfg=>{
-
-let card=document.createElement("div");
-card.className="card";
-
-let t=document.createElement("div");
-t.innerText=cfg;
-
-let copy=document.createElement("button");
-copy.className="copy";
-copy.innerText="کپی";
-copy.onclick=()=>copyText(cfg);
-
-card.appendChild(t);
-card.appendChild(copy);
-list.appendChild(card);
-
-});
-
-wrap.appendChild(btn);
-wrap.appendChild(list);
-div.appendChild(wrap);
-
-});
+function showConfigs(configs){
+    let text=configs.join("\n\n");
+    alert(text);
 }
 
-function searchConfigs(){
+// ⏱ هر ۳ ساعت آپدیت خودکار
+setInterval(loadConfigs, 10800000);
 
-let v=document.getElementById("search").value.toLowerCase();
+// اجرا اولیه
+loadConfigs();
+</script>
 
-if(!v){
-show();
-return;
-}
-
-let result=data.map(c=>{
-
-if(c.name.toLowerCase().includes(v)) return c;
-
-let f=c.configs.filter(x=>x.toLowerCase().includes(v));
-
-return {name:c.name,configs:f};
-
-}).filter(c=>c.configs.length>0);
-
-show(result);
-}
-
-// مهم: بعد از لود کامل اجرا شه
-window.onload=loadConfigs;
-
-</script></body>
+</body>
 </html>
