@@ -81,7 +81,9 @@ button{
 <div class="container">
     <h1>🌍 کانفیگ ها</h1>
 
-    <input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()">
+    <button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
+
+    <input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchConfigs()">
 
     <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
@@ -95,7 +97,12 @@ button{
 let data = [];
 let opened = null;
 
-// دیتا لوکال (دیگه fetch نداره → صفحه سفید نمیشه)
+// لینک تلگرام
+function openTelegram(){
+    window.open("https://t.me/V2raying_config","_blank");
+}
+
+// دیتا لوکال
 function loadConfigs(){
 
     data = [
@@ -159,7 +166,6 @@ function showCountries(){
             opened = list;
         };
 
-        // کپی همه
         const allBtn = document.createElement("button");
         allBtn.className = "update";
         allBtn.innerText = "📋 کپی همه";
@@ -196,14 +202,28 @@ function showCountries(){
     });
 }
 
-// جستجو
+// جستجو (کشور + کانفیگ)
 function searchConfigs(){
     const value = document.getElementById("search").value.toLowerCase();
-    const cards = document.querySelectorAll(".card");
 
-    cards.forEach(card=>{
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(value) ? "flex" : "none";
+    const wrappers = document.querySelectorAll("#countries > div");
+
+    wrappers.forEach(wrapper=>{
+        const countryBtn = wrapper.querySelector("button");
+        const cards = wrapper.querySelectorAll(".card");
+
+        let countryMatch = countryBtn.innerText.toLowerCase().includes(value);
+        let anyConfigMatch = false;
+
+        cards.forEach(card=>{
+            const text = card.innerText.toLowerCase();
+            const match = text.includes(value);
+
+            card.style.display = match ? "flex" : "none";
+            if(match) anyConfigMatch = true;
+        });
+
+        wrapper.style.display = (countryMatch || anyConfigMatch) ? "block" : "none";
     });
 }
 
