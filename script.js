@@ -1,108 +1,150 @@
-const app = document.getElementById("app");
-const lastUpdate = document.getElementById("lastUpdate");
-const searchInput = document.getElementById("search");
-const autoBtn = document.getElementById("autoBtn");
+// ⏰ ساعت ایران
+function updateTime(){
+    const now = new Date();
+    const iranTime = now.toLocaleString("fa-IR", {
+        timeZone: "Asia/Tehran",
+        hour: "2-digit",
+        minute: "2-digit",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    });
 
-let configs = { de: [], us: [] };
-let currentTab = "de";
-let autoInterval = null;
-
-function showLoading() {
-    app.innerHTML = "⏳ در حال دریافت...";
+    document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + iranTime + " ⏰";
 }
 
-async function fetchConfigs() {
-    showLoading();
+let data = {};
+let autoUpdate = false;
+let interval = null;
 
-    try {
-        const res = await fetch("https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt");
-        const text = await res.text();
+// گرفتن کانفیگ‌ها
+async function fetchConfigs(){
+    try{
+        const res = await fetch("generate.json?" + new Date().getTime());
+        const json = await res.json();
 
-        const lines = text.split("\n").filter(x => x.trim());
+        data = {};
 
-        configs = { de: [], us: [] };
+        json.forEach(cfg=>{
+            let text = cfg.toLowerCase();
+            let country = null;
 
-        lines.forEach(line => {
-            if (line.includes("DE") || line.toLowerCase().includes("germany")) {
-                configs.de.push(line);
+            // 🇺🇸 آمریکا
+            if (
+                text.includes("us") ||
+                text.includes("usa") ||
+                text.includes("america")
+            ){
+                country = "آمریکا 🇺🇸";
             }
-            if (line.includes("US") || line.toLowerCase().includes("united states")) {
-                configs.us.push(line);
+
+            // 🇩🇪 آلمان
+            else if (
+                text.includes("de") ||
+                text.includes("germany")
+            ){
+                country = "آلمان 🇩🇪";
+            }
+
+            // فقط این دو کشور
+            if(country){
+                if(!data[country]) data[country] = [];
+                data[country].push(cfg);
             }
         });
 
-        render();
+        loadConfigs();
+        updateTime();
 
-        lastUpdate.innerText = "آخرین آپدیت: " + new Date().toLocaleString("fa-IR");
-
-    } catch {
-        app.innerHTML = "❌ خطا";
+    }catch(e){
+        document.getElementById("app").innerHTML = "خطا در دریافت ❌";
     }
 }
 
-function render() {
+// نمایش کشورها
+function loadConfigs(){
+    const app = document.getElementById("app");
     app.innerHTML = "";
 
-    let list = configs[currentTab];
+    for(let country in data){
+        let div = document.createElement("div");
+        div.className = "country";
+        div.innerText = country + " (" + data[country].length + ")";
 
-    const search = searchInput.value.toLowerCase();
-    list = list.filter(x => x.toLowerCase().includes(search));
+        div.onclick = ()=>{
+            showConfigs(country);
+        };
 
-    list.forEach(cfg => {
-        const card = document.createElement("div");
-        card.className = "card";
+        app.appendChild(div);
+    }
+}
 
-        const pre = document.createElement("pre");
-        pre.innerText = cfg;
+// نمایش کانفیگ‌ها
+function showConfigs(country){
+    const app = document.getElementById("app");
+    app.innerHTML = `<h2>${country}</h2>`;
 
-        const btn = document.createElement("button");
-        btn.innerText = "📋";
-        btn.onclick = () => copy(cfg, btn);
+    data[country].forEach(cfg=>{
+        let box = document.createElement("div");
+        box.className = "configBox";
 
-        card.appendChild(pre);
-        card.appendChild(btn);
+        box.innerHTML = `
+        <p style="word-break: break-all;">${cfg}</p>
+        <button onclick="copyConfig(\`${cfg}\`)">📋 کپی</button>
+        `;
 
-        app.appendChild(card);
+        app.appendChild(box);
     });
+
+    let back = document.createElement("button");
+    back.innerText = "🔙 بازگشت";
+    back.onclick = loadConfigs;
+    app.appendChild(back);
 }
 
-function switchTab(tab) {
-    currentTab = tab;
-
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    event.target.classList.add("active");
-
-    render();
-}
-
-function copy(text, btn) {
+// کپی
+function copyConfig(text){
     navigator.clipboard.writeText(text);
-
-    btn.innerText = "✅";
-    setTimeout(() => btn.innerText = "📋", 1000);
+    alert("کپی شد ✅");
 }
 
-function copyAll() {
-    const list = configs[currentTab].join("\n");
-    navigator.clipboard.writeText(list);
-    alert("همه کپی شد 😎");
-}
+// سرچ کشور
+document.getElementById("search").addEventListener("input", function(){
+    const value = this.value.toLowerCase();
 
-searchInput.addEventListener("input", render);
+    const app = document.getElementById("app");
+    app.innerHTML = "";
 
-function manualUpdate() {
+    for(let country in data){
+        if(country.toLowerCase().includes(value)){
+            let div = document.createElement("div");
+            div.className = "country";
+            div.innerText = country + " (" + data[country].length + ")";
+            div.onclick = ()=> showConfigs(country);
+            app.appendChild(div);
+        }
+    }
+});
+
+// آپدیت دستی
+function manualUpdate(){
     fetchConfigs();
 }
 
-function toggleAuto() {
-    if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-        autoBtn.innerText = "🔴 Auto OFF";
-    } else {
-        autoInterval = setInterval(fetchConfigs, 30000);
-        autoBtn.innerText = "🟢 Auto ON";
+// اتو آپدیت
+function toggleAuto(){
+    autoUpdate = !autoUpdate;
+    const btn = document.getElementById("autoBtn");
+
+    if(autoUpdate){
+        btn.innerText = "🟢 Auto ON";
+        interval = setInterval(fetchConfigs, 30000);
+    }else{
+        btn.innerText = "🔴 Auto OFF";
+        clearInterval(interval);
     }
 }
 
+// اجرای اولیه
 fetchConfigs();
