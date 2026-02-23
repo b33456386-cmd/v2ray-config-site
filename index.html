@@ -2,94 +2,141 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>V2Ray Configs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کانفیگ ها</title>
 
 <style>
-body {
-    font-family: sans-serif;
-    background: #111;
-    color: #fff;
-    text-align: center;
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#0b132b;
+    color:#fff;
+    direction: rtl;
 }
-
-button {
-    margin: 5px;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
+.container{
+    padding:15px;
+    max-width:500px;
+    margin:auto;
 }
-
-.country {
-    background: #333;
-    color: #fff;
-    width: 90%;
+h1{
+    text-align:center;
 }
-
-.list {
-    display: none;
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
 }
-
-.list.open {
-    display: block;
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
+    color:#fff;
+    cursor:pointer;
 }
-
-.card {
-    background: #222;
-    margin: 5px;
-    padding: 10px;
-    border-radius: 8px;
+.update{
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
 }
-
+.country{
+    background:linear-gradient(45deg,#ff7e5f,#feb47b);
+}
+.telegram{
+    background:linear-gradient(45deg,#0088cc,#00aced);
+}
+.card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#1c2541;
+    margin:8px 0;
+    padding:10px;
+    border-radius:15px;
+    font-size:12px;
+}
+.text{
+    width:70%;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.copy{
+    background:linear-gradient(45deg,#7f00ff,#e100ff);
+}
+.list{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s ease;
+}
+.list.open{
+    max-height:1000px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>کانفیگ‌ها</h2>
+<div class="container">
+    <h1>🌍 کانفیگ ها</h1>
 
-<div id="countries">در حال لود...</div>
+    <input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()">
+
+    <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
+
+    <div id="lastUpdate"></div>
+
+    <div id="countries"></div>
+</div>
 
 <script>
 
+let data = [];
+let opened = null;
+
+// دیتا لوکال (دیگه fetch نداره → صفحه سفید نمیشه)
 function loadConfigs(){
 
-    const data = [
+    data = [
         {
             name: "آمریکا",
-            groups: [
-                {
-                    type: "VLESS",
-                    configs: [
-                        "vless://usa-1",
-                        "vless://usa-2"
-                    ]
-                }
+            configs: [
+                "vless://usa-1",
+                "vless://usa-2",
+                "vless://usa-3"
             ]
         },
         {
             name: "آلمان",
-            groups: [
-                {
-                    type: "VLESS",
-                    configs: [
-                        "vless://germany-1",
-                        "vless://germany-2"
-                    ]
-                }
+            configs: [
+                "vless://germany-1",
+                "vless://germany-2",
+                "vless://germany-3"
             ]
         }
     ];
 
-    showCountries(data);
+    showTime();
+    showCountries();
 }
 
-function showCountries(data){
+function getIranTime(){
+    return new Date().toLocaleTimeString("fa-IR", {
+        timeZone: "Asia/Tehran"
+    });
+}
+
+function showTime(){
+    document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + getIranTime();
+}
+
+function showCountries(){
     const div = document.getElementById("countries");
     div.innerHTML = "";
 
-    let opened = null;
-
-    data.forEach(c=>{
+    data.forEach((c)=>{
         const wrapper = document.createElement("div");
 
         const btn = document.createElement("button");
@@ -99,7 +146,7 @@ function showCountries(data){
         if(c.name.includes("آلمان")) flag = "🇩🇪 ";
 
         btn.className = "country";
-        btn.innerText = flag + c.name;
+        btn.innerText = flag + c.name + " ("+c.configs.length+")";
 
         const list = document.createElement("div");
         list.className = "list";
@@ -112,28 +159,35 @@ function showCountries(data){
             opened = list;
         };
 
-        c.groups.forEach(group=>{
-            const title = document.createElement("button");
-            title.innerText = "📦 " + group.type;
-            list.appendChild(title);
+        // کپی همه
+        const allBtn = document.createElement("button");
+        allBtn.className = "update";
+        allBtn.innerText = "📋 کپی همه";
+        allBtn.onclick = ()=>{
+            navigator.clipboard.writeText(c.configs.join("\n"));
+            alert("کپی شد");
+        };
+        list.appendChild(allBtn);
 
-            group.configs.forEach(cfg=>{
-                const card = document.createElement("div");
+        c.configs.forEach(cfg=>{
+            const card = document.createElement("div");
+            card.className = "card";
 
-                const text = document.createElement("div");
-                text.innerText = cfg;
+            const text = document.createElement("div");
+            text.className = "text";
+            text.innerText = cfg;
 
-                const copyBtn = document.createElement("button");
-                copyBtn.innerText = "کپی";
-                copyBtn.onclick = ()=>{
-                    navigator.clipboard.writeText(cfg);
-                    alert("کپی شد");
-                };
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy";
+            copyBtn.innerText = "کپی";
+            copyBtn.onclick = ()=>{
+                navigator.clipboard.writeText(cfg);
+                alert("کپی شد");
+            };
 
-                card.appendChild(text);
-                card.appendChild(copyBtn);
-                list.appendChild(card);
-            });
+            card.appendChild(text);
+            card.appendChild(copyBtn);
+            list.appendChild(card);
         });
 
         wrapper.appendChild(btn);
@@ -142,6 +196,18 @@ function showCountries(data){
     });
 }
 
+// جستجو
+function searchConfigs(){
+    const value = document.getElementById("search").value.toLowerCase();
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach(card=>{
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(value) ? "flex" : "none";
+    });
+}
+
+// اجرا
 loadConfigs();
 
 </script>
