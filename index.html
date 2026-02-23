@@ -1,41 +1,41 @@
 <!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>کانفیگ رایگان</title>
+<html lang="fa" dir="rtl">
 
-    <link rel="stylesheet" href="style.css">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>V2Ray Configs</title>
+
+<!-- ✅ اتصال CSS -->
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <!-- سرچ -->
-    <input id="search" placeholder="🔍 جستجو کشور (آمریکا / آلمان)">
+    <h1>🌐 کانفیگ‌های V2Ray</h1>
 
-    <!-- دکمه‌ها -->
+    <!-- 🔍 سرچ -->
+    <input id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
+
+    <!-- 🎛 کنترل‌ها -->
     <div class="controls">
         <button onclick="manualUpdate()">🔄 آپدیت</button>
         <button id="autoBtn" onclick="toggleAuto()">🔴 Auto OFF</button>
     </div>
 
-    <!-- آخرین آپدیت -->
-    <div id="lastUpdate">در حال دریافت...</div>
+    <!-- ⏰ آخرین آپدیت -->
+    <div id="lastUpdate">در حال دریافت زمان...</div>
 
-    <!-- لیست -->
+    <!-- 📦 لیست -->
     <div id="app"></div>
-
-    <!-- تلگرام -->
-    <div style="text-align:center; margin-top:30px;">
-        <a href="https://t.me/V2raying_config" target="_blank" style="color:white; text-decoration:none; font-size:18px;">
-            📢 کانال تلگرام
-        </a>
-    </div>
 
 </div>
 
+<!-- ✅ اتصال JS -->
 <script src="script.js"></script>
 
 </body>
