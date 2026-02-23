@@ -12,18 +12,17 @@ function updateTime(){
         day: "2-digit"
     });
 
-    document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + iranTime + " ⏰";
+    const el = document.getElementById("lastUpdate");
+    if(el) el.innerText = "آخرین آپدیت: " + iranTime + " ⏰";
 }
-
 updateTime();
 
 let data = {};
 
-// 🔥 گرفتن دیتا از generate.json
+// گرفتن دیتا
 async function fetchConfigs(){
     try{
-        const res = await fetch("generate.json?" + new Date().getTime());
+        const res = await fetch("configs.json?" + new Date().getTime());
         const json = await res.json();
 
         data = {};
@@ -43,7 +42,8 @@ async function fetchConfigs(){
         loadConfigs();
 
     }catch(e){
-        document.getElementById("app").innerHTML = "خطا در دریافت کانفیگ ❌";
+        console.log(e);
+        document.getElementById("app").innerHTML = "خطا در دریافت ❌";
     }
 }
 
@@ -56,16 +56,12 @@ function loadConfigs(){
         let div = document.createElement("div");
         div.className = "country";
         div.innerText = country + " (" + data[country].length + ")";
-
-        div.onclick = ()=>{
-            showConfigs(country);
-        };
-
+        div.onclick = ()=> showConfigs(country);
         app.appendChild(div);
     }
 }
 
-// نمایش کانفیگ‌ها
+// نمایش کانفیگ
 function showConfigs(country){
     const app = document.getElementById("app");
     app.innerHTML = `<h2>${country}</h2>`;
@@ -76,7 +72,7 @@ function showConfigs(country){
 
         box.innerHTML = `
         <p style="word-break: break-all;">${cfg}</p>
-        <button onclick="copyConfig('${cfg}')">📋 کپی</button>
+        <button onclick="copyConfig(\`${cfg}\`)">📋 کپی</button>
         `;
 
         app.appendChild(box);
@@ -94,30 +90,27 @@ function copyConfig(text){
     alert("کپی شد ✅");
 }
 
-// سرچ
-document.getElementById("search").addEventListener("input", function(){
-    const value = this.value.toLowerCase();
+// سرچ (ایمن)
+const searchInput = document.getElementById("search");
+if(searchInput){
+    searchInput.addEventListener("input", function(){
+        const value = this.value.toLowerCase();
+        const app = document.getElementById("app");
+        app.innerHTML = "";
 
-    const app = document.getElementById("app");
-    app.innerHTML = "";
-
-    for(let country in data){
-        if(country.toLowerCase().includes(value)){
-            let div = document.createElement("div");
-            div.className = "country";
-            div.innerText = country + " (" + data[country].length + ")";
-            div.onclick = ()=> showConfigs(country);
-            app.appendChild(div);
+        for(let country in data){
+            if(country.toLowerCase().includes(value)){
+                let div = document.createElement("div");
+                div.className = "country";
+                div.innerText = country + " (" + data[country].length + ")";
+                div.onclick = ()=> showConfigs(country);
+                app.appendChild(div);
+            }
         }
-    }
-});
-
-// دکمه رفرش
-function loadConfigsButton(){
-    fetchConfigs();
+    });
 }
 
-// اجرای اولیه
+// اجرا
 fetchConfigs();
 
-</script>
+            </script>
