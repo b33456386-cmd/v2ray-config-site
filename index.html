@@ -1,24 +1,66 @@
-<script>
+<!DOCTYPE html><html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>پنل کانفیگ</title><style>
+body{
+font-family:sans-serif;
+background:#111;
+color:#fff;
+padding:10px;
+}
+.country{
+width:100%;
+padding:10px;
+margin-top:10px;
+background:#222;
+border:none;
+color:#fff;
+font-size:16px;
+}
+.list{display:none;}
+.list.open{display:block;}
+.card{
+background:#1a1a1a;
+margin:5px 0;
+padding:8px;
+border-radius:8px;
+}
+.copy{
+margin-top:5px;
+background:#00c853;
+border:none;
+padding:5px;
+color:#fff;
+}
+.update{
+margin-top:5px;
+background:#2962ff;
+border:none;
+padding:5px;
+color:#fff;
+}
+input{
+width:100%;
+padding:8px;
+margin-top:10px;
+}
+</style></head><body><h3 id="lastUpdate">...</h3><input id="search" placeholder="جستجو..." oninput="searchConfigs()"><div id="countries">در حال لود...</div><script>
 
 let data=[];
 let opened=null;
 
 function getTime(){
-return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
+return new Date().toLocaleTimeString("fa-IR");
 }
 
-// کپی سازگار با همه گوشی‌ها
+// کپی بدون باگ
 function copyText(text){
-if(navigator.clipboard){
-navigator.clipboard.writeText(text);
-}else{
 let t=document.createElement("textarea");
 t.value=text;
 document.body.appendChild(t);
 t.select();
 document.execCommand("copy");
 document.body.removeChild(t);
-}
 alert("کپی شد ✅");
 }
 
@@ -28,24 +70,21 @@ try{return atob(t.trim())}catch{return t}
 
 async function loadConfigs(){
 
-document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
+document.getElementById("countries").innerText="⏳ در حال دریافت...";
 
 try{
 
 const urls=[
-"https://raw.githubusercontent.com/v2fly/free-nodes/main/sub",
-"https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
+"https://raw.githubusercontent.com/v2fly/free-nodes/main/sub"
 ];
 
 let all=[];
 
 for(let u of urls){
-try{
 let r=await fetch(u);
 let t=await r.text();
 t=safeDecode(t);
 all=all.concat(t.split("\n"));
-}catch{}
 }
 
 all=all.filter(x=>x.startsWith("vmess")||x.startsWith("vless")||x.startsWith("trojan"));
@@ -59,33 +98,34 @@ if(x.includes("de")) de.push(c);
 });
 
 data=[
-{name:"آمریکا",configs:usa.slice(0,50)},
-{name:"آلمان",configs:de.slice(0,50)}
+{name:"آمریکا",configs:usa.slice(0,20)},
+{name:"آلمان",configs:de.slice(0,20)}
 ];
 
-document.getElementById("lastUpdate").innerText="آخرین آپدیت: "+getTime();
+document.getElementById("lastUpdate").innerText="آپدیت: "+getTime();
 
 show();
 
 }catch(e){
-document.getElementById("countries").innerHTML="❌ خطا در دریافت";
+document.getElementById("countries").innerText="❌ خطا";
 console.log(e);
 }
 }
 
-function show(filteredData=null){
+function show(filteredData){
 
 let div=document.getElementById("countries");
 div.innerHTML="";
 
-let listData = filteredData || data;
+let listData=filteredData||data;
 
 listData.forEach(c=>{
+
 let wrap=document.createElement("div");
 
 let btn=document.createElement("button");
 btn.className="country";
-btn.innerText=(c.name==="آمریکا"?"🇺🇸 ":"🇩🇪 ")+c.name+" ("+c.configs.length+")";
+btn.innerText=c.name+" ("+c.configs.length+")";
 
 let list=document.createElement("div");
 list.className="list";
@@ -96,15 +136,14 @@ list.classList.toggle("open");
 opened=list;
 };
 
-// کپی همه
 let allBtn=document.createElement("button");
 allBtn.className="update";
-allBtn.innerText="📋 کپی همه";
+allBtn.innerText="کپی همه";
 allBtn.onclick=()=>copyText(c.configs.join("\n"));
 list.appendChild(allBtn);
 
-// هر کانفیگ
 c.configs.forEach(cfg=>{
+
 let card=document.createElement("div");
 card.className="card";
 
@@ -119,15 +158,16 @@ copy.onclick=()=>copyText(cfg);
 card.appendChild(t);
 card.appendChild(copy);
 list.appendChild(card);
+
 });
 
 wrap.appendChild(btn);
 wrap.appendChild(list);
 div.appendChild(wrap);
+
 });
 }
 
-// جستجوی حرفه‌ای (کشور + کانفیگ)
 function searchConfigs(){
 
 let v=document.getElementById("search").value.toLowerCase();
@@ -137,26 +177,21 @@ show();
 return;
 }
 
-let result = data.map(c=>{
+let result=data.map(c=>{
 
-// اگر اسم کشور مچ شد → همه رو نشون بده
-if(c.name.toLowerCase().includes(v)){
-return c;
-}
+if(c.name.toLowerCase().includes(v)) return c;
 
-// فیلتر کانفیگ‌ها
-let filtered = c.configs.filter(cfg=>cfg.toLowerCase().includes(v));
+let f=c.configs.filter(x=>x.toLowerCase().includes(v));
 
-return {
-name:c.name,
-configs:filtered
-};
+return {name:c.name,configs:f};
 
 }).filter(c=>c.configs.length>0);
 
 show(result);
 }
 
-loadConfigs();
+// مهم: بعد از لود کامل اجرا شه
+window.onload=loadConfigs;
 
-</script>
+</script></body>
+</html>
