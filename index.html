@@ -1,37 +1,200 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کانفیگ رایگان</title>
 
-<title>V2Ray Configs</title>
+<style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#0b132b;
+    color:#fff;
+}
 
-<link rel="stylesheet" href="style.css">
+.container{
+    padding:20px;
+    max-width:500px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    margin-bottom:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.update{
+    background:linear-gradient(45deg,#4facfe,#00f2fe);
+}
+
+.country{
+    background:linear-gradient(45deg,#ff7e5f,#feb47b);
+}
+
+.card{
+    background:#1c2541;
+    padding:10px;
+    border-radius:15px;
+    margin-top:10px;
+}
+
+.copy{
+    background:#6a11cb;
+    color:#fff;
+    padding:5px 10px;
+    border-radius:10px;
+    float:left;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>🌍 کانفیگ‌ها</h2>
+<h1>🌍 کانفیگ‌ها</h1>
 
-<input id="search" placeholder="🔍 جستجو کشور...">
+<input id="search" placeholder="🔍 جستجو...">
 
-<div class="controls">
-    <button onclick="loadData()">🔄 آپدیت</button>
-</div>
+<button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
 <div id="lastUpdate"></div>
 
 <div id="countries"></div>
 
-<div id="configs"></div>
+<div id="app"></div>
 
 </div>
 
-<a href="https://t.me/V2raying_config" class="telegram">📢</a>
+<script>
+const URL = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt";
 
-<script src="script.js"></script>
+let data = [];
+
+// ⏱ هر 1 ساعت آپدیت
+setInterval(loadConfigs, 3600000);
+
+function iranTime(){
+    return new Date().toLocaleString("fa-IR");
+}
+
+async function loadConfigs(){
+    document.getElementById("app").innerHTML="⏳ در حال دریافت...";
+    document.getElementById("countries").innerHTML="";
+
+    try{
+        const res = await fetch(URL + "?t=" + Date.now());
+        const text = await res.text();
+        const decoded = atob(text);
+
+        const lines = decoded.split("\n");
+        const unique = [...new Set(lines)];
+
+        const us = unique.filter(c=>c.includes("US"));
+        const de = unique.filter(c=>c.includes("DE"));
+
+        data = [
+            {name:"🇺🇸 آمریکا", list:us},
+            {name:"🇩🇪 آلمان", list:de}
+        ];
+
+        showCountries();
+
+        document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + iranTime();
+
+    }catch{
+        document.getElementById("app").innerText="❌ خطا";
+    }
+}
+
+function showCountries(){
+    const box = document.getElementById("countries");
+
+    data.forEach((c,i)=>{
+        const btn = document.createElement("button");
+        btn.className="country";
+        btn.innerText = c.name + " (" + c.list.length + ")";
+        btn.onclick = ()=>showConfigs(i);
+        box.appendChild(btn);
+    });
+}
+
+function showConfigs(index){
+    const app = document.getElementById("app");
+    app.innerHTML="";
+
+    const country = data[index];
+
+    // 🔥 کپی همه
+    const allBtn = document.createElement("button");
+    allBtn.innerText="📋 کپی همه";
+    allBtn.onclick=()=>{
+        navigator.clipboard.writeText(country.list.join("\n"));
+        alert("کپی شد ✅");
+    };
+    app.appendChild(allBtn);
+
+    country.list.forEach(cfg=>{
+        const div = document.createElement("div");
+        div.className="card";
+
+        const text = document.createElement("div");
+        text.innerText = cfg;
+
+        const btn = document.createElement("button");
+        btn.className="copy";
+        btn.innerText="کپی";
+        btn.onclick=()=>{
+            navigator.clipboard.writeText(cfg);
+            alert("کپی شد");
+        };
+
+        div.appendChild(text);
+        div.appendChild(btn);
+
+        app.appendChild(div);
+    });
+}
+
+// سرچ
+document.getElementById("search").addEventListener("input",function(){
+    const val = this.value.toLowerCase();
+    const filtered = data.filter(c=>c.name.toLowerCase().includes(val));
+
+    const box = document.getElementById("countries");
+    box.innerHTML="";
+
+    filtered.forEach((c,i)=>{
+        const btn = document.createElement("button");
+        btn.className="country";
+        btn.innerText = c.name + " (" + c.list.length + ")";
+        btn.onclick = ()=>showConfigs(i);
+        box.appendChild(btn);
+    });
+});
+
+loadConfigs();
+</script>
 
 </body>
 </html>
