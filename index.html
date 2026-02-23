@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="fa">
+<!DOCTYPE html><html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ ها</title>
-
-<style>
+<title>کانفیگ ها</title><style>
 body{
     margin:0;
     font-family:sans-serif;
@@ -71,67 +68,83 @@ button{
     transition:max-height 0.4s ease;
 }
 .list.open{
-    max-height:1000px;
+    max-height:2000px;
 }
-</style>
-</head>
+</style></head><body><div class="container">
+    <h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
 
-<body>
+<input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchConfigs()">
 
-<div class="container">
-    <h1>🌍 کانفیگ ها</h1>
+<button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
 
-    <button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
+<div id="lastUpdate"></div>
 
-    <input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchConfigs()">
+<div id="countries"></div>
 
-    <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
-
-    <div id="lastUpdate"></div>
-
-    <div id="countries"></div>
-</div>
-
-<script>
+</div><script>
 
 let data = [];
 let opened = null;
 
-// لینک تلگرام
 function openTelegram(){
     window.open("https://t.me/V2raying_config","_blank");
-}
-
-// دیتا لوکال
-function loadConfigs(){
-
-    data = [
-        {
-            name: "آمریکا",
-            configs: [
-                "vless://usa-1",
-                "vless://usa-2",
-                "vless://usa-3"
-            ]
-        },
-        {
-            name: "آلمان",
-            configs: [
-                "vless://germany-1",
-                "vless://germany-2",
-                "vless://germany-3"
-            ]
-        }
-    ];
-
-    showTime();
-    showCountries();
 }
 
 function getIranTime(){
     return new Date().toLocaleTimeString("fa-IR", {
         timeZone: "Asia/Tehran"
     });
+}
+
+async function loadConfigs(){
+
+    document.getElementById("countries").innerHTML = "⏳ در حال دریافت...";
+
+    try{
+
+        const sources = [
+            "https://raw.githubusercontent.com/v2fly/free-nodes/main/sub",
+            "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
+        ];
+
+        let allConfigs = [];
+
+        for(let url of sources){
+            const res = await fetch(url);
+            const text = await res.text();
+            const decoded = atob(text.trim());
+            const list = decoded.split("\n");
+            allConfigs = allConfigs.concat(list);
+        }
+
+        allConfigs = [...new Set(allConfigs)];
+
+        let usa = [];
+        let germany = [];
+
+        allConfigs.forEach(cfg=>{
+            const lower = cfg.toLowerCase();
+
+            if(lower.includes("us") || lower.includes("usa")){
+                usa.push(cfg);
+            }
+            if(lower.includes("de") || lower.includes("germany")){
+                germany.push(cfg);
+            }
+        });
+
+        data = [
+            { name: "آمریکا", configs: usa.slice(0,50) },
+            { name: "آلمان", configs: germany.slice(0,50) }
+        ];
+
+        showTime();
+        showCountries();
+
+    }catch(e){
+        document.getElementById("countries").innerHTML = "❌ خطا در دریافت";
+        console.log(e);
+    }
 }
 
 function showTime(){
@@ -202,35 +215,27 @@ function showCountries(){
     });
 }
 
-// جستجو (کشور + کانفیگ)
 function searchConfigs(){
     const value = document.getElementById("search").value.toLowerCase();
 
     const wrappers = document.querySelectorAll("#countries > div");
 
     wrappers.forEach(wrapper=>{
-        const countryBtn = wrapper.querySelector("button");
-        const cards = wrapper.querySelectorAll(".card");
+        const countryText = wrapper.innerText.toLowerCase();
 
-        let countryMatch = countryBtn.innerText.toLowerCase().includes(value);
-        let anyConfigMatch = false;
-
-        cards.forEach(card=>{
-            const text = card.innerText.toLowerCase();
-            const match = text.includes(value);
-
-            card.style.display = match ? "flex" : "none";
-            if(match) anyConfigMatch = true;
-        });
-
-        wrapper.style.display = (countryMatch || anyConfigMatch) ? "block" : "none";
+        if(countryText.includes(value)){
+            wrapper.style.display = "block";
+        }else{
+            wrapper.style.display = "none";
+        }
     });
 }
 
 // اجرا
 loadConfigs();
 
-</script>
+// آپدیت خودکار هر ۳ ساعت
+setInterval(loadConfigs, 3 * 60 * 60 * 1000);
 
-</body>
+</script></body>
 </html>
