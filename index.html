@@ -1,25 +1,111 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل کانفیگ حرفه‌ای</title>
+
+<style>
+body{
+    font-family:tahoma;
+    background:#0b132b;
+    color:white;
+    text-align:center;
+    margin:0;
+}
+
+h1{margin:20px;}
+
+input{
+    width:85%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin:10px;
+    font-size:14px;
+}
+
+button{
+    width:90%;
+    padding:15px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    background:#3a86ff;
+    color:white;
+}
+
+.box{
+    background:#1c2541;
+    margin:10px;
+    padding:15px;
+    border-radius:15px;
+}
+
+.config{
+    background:#0f1b3d;
+    margin:8px 0;
+    padding:10px;
+    border-radius:10px;
+    font-size:12px;
+    word-break:break-all;
+}
+
+.copy{
+    margin-top:5px;
+    background:#8338ec;
+    padding:8px;
+    border-radius:8px;
+    font-size:12px;
+}
+
+.sub{
+    background:#06d6a0;
+}
+
+.telegram-btn{
+    display:block;
+    width:85%;
+    margin:30px auto;
+    padding:15px;
+    border-radius:12px;
+    background:#229ED9;
+    color:white;
+    font-size:18px;
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌍 پنل کانفیگ حرفه‌ای</h1>
+
+<input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchData()">
+
+<button onclick="loadConfigs()">🔄 آپدیت</button>
+
+<p id="lastUpdate">⏳ آخرین آپدیت: -</p>
+
+<div id="countries">در حال دریافت...</div>
+
+<a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
+🚀 عضویت در کانال تلگرام
+</a>
+
 <script>
 let data = [];
 let originalData = [];
+let lastUpdateTime = null;
 
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
-        const url = "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt";
-
-        // گرفتن همزمان متن + هدر
-        const res = await fetch(url + "?" + Date.now());
-
-        // ⏱ گرفتن زمان واقعی آپدیت از هدر
-        const lastModified = res.headers.get("Last-Modified");
-
-        if(lastModified){
-            const date = new Date(lastModified);
-            showRealUpdateTime(date);
-        }
-
+        const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
         const text = await res.text();
+
         const lines = text.split("\n");
 
         let usa = [];
@@ -41,6 +127,7 @@ async function loadConfigs(){
 
         originalData = JSON.parse(JSON.stringify(data));
 
+        updateTime();
         showCountries();
 
     }catch(e){
@@ -48,16 +135,27 @@ async function loadConfigs(){
     }
 }
 
-// ⏱ تبدیل به ساعت ایران (فقط ساعت و دقیقه)
-function showRealUpdateTime(date){
-    const iranTime = date.toLocaleTimeString("fa-IR", {
+function updateTime(){
+    lastUpdateTime = new Date();
+    updateClock();
+}
+
+function getIranTime(date){
+    return date.toLocaleTimeString("fa-IR", {
         timeZone: "Asia/Tehran",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
+        second: "2-digit"
     });
+}
+
+function updateClock(){
+    if(!lastUpdateTime) return;
+
+    const iranTime = getIranTime(lastUpdateTime);
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت واقعی کانفیگ: " + iranTime;
+        "🕒 آخرین آپدیت کانفیگ: " + iranTime;
 }
 
 function showCountries(){
@@ -134,8 +232,10 @@ function searchData(){
     showCountries();
 }
 
-// ⏱ هر ۳ ساعت
 setInterval(loadConfigs, 10800000);
 
 loadConfigs();
-       </script>
+</script>
+
+</body>
+</html>
