@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>پنل کانفیگ</title>
+<title>پنل کانفیگ حرفه‌ای</title>
 
 <style>
 body{
@@ -13,7 +13,17 @@ body{
     text-align:center;
     margin:0;
 }
+
 h1{margin:20px;}
+
+input{
+    width:85%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin:10px;
+    font-size:14px;
+}
 
 button{
     width:90%;
@@ -49,25 +59,45 @@ button{
     border-radius:8px;
     font-size:12px;
 }
+
+.sub{
+    background:#06d6a0;
+}
+
+.footer{
+    margin:20px;
+    font-size:14px;
+    opacity:0.8;
+}
 </style>
 </head>
 
 <body>
 
-<h1>🌍 پنل کانفیگ</h1>
+<h1>🌍 پنل کانفیگ حرفه‌ای</h1>
+
+<input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchData()">
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
+<p id="lastUpdate">⏳ آخرین آپدیت: -</p>
+
 <div id="countries">در حال دریافت...</div>
+
+<div class="footer">
+    <a href="https://t.me/V2raying_config" target="_blank" style="color:#3a86ff;text-decoration:none;">
+        📢 تلگرام ما
+    </a>
+</div>
 
 <script>
 let data = [];
+let originalData = [];
 
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
-        // 🔥 سورس قوی تر
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
         const text = await res.text();
 
@@ -90,11 +120,19 @@ async function loadConfigs(){
             {name:"🇩🇪 آلمان", configs: germany.slice(0,10)}
         ];
 
+        originalData = JSON.parse(JSON.stringify(data));
+
+        updateTime();
         showCountries();
 
     }catch(e){
-        document.getElementById("countries").innerHTML="❌ خطا در دریافت (احتمالا فیلتر)";
+        document.getElementById("countries").innerHTML="❌ خطا در دریافت";
     }
+}
+
+function updateTime(){
+    const now = new Date().toLocaleString("fa-IR", { timeZone: "Asia/Tehran" });
+    document.getElementById("lastUpdate").innerText = "🕒 آخرین آپدیت: " + now;
 }
 
 function showCountries(){
@@ -104,9 +142,15 @@ function showCountries(){
         html+=`
         <div class="box">
             <h3>${country.name} (${country.configs.length})</h3>
+
             <button onclick="toggleConfigs(${index})">
                 نمایش کانفیگ‌ها
             </button>
+
+            <button class="sub" onclick="copySub(${index})">
+                📡 کپی سابسکریپشن
+            </button>
+
             <div id="list${index}"></div>
         </div>
         `;
@@ -144,10 +188,30 @@ function copyConfig(text){
     alert("✅ کپی شد");
 }
 
-// ⏱ هر ۳ ساعت آپدیت
+function copySub(index){
+    let list = data[index].configs.join("\n");
+    navigator.clipboard.writeText(list);
+    alert("📡 سابسکریپشن کپی شد");
+}
+
+function searchData(){
+    let value = document.getElementById("search").value.toLowerCase();
+
+    data = originalData.map(country=>{
+        return {
+            name: country.name,
+            configs: country.configs.filter(c => 
+                c.toLowerCase().includes(value) || country.name.toLowerCase().includes(value)
+            )
+        };
+    });
+
+    showCountries();
+}
+
+// ⏱ هر ۳ ساعت
 setInterval(loadConfigs, 10800000);
 
-// اجرا اولیه
 loadConfigs();
 </script>
 
