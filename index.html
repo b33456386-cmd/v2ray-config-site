@@ -2,44 +2,72 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>NovaConfig</title>
+
+  <!-- مهم برای بزرگ شدن در موبایل -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>لیست کانفیگ‌ها</title>
+
+  <!-- فونت -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+
+  <!-- استایل -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h1 class="title">🚀 NovaConfig</h1>
+    <!-- هدر -->
+    <div class="header">
+      <h2>آخرین آپدیت: 10:19 23-02-2026</h2>
+    </div>
 
-  <!-- تلگرام -->
-  <div class="telegram">
-    <a href="https://t.me/V2raying_config" target="_blank">
-      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
-      <span>@V2raying_config</span>
-    </a>
+    <!-- سرچ -->
+    <input type="text" class="search-box" placeholder="جستجو: کشور یا کانفیگ...">
+
+    <!-- دکمه ریلود -->
+    <button class="button">🔄 بارگذاری مجدد</button>
+
+    <!-- تعداد کشور -->
+    <p>تعداد کشورها: 33</p>
+
+    <!-- دکمه بازگشت -->
+    <button class="button">بازگشت به لیست کشورها</button>
+
+    <!-- کارت کشور -->
+    <div class="country-card">
+
+      <div class="country-title">
+        🇩🇪 Germany (7)
+      </div>
+
+      <!-- کانفیگ -->
+      <div class="config-card">
+        vless://example-config-1
+        <button class="copy-btn">کپی</button>
+      </div>
+
+      <div class="config-card">
+        vless://example-config-2
+        <button class="copy-btn">کپی</button>
+      </div>
+
+      <div class="config-card">
+        ss://example-config-3
+        <button class="copy-btn">کپی</button>
+      </div>
+
+    </div>
+
+    <!-- فوتر -->
+    <div class="footer">
+      <a href="#">GitHub</a>
+      <a href="#">کانال تلگرام</a>
+    </div>
+
   </div>
 
-  <p id="lastUpdate" style="text-align:center;"></p>
-
-  <!-- سرچ -->
-  <input id="searchInput" class="search" placeholder="🔍 جستجو...">
-
-  <!-- دکمه‌ها -->
-  <div style="text-align:center;">
-    <button id="themeBtn">🌙 / ☀️</button>
-    <button id="randomBtn">🎲 رندوم</button>
-
-    <a href="configs.json" target="_blank">
-      <button>📡 Subscribe</button>
-    </a>
-  </div>
-
-  <hr>
-
-  <div id="countries"></div>
-
-</div>
-
-<script src="script.js"></script>
 </body>
 </html>
