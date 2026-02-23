@@ -2,140 +2,94 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ ها</title>
+<title>V2Ray Configs</title>
 
 <style>
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:#0b132b;
-    color:#fff;
-    direction: rtl;
-}
-.container{
-    padding:15px;
-    max-width:500px;
-    margin:auto;
-}
-h1{
-    text-align:center;
-}
-input{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-}
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-    color:#fff;
-    cursor:pointer;
-}
-.update{
-    background:linear-gradient(45deg,#00c6ff,#0072ff);
-}
-.country{
-    background:linear-gradient(45deg,#ff7e5f,#feb47b);
-}
-.telegram{
-    background:linear-gradient(45deg,#0088cc,#00aced);
-}
-.card{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#1c2541;
-    margin:8px 0;
-    padding:10px;
-    border-radius:15px;
-    font-size:12px;
-}
-.text{
-    width:70%;
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-}
-.copy{
-    background:linear-gradient(45deg,#7f00ff,#e100ff);
+body {
+    font-family: sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
 }
 
-/* انیمیشن */
-.list{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height 0.4s ease;
+button {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
 }
-.list.open{
-    max-height:1000px;
+
+.country {
+    background: #333;
+    color: #fff;
+    width: 90%;
 }
+
+.list {
+    display: none;
+}
+
+.list.open {
+    display: block;
+}
+
+.card {
+    background: #222;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>🌍 کانفیگ ها</h1>
+<h2>کانفیگ‌ها</h2>
 
-    <button class="telegram" onclick="openTelegram()">📢 کانال تلگرام</button>
-
-    <input type="text" id="search" placeholder="🔍 جستجوی کانفیگ..." oninput="searchConfigs()">
-
-    <button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
-
-    <div id="lastUpdate"></div>
-
-    <div id="countries"></div>
-</div>
+<div id="countries">در حال لود...</div>
 
 <script>
-let data = [];
-let opened = null;
 
-function openTelegram(){
-    window.open("https://t.me/V2raying_config","_blank");
+function loadConfigs(){
+
+    const data = [
+        {
+            name: "آمریکا",
+            groups: [
+                {
+                    type: "VLESS",
+                    configs: [
+                        "vless://usa-1",
+                        "vless://usa-2"
+                    ]
+                }
+            ]
+        },
+        {
+            name: "آلمان",
+            groups: [
+                {
+                    type: "VLESS",
+                    configs: [
+                        "vless://germany-1",
+                        "vless://germany-2"
+                    ]
+                }
+            ]
+        }
+    ];
+
+    showCountries(data);
 }
 
-function getIranTime(){
-    return new Date().toLocaleTimeString("fa-IR", {
-        timeZone: "Asia/Tehran"
-    });
-}
-
-async function loadConfigs(){
-    document.getElementById("countries").innerHTML = "در حال لود...";
-
-    try{
-        const res = await fetch("configs.json?" + Date.now());
-        const json = await res.json();
-
-        data = json.countries;
-
-        showTime();
-        showCountries();
-
-    }catch(e){
-        document.getElementById("countries").innerHTML = "خطا ❌";
-        console.log(e);
-    }
-}
-
-function showTime(){
-    document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + getIranTime() + " 🇮🇷";
-}
-
-function showCountries(){
+function showCountries(data){
     const div = document.getElementById("countries");
     div.innerHTML = "";
 
-    data.forEach((c)=>{
+    let opened = null;
+
+    data.forEach(c=>{
         const wrapper = document.createElement("div");
 
         const btn = document.createElement("button");
@@ -145,7 +99,7 @@ function showCountries(){
         if(c.name.includes("آلمان")) flag = "🇩🇪 ";
 
         btn.className = "country";
-        btn.innerText = flag + c.name + " ("+c.count+")";
+        btn.innerText = flag + c.name;
 
         const list = document.createElement("div");
         list.className = "list";
@@ -154,68 +108,42 @@ function showCountries(){
             if(opened && opened !== list){
                 opened.classList.remove("open");
             }
-
             list.classList.toggle("open");
             opened = list;
         };
 
-        const allBtn = document.createElement("button");
-        allBtn.className = "update";
-        allBtn.innerText = "📋 کپی همه";
-        allBtn.onclick = ()=>{
-            navigator.clipboard.writeText(c.configs.join("\n"));
-            alert("کپی شد");
-        };
-        list.appendChild(allBtn);
+        c.groups.forEach(group=>{
+            const title = document.createElement("button");
+            title.innerText = "📦 " + group.type;
+            list.appendChild(title);
 
-        c.configs.forEach(cfg=>{
-            const card = document.createElement("div");
-            card.className = "card";
+            group.configs.forEach(cfg=>{
+                const card = document.createElement("div");
 
-            const text = document.createElement("div");
-            text.className = "text";
-            text.innerText = cfg;
+                const text = document.createElement("div");
+                text.innerText = cfg;
 
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy";
-            copyBtn.innerText = "کپی";
-            copyBtn.onclick = ()=>{
-                navigator.clipboard.writeText(cfg);
-                alert("کپی شد");
-            };
+                const copyBtn = document.createElement("button");
+                copyBtn.innerText = "کپی";
+                copyBtn.onclick = ()=>{
+                    navigator.clipboard.writeText(cfg);
+                    alert("کپی شد");
+                };
 
-            card.appendChild(text);
-            card.appendChild(copyBtn);
-
-            list.appendChild(card);
+                card.appendChild(text);
+                card.appendChild(copyBtn);
+                list.appendChild(card);
+            });
         });
 
         wrapper.appendChild(btn);
         wrapper.appendChild(list);
-
         div.appendChild(wrapper);
     });
 }
 
-// جستجو
-function searchConfigs(){
-    const value = document.getElementById("search").value.toLowerCase();
-    const cards = document.querySelectorAll(".card");
-
-    cards.forEach(card=>{
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(value) ? "flex" : "none";
-    });
-}
-
-// آپدیت خودکار هر ۳ ساعت
-setInterval(()=>{
-    loadConfigs();
-    console.log("Auto Updated ⏱");
-}, 3 * 60 * 60 * 1000);
-
-// اجرا
 loadConfigs();
+
 </script>
 
 </body>
