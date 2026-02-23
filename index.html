@@ -14,6 +14,7 @@ body{
     margin:0;
 }
 h1{margin:20px;}
+
 button{
     width:90%;
     padding:15px;
@@ -24,11 +25,29 @@ button{
     background:#3a86ff;
     color:white;
 }
+
 .box{
     background:#1c2541;
     margin:10px;
+    padding:15px;
+    border-radius:15px;
+}
+
+.config{
+    background:#0f1b3d;
+    margin:8px 0;
     padding:10px;
     border-radius:10px;
+    font-size:12px;
+    word-break:break-all;
+}
+
+.copy{
+    margin-top:5px;
+    background:#8338ec;
+    padding:8px;
+    border-radius:8px;
+    font-size:12px;
 }
 </style>
 </head>
@@ -48,8 +67,8 @@ async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
-        // 🔥 سورس رایگان کانفیگ
-        const res = await fetch("https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt?" + Date.now());
+        // 🔥 سورس قوی تر
+        const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
         const text = await res.text();
 
         const lines = text.split("\n");
@@ -74,20 +93,21 @@ async function loadConfigs(){
         showCountries();
 
     }catch(e){
-        document.getElementById("countries").innerHTML="❌ خطا در دریافت";
+        document.getElementById("countries").innerHTML="❌ خطا در دریافت (احتمالا فیلتر)";
     }
 }
 
 function showCountries(){
     let html="";
 
-    data.forEach(country=>{
+    data.forEach((country,index)=>{
         html+=`
         <div class="box">
             <h3>${country.name} (${country.configs.length})</h3>
-            <button onclick='showConfigs(${JSON.stringify(country.configs)})'>
+            <button onclick="toggleConfigs(${index})">
                 نمایش کانفیگ‌ها
             </button>
+            <div id="list${index}"></div>
         </div>
         `;
     });
@@ -95,12 +115,36 @@ function showCountries(){
     document.getElementById("countries").innerHTML=html;
 }
 
-function showConfigs(configs){
-    let text=configs.join("\n\n");
-    alert(text);
+function toggleConfigs(index){
+    let container = document.getElementById("list"+index);
+
+    if(container.innerHTML !== ""){
+        container.innerHTML="";
+        return;
+    }
+
+    let configs = data[index].configs;
+    let html="";
+
+    configs.forEach(c=>{
+        html+=`
+        <div class="config">
+            ${c}
+            <br>
+            <button class="copy" onclick="copyConfig('${c}')">کپی</button>
+        </div>
+        `;
+    });
+
+    container.innerHTML=html;
 }
 
-// ⏱ هر ۳ ساعت آپدیت خودکار
+function copyConfig(text){
+    navigator.clipboard.writeText(text);
+    alert("✅ کپی شد");
+}
+
+// ⏱ هر ۳ ساعت آپدیت
 setInterval(loadConfigs, 10800000);
 
 // اجرا اولیه
