@@ -3,15 +3,14 @@ const lastUpdate = document.getElementById("lastUpdate");
 const searchInput = document.getElementById("search");
 const autoBtn = document.getElementById("autoBtn");
 
-let allConfigs = {};
+let configs = { de: [], us: [] };
+let currentTab = "de";
 let autoInterval = null;
 
-/* لودینگ */
 function showLoading() {
-    app.innerHTML = "<p style='text-align:center'>⏳ در حال دریافت کانفیگ...</p>";
+    app.innerHTML = "⏳ در حال دریافت...";
 }
 
-/* گرفتن کانفیگ */
 async function fetchConfigs() {
     showLoading();
 
@@ -21,102 +20,80 @@ async function fetchConfigs() {
 
         const lines = text.split("\n").filter(x => x.trim());
 
-        allConfigs = {
-            "🇩🇪 آلمان": [],
-            "🇺🇸 آمریکا": []
-        };
+        configs = { de: [], us: [] };
 
         lines.forEach(line => {
             if (line.includes("DE") || line.toLowerCase().includes("germany")) {
-                allConfigs["🇩🇪 آلمان"].push(line);
+                configs.de.push(line);
             }
             if (line.includes("US") || line.toLowerCase().includes("united states")) {
-                allConfigs["🇺🇸 آمریکا"].push(line);
+                configs.us.push(line);
             }
         });
 
-        render(allConfigs);
+        render();
 
-        const now = new Date().toLocaleString("fa-IR");
-        lastUpdate.innerText = "آخرین آپدیت: " + now;
+        lastUpdate.innerText = "آخرین آپدیت: " + new Date().toLocaleString("fa-IR");
 
-    } catch (e) {
-        app.innerHTML = "❌ خطا در دریافت دیتا";
+    } catch {
+        app.innerHTML = "❌ خطا";
     }
 }
 
-/* نمایش */
-function render(data) {
+function render() {
     app.innerHTML = "";
 
-    Object.keys(data).forEach(country => {
-        if (data[country].length === 0) return;
+    let list = configs[currentTab];
 
-        const box = document.createElement("div");
-        box.className = "country-box";
+    const search = searchInput.value.toLowerCase();
+    list = list.filter(x => x.toLowerCase().includes(search));
 
-        const title = document.createElement("h2");
-        title.innerText = country + " (" + data[country].length + ")";
-        box.appendChild(title);
+    list.forEach(cfg => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-        data[country].forEach(cfg => {
-            const card = document.createElement("div");
-            card.className = "card";
+        const pre = document.createElement("pre");
+        pre.innerText = cfg;
 
-            const pre = document.createElement("pre");
-            pre.innerText = cfg;
+        const btn = document.createElement("button");
+        btn.innerText = "📋";
+        btn.onclick = () => copy(cfg, btn);
 
-            const btn = document.createElement("button");
-            btn.innerText = "📋 کپی";
-            btn.onclick = () => copyConfig(cfg, btn);
+        card.appendChild(pre);
+        card.appendChild(btn);
 
-            card.appendChild(pre);
-            card.appendChild(btn);
-            box.appendChild(card);
-        });
-
-        app.appendChild(box);
+        app.appendChild(card);
     });
 }
 
-/* کپی حرفه‌ای */
-function copyConfig(text, btn) {
+function switchTab(tab) {
+    currentTab = tab;
+
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    event.target.classList.add("active");
+
+    render();
+}
+
+function copy(text, btn) {
     navigator.clipboard.writeText(text);
 
-    const old = btn.innerText;
-    btn.innerText = "✅ کپی شد";
-    btn.style.background = "green";
-
-    setTimeout(() => {
-        btn.innerText = old;
-        btn.style.background = "";
-    }, 1500);
+    btn.innerText = "✅";
+    setTimeout(() => btn.innerText = "📋", 1000);
 }
 
-/* سرچ */
-searchInput.addEventListener("input", () => {
-    const value = searchInput.value.toLowerCase();
+function copyAll() {
+    const list = configs[currentTab].join("\n");
+    navigator.clipboard.writeText(list);
+    alert("همه کپی شد 😎");
+}
 
-    const filtered = {};
+searchInput.addEventListener("input", render);
 
-    Object.keys(allConfigs).forEach(country => {
-        const match = allConfigs[country].filter(cfg =>
-            cfg.toLowerCase().includes(value)
-        );
-        if (match.length > 0) {
-            filtered[country] = match;
-        }
-    });
-
-    render(filtered);
-});
-
-/* آپدیت دستی */
 function manualUpdate() {
     fetchConfigs();
 }
 
-/* اتو آپدیت */
 function toggleAuto() {
     if (autoInterval) {
         clearInterval(autoInterval);
@@ -128,5 +105,4 @@ function toggleAuto() {
     }
 }
 
-/* شروع */
 fetchConfigs();
