@@ -14,20 +14,23 @@ function updateTime(){
         "آخرین آپدیت: " + iranTime + " ⏰";
 }
 
+// دیتا
 let data = {};
-let autoUpdate = false;
-let interval;
+let autoInterval = null;
 
-// گرفتن دیتا
+// 🔥 گرفتن دیتا (نسخه بدون خطا)
 async function fetchConfigs(){
     try{
-        const res = await fetch("generate.json?" + new Date().getTime());
+        const res = await fetch("generate.json?" + Date.now());
+
+        if(!res.ok) throw new Error("fetch error");
+
         const json = await res.json();
 
         data = {};
 
         json.forEach(cfg=>{
-            let country = "نامشخص";
+            let country = "نامشخص 🌍";
 
             if(cfg.includes("US") || cfg.includes("America"))
                 country = "آمریکا 🇺🇸";
@@ -38,11 +41,22 @@ async function fetchConfigs(){
             data[country].push(cfg);
         });
 
-        updateTime();
         loadConfigs();
+        updateTime();
 
     }catch(e){
-        document.getElementById("app").innerHTML = "خطا در دریافت ❌";
+        console.log(e);
+
+        // ❗ fallback (که صفحه سفید نشه)
+        data = {
+            "آمریکا 🇺🇸": ["sample-config-us"],
+            "آلمان 🇩🇪": ["sample-config-de"]
+        };
+
+        loadConfigs();
+
+        document.getElementById("lastUpdate").innerText =
+            "خطا در دریافت ❌ (نمایش تست)";
     }
 }
 
@@ -53,8 +67,8 @@ function loadConfigs(){
 
     for(let country in data){
         let div = document.createElement("div");
-        div.className = "country fadeIn";
-        div.innerText = country + " (" + data[country].length + ")";
+        div.className = "country";
+        div.innerText = `${country} (${data[country].length})`;
 
         div.onclick = ()=>{
             showConfigs(country);
@@ -67,39 +81,24 @@ function loadConfigs(){
 // نمایش کانفیگ‌ها
 function showConfigs(country){
     const app = document.getElementById("app");
-    app.innerHTML = `
-        <div class="topBar">
-            <button onclick="loadConfigs()">🔙</button>
-            <input id="innerSearch" placeholder="🔍 جستجو داخل کانفیگ">
-        </div>
-        <h2>${country}</h2>
-    `;
+    app.innerHTML = `<h2>${country}</h2>`;
 
     data[country].forEach(cfg=>{
-        createConfigBox(cfg, app);
-    });
+        let box = document.createElement("div");
+        box.className = "configBox";
 
-    // سرچ داخل کشور
-    document.getElementById("innerSearch").addEventListener("input", function(){
-        const val = this.value.toLowerCase();
-        app.querySelectorAll(".configBox").forEach(box=>{
-            box.style.display = box.innerText.toLowerCase().includes(val)
-                ? "block" : "none";
-        });
-    });
-}
-
-// ساخت باکس
-function createConfigBox(cfg, app){
-    let box = document.createElement("div");
-    box.className = "configBox fadeIn";
-
-    box.innerHTML = `
-        <p>${cfg}</p>
+        box.innerHTML = `
+        <p style="word-break: break-all;">${cfg}</p>
         <button onclick="copyConfig(\`${cfg}\`)">📋 کپی</button>
-    `;
+        `;
 
-    app.appendChild(box);
+        app.appendChild(box);
+    });
+
+    let back = document.createElement("button");
+    back.innerText = "🔙 بازگشت";
+    back.onclick = loadConfigs;
+    app.appendChild(back);
 }
 
 // کپی
@@ -108,9 +107,10 @@ function copyConfig(text){
     alert("کپی شد ✅");
 }
 
-// سرچ کشور
+// 🔍 سرچ
 document.getElementById("search").addEventListener("input", function(){
     const value = this.value.toLowerCase();
+
     const app = document.getElementById("app");
     app.innerHTML = "";
 
@@ -118,32 +118,32 @@ document.getElementById("search").addEventListener("input", function(){
         if(country.toLowerCase().includes(value)){
             let div = document.createElement("div");
             div.className = "country";
-            div.innerText = country + " (" + data[country].length + ")";
+            div.innerText = `${country} (${data[country].length})`;
             div.onclick = ()=> showConfigs(country);
             app.appendChild(div);
         }
     }
 });
 
-// دکمه آپدیت
+// 🔄 آپدیت دستی
 function manualUpdate(){
     fetchConfigs();
 }
 
-// Auto Update
+// 🤖 اتو آپدیت
 function toggleAuto(){
-    autoUpdate = !autoUpdate;
-
     const btn = document.getElementById("autoBtn");
 
-    if(autoUpdate){
-        btn.innerText = "🟢 Auto ON";
-        interval = setInterval(fetchConfigs, 30000);
-    }else{
+    if(autoInterval){
+        clearInterval(autoInterval);
+        autoInterval = null;
         btn.innerText = "🔴 Auto OFF";
-        clearInterval(interval);
+    }else{
+        autoInterval = setInterval(fetchConfigs, 15000);
+        btn.innerText = "🟢 Auto ON";
     }
 }
 
-// اجرا
+// اجرای اولیه
 fetchConfigs();
+updateTime();
