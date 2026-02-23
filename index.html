@@ -64,10 +64,17 @@ button{
     background:#06d6a0;
 }
 
-.footer{
-    margin:20px;
-    font-size:14px;
-    opacity:0.8;
+/* 🔥 دکمه تلگرام */
+.telegram-btn{
+    display:block;
+    width:85%;
+    margin:30px auto;
+    padding:15px;
+    border-radius:12px;
+    background:#229ED9;
+    color:white;
+    font-size:18px;
+    text-decoration:none;
 }
 </style>
 </head>
@@ -84,11 +91,10 @@ button{
 
 <div id="countries">در حال دریافت...</div>
 
-<div class="footer">
-    <a href="https://t.me/V2raying_config" target="_blank" style="color:#3a86ff;text-decoration:none;">
-        📢 تلگرام ما
-    </a>
-</div>
+<!-- 🔥 دکمه تلگرام حرفه‌ای -->
+<a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
+    🚀 عضویت در کانال تلگرام
+</a>
 
 <script>
 let data = [];
@@ -122,7 +128,7 @@ async function loadConfigs(){
 
         originalData = JSON.parse(JSON.stringify(data));
 
-        updateTime();
+        updateTime(); // 👈 زمان واقعی دریافت
         showCountries();
 
     }catch(e){
@@ -131,8 +137,12 @@ async function loadConfigs(){
 }
 
 function updateTime(){
-    const now = new Date().toLocaleString("fa-IR", { timeZone: "Asia/Tehran" });
-    document.getElementById("lastUpdate").innerText = "🕒 آخرین آپدیت: " + now;
+    const now = new Date();
+    const time = now.toLocaleTimeString("fa-IR");
+    const date = now.toLocaleDateString("fa-IR");
+
+    document.getElementById("lastUpdate").innerText =
+        "🕒 آخرین آپدیت کانفیگ: " + date + " - " + time;
 }
 
 function showCountries(){
