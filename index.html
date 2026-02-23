@@ -1,137 +1,186 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V2Ray Configs</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2Ray Configs</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+  color: white;
+  text-align: center;
+}
+
+/* کانتینر */
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 15px;
+}
+
+/* عنوان */
+h1 {
+  font-size: 28px;
+  margin-top: 20px;
+}
+
+/* سرچ */
+.search {
+  width: 90%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* دکمه‌ها */
+.btn {
+  margin: 10px 5px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.update { background: #3498db; color: white; }
+.toggle { background: #f1c40f; }
+
+/* تاریخ */
+.time {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* کارت کشور */
+.country {
+  background: linear-gradient(45deg, #6a11cb, #ff7e5f);
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+/* عنوان کشور */
+.country h2 {
+  margin-bottom: 10px;
+}
+
+/* کارت کانفیگ */
+.config {
+  background: #2f2f3f;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 15px;
+  text-align: left;
+  direction: ltr;
+  font-size: 12px;
+  position: relative;
+}
+
+/* دکمه کپی */
+.copy-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background: linear-gradient(45deg,#ff7e5f,#6a11cb);
+  color: white;
+  cursor: pointer;
+}
+
+/* تلگرام */
+.telegram {
+  margin-top: 30px;
+  display: inline-block;
+  background: #0088cc;
+  padding: 12px 20px;
+  border-radius: 25px;
+  color: white;
+  text-decoration: none;
+}
+</style>
+
 </head>
 
 <body>
 
-<header class="header">
-  <h1>🌐 کانفیگ‌های V2Ray</h1>
+<div class="container">
 
-  <div class="top-bar">
-    <input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
+<h1>🌐 V2Ray کانفیگ‌ها</h1>
 
-    <div class="controls">
-      <button id="darkToggle">🌙</button>
-      <button id="updateBtn">🔄 آپدیت</button>
-      <label class="switch">
-        <input type="checkbox" id="autoUpdate">
-        <span>آپدیت خودکار</span>
-      </label>
-    </div>
-  </div>
+<input class="search" placeholder="🔍 جستجو کشور یا کانفیگ...">
 
-  <div class="info">
-    <span id="time"></span>
-  </div>
-</header>
+<br>
 
-<main class="container">
+<button class="btn update">🔄 آپدیت</button>
+<button class="btn toggle">🌙</button>
 
-  <!-- 🇺🇸 آمریکا -->
-  <section class="country">
-    <h2>🇺🇸 آمریکا (<span id="usCount">0</span>)</h2>
-    <div class="configs" id="usConfigs"></div>
-  </section>
+<div class="time" id="time"></div>
 
-  <!-- 🇩🇪 آلمان -->
-  <section class="country">
-    <h2>🇩🇪 آلمان (<span id="deCount">0</span>)</h2>
-    <div class="configs" id="deConfigs"></div>
-  </section>
+<!-- آمریکا -->
+<div class="country">
+<h2>🇺🇸 آمریکا (2)</h2>
 
-</main>
+<div class="config">
+config-us-1
+<button class="copy-btn" onclick="copy(this)">کپی</button>
+</div>
+
+<div class="config">
+config-us-2
+<button class="copy-btn" onclick="copy(this)">کپی</button>
+</div>
+
+</div>
+
+<!-- آلمان -->
+<div class="country">
+<h2>🇩🇪 آلمان (2)</h2>
+
+<div class="config">
+config-de-1
+<button class="copy-btn" onclick="copy(this)">کپی</button>
+</div>
+
+<div class="config">
+config-de-2
+<button class="copy-btn" onclick="copy(this)">کپی</button>
+</div>
+
+</div>
 
 <!-- تلگرام -->
-<footer class="footer">
-  <a href="https://t.me/V2raying_config" target="_blank" class="telegram">
-    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
-    کانال تلگرام
-  </a>
-</footer>
+<a class="telegram" href="https://t.me/V2raying_config">
+📢 کانال تلگرام
+</a>
+
+</div>
 
 <script>
-const usConfigs = [
-  "config-us-1",
-  "config-us-2"
-];
-
-const deConfigs = [
-  "config-de-1",
-  "config-de-2"
-];
-
-function renderConfigs() {
-  const usBox = document.getElementById("usConfigs");
-  const deBox = document.getElementById("deConfigs");
-
-  usBox.innerHTML = "";
-  deBox.innerHTML = "";
-
-  usConfigs.forEach(c => {
-    usBox.innerHTML += createCard(c);
-  });
-
-  deConfigs.forEach(c => {
-    deBox.innerHTML += createCard(c);
-  });
-
-  document.getElementById("usCount").innerText = usConfigs.length;
-  document.getElementById("deCount").innerText = deConfigs.length;
-}
-
-function createCard(config) {
-  return `
-    <div class="card">
-      <p>${config}</p>
-      <button onclick="copyConfig('${config}')">📋 کپی</button>
-    </div>
-  `;
-}
-
-function copyConfig(text) {
+// کپی
+function copy(btn){
+  const text = btn.parentElement.innerText.replace("کپی","");
   navigator.clipboard.writeText(text);
-  alert("کپی شد ✅");
+  btn.innerText = "✔";
+  setTimeout(()=>btn.innerText="کپی",1000);
 }
-
-// سرچ
-document.getElementById("search").addEventListener("input", function() {
-  const value = this.value.toLowerCase();
-  document.querySelectorAll(".card").forEach(card => {
-    card.style.display = card.innerText.toLowerCase().includes(value) ? "block" : "none";
-  });
-});
-
-// دارک مود
-document.getElementById("darkToggle").onclick = () => {
-  document.body.classList.toggle("dark");
-};
 
 // ساعت ایران
-function updateTime() {
-  const now = new Date().toLocaleString("fa-IR", { timeZone: "Asia/Tehran" });
-  document.getElementById("time").innerText = "🕒 " + now;
+function updateTime(){
+  const now = new Date();
+  document.getElementById("time").innerText =
+  "🕒 " + now.toLocaleString("fa-IR");
 }
-setInterval(updateTime, 1000);
+
+setInterval(updateTime,1000);
 updateTime();
-
-// دکمه آپدیت
-document.getElementById("updateBtn").onclick = () => {
-  renderConfigs();
-};
-
-// آپدیت خودکار
-setInterval(() => {
-  if (document.getElementById("autoUpdate").checked) {
-    renderConfigs();
-  }
-}, 10000);
-
-renderConfigs();
 </script>
 
 </body>
