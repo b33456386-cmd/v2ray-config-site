@@ -1,103 +1,132 @@
-let allConfigs = [];
+const app = document.getElementById("app");
+const lastUpdate = document.getElementById("lastUpdate");
+const searchInput = document.getElementById("search");
+const autoBtn = document.getElementById("autoBtn");
+
+let allConfigs = {};
 let autoInterval = null;
 
-const API_URL = "generate.json"; // اگر لینک داری جایگزین کن
+/* لودینگ */
+function showLoading() {
+    app.innerHTML = "<p style='text-align:center'>⏳ در حال دریافت کانفیگ...</p>";
+}
 
-async function fetchData() {
+/* گرفتن کانفیگ */
+async function fetchConfigs() {
+    showLoading();
+
     try {
-        const res = await fetch(API_URL + "?t=" + Date.now());
-        const data = await res.json();
+        const res = await fetch("https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt");
+        const text = await res.text();
 
-        allConfigs = data;
+        const lines = text.split("\n").filter(x => x.trim());
 
-        render(data);
-        updateTime();
+        allConfigs = {
+            "🇩🇪 آلمان": [],
+            "🇺🇸 آمریکا": []
+        };
+
+        lines.forEach(line => {
+            if (line.includes("DE") || line.toLowerCase().includes("germany")) {
+                allConfigs["🇩🇪 آلمان"].push(line);
+            }
+            if (line.includes("US") || line.toLowerCase().includes("united states")) {
+                allConfigs["🇺🇸 آمریکا"].push(line);
+            }
+        });
+
+        render(allConfigs);
+
+        const now = new Date().toLocaleString("fa-IR");
+        lastUpdate.innerText = "آخرین آپدیت: " + now;
 
     } catch (e) {
-        document.getElementById("usList").innerHTML = "❌ خطا";
-        document.getElementById("deList").innerHTML = "";
+        app.innerHTML = "❌ خطا در دریافت دیتا";
     }
 }
 
-function render(list) {
+/* نمایش */
+function render(data) {
+    app.innerHTML = "";
 
-    let us = [];
-    let de = [];
+    Object.keys(data).forEach(country => {
+        if (data[country].length === 0) return;
 
-    list.forEach(item => {
+        const box = document.createElement("div");
+        box.className = "country-box";
 
-        const text = JSON.stringify(item).toLowerCase();
+        const title = document.createElement("h2");
+        title.innerText = country + " (" + data[country].length + ")";
+        box.appendChild(title);
 
-        if (text.includes("united") || text.includes("us")) {
-            us.push(item);
-        } else if (text.includes("germany")) {
-            de.push(item);
+        data[country].forEach(cfg => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const pre = document.createElement("pre");
+            pre.innerText = cfg;
+
+            const btn = document.createElement("button");
+            btn.innerText = "📋 کپی";
+            btn.onclick = () => copyConfig(cfg, btn);
+
+            card.appendChild(pre);
+            card.appendChild(btn);
+            box.appendChild(card);
+        });
+
+        app.appendChild(box);
+    });
+}
+
+/* کپی حرفه‌ای */
+function copyConfig(text, btn) {
+    navigator.clipboard.writeText(text);
+
+    const old = btn.innerText;
+    btn.innerText = "✅ کپی شد";
+    btn.style.background = "green";
+
+    setTimeout(() => {
+        btn.innerText = old;
+        btn.style.background = "";
+    }, 1500);
+}
+
+/* سرچ */
+searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+
+    const filtered = {};
+
+    Object.keys(allConfigs).forEach(country => {
+        const match = allConfigs[country].filter(cfg =>
+            cfg.toLowerCase().includes(value)
+        );
+        if (match.length > 0) {
+            filtered[country] = match;
         }
     });
-
-    renderList("usList", us);
-    renderList("deList", de);
-
-    document.getElementById("usCount").innerText = us.length;
-    document.getElementById("deCount").innerText = de.length;
-}
-
-function renderList(id, list) {
-    const el = document.getElementById(id);
-    el.innerHTML = "";
-
-    list.forEach(i => {
-        const config = i.config || i || "";
-
-        el.innerHTML += `
-        <div class="card">
-            <pre>${config}</pre>
-            <button onclick="copyText(\`${config}\`)">کپی</button>
-        </div>
-        `;
-    });
-}
-
-function copyText(text) {
-    navigator.clipboard.writeText(text);
-    alert("کپی شد ✅");
-}
-
-function updateTime() {
-    const now = new Date().toLocaleString("fa-IR", {
-        timeZone: "Asia/Tehran"
-    });
-
-    document.getElementById("lastUpdate").innerText =
-        "آخرین آپدیت: " + now;
-}
-
-function manualUpdate() {
-    fetchData();
-}
-
-function toggleAuto() {
-    const btn = document.getElementById("autoBtn");
-
-    if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-        btn.innerText = "🔴 Auto OFF";
-    } else {
-        autoInterval = setInterval(fetchData, 10000);
-        btn.innerText = "🟢 Auto ON";
-    }
-}
-
-// سرچ
-document.getElementById("search").addEventListener("input", e => {
-    const val = e.target.value.toLowerCase();
-
-    const filtered = allConfigs.filter(i =>
-        JSON.stringify(i).toLowerCase().includes(val)
-    );
 
     render(filtered);
 });
 
-fetchData();
+/* آپدیت دستی */
+function manualUpdate() {
+    fetchConfigs();
+}
+
+/* اتو آپدیت */
+function toggleAuto() {
+    if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+        autoBtn.innerText = "🔴 Auto OFF";
+    } else {
+        autoInterval = setInterval(fetchConfigs, 30000);
+        autoBtn.innerText = "🟢 Auto ON";
+    }
+}
+
+/* شروع */
+fetchConfigs();
