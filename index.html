@@ -1,163 +1,152 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>NovaConfig</title>
 
 <style>
-
 body {
-    margin: 0;
     font-family: sans-serif;
-    background: #0f172a;
+    background: linear-gradient(135deg,#1e1e2f,#2a2a40);
     color: white;
     text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-    max-width: 500px;
-    margin: auto;
-    padding: 15px;
+h1 {
+    margin-top: 20px;
+    font-size: 28px;
 }
 
-/* کشور */
-.country {
-    background: linear-gradient(45deg, #6366f1, #f97316);
-    padding: 15px;
-    border-radius: 15px;
-    margin: 10px 0;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-/* کارت کانفیگ */
-.card {
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 15px;
-    margin: 10px 0;
-}
-
-/* دکمه */
-.btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 10px;
+#lastUpdate {
     margin-top: 10px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+input {
+    width: 80%;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    margin-top: 15px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(45deg,#ff7a18,#ff3d3d);
+    color: white;
+    font-size: 16px;
+}
+
+.country {
+    margin: 20px;
+    padding: 15px;
+    border-radius: 20px;
+    background: linear-gradient(45deg,#6a11cb,#2575fc);
     cursor: pointer;
 }
 
-.copy-btn {
-    background: orange;
-    color: white;
-}
-
-.back-btn {
-    background: #6366f1;
-    color: white;
-    margin-bottom: 10px;
-}
-
-/* تلگرام */
-.telegram-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-
-    width: 90%;
-    margin: 20px auto;
-
-    padding: 14px;
+.configBox {
+    background: #2f2f3f;
+    margin: 10px;
+    padding: 15px;
     border-radius: 15px;
-
-    text-decoration: none;
-    color: white;
-
-    background: linear-gradient(45deg, #0088cc, #00c6ff);
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
 <h1>🌐 NovaConfig</h1>
 
-<!-- لیست کشورها -->
-<div id="countries"></div>
+<div id="lastUpdate"></div>
 
-<!-- صفحه داخل کشور -->
-<div id="configs" style="display:none;"></div>
+<input type="text" placeholder="جستجو کشور یا کانفیگ..." id="search">
 
-<!-- تلگرام -->
-<a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
-📡 کانال تلگرام
-</a>
+<br>
 
-</div>
+<button onclick="loadConfigs()">🔄 بارگذاری مجدد</button>
+
+<div id="app"></div>
 
 <script>
 
+// ⏰ ساعت ایران
+function updateTime(){
+    const now = new Date();
+
+    const iranTime = now.toLocaleString("fa-IR", {
+        timeZone: "Asia/Tehran",
+        hour: "2-digit",
+        minute: "2-digit",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    });
+
+    document.getElementById("lastUpdate").innerText =
+        "آخرین آپدیت: " + iranTime + " ⏰";
+}
+
+updateTime();
+
+// دیتا نمونه (بعدا از generate.json میاد)
 const data = {
-    us: {
-        name: "🇺🇸 آمریکا",
-        configs: ["config-us-1", "config-us-2"]
-    },
-    de: {
-        name: "🇩🇪 آلمان",
-        configs: ["config-de-1", "config-de-2"]
-    }
+    "آمریکا": ["config-us-1","config-us-2"],
+    "آلمان": ["config-de-1","config-de-2"]
 };
 
-function copy(text){
+function loadConfigs(){
+    const app = document.getElementById("app");
+    app.innerHTML = "";
+
+    for(let country in data){
+        let div = document.createElement("div");
+        div.className = "country";
+        div.innerText = country + " (" + data[country].length + ")";
+        
+        div.onclick = ()=>{
+            showConfigs(country);
+        };
+
+        app.appendChild(div);
+    }
+}
+
+function showConfigs(country){
+    const app = document.getElementById("app");
+    app.innerHTML = `<h2>${country}</h2>`;
+
+    data[country].forEach(cfg=>{
+        let box = document.createElement("div");
+        box.className = "configBox";
+
+        box.innerHTML = `
+        <p>${cfg}</p>
+        <button onclick="copyConfig('${cfg}')">📋 کپی</button>
+        `;
+
+        app.appendChild(box);
+    });
+
+    let back = document.createElement("button");
+    back.innerText = "🔙 بازگشت";
+    back.onclick = loadConfigs;
+    app.appendChild(back);
+}
+
+function copyConfig(text){
     navigator.clipboard.writeText(text);
     alert("کپی شد ✅");
 }
 
-// نمایش کشورها
-function showCountries(){
-    let html = "";
-    for(let key in data){
-        html += `
-        <div class="country" onclick="openCountry('${key}')">
-            ${data[key].name} (${data[key].configs.length})
-        </div>`;
-    }
-    document.getElementById("countries").innerHTML = html;
-}
-
-// ورود به کشور
-function openCountry(key){
-
-    document.getElementById("countries").style.display = "none";
-    document.getElementById("configs").style.display = "block";
-
-    let html = `<button class="btn back-btn" onclick="back()">🔙 بازگشت</button>`;
-    html += `<h2>${data[key].name}</h2>`;
-
-    data[key].configs.forEach(c=>{
-        html += `
-        <div class="card">
-            <p>${c}</p>
-            <button class="btn copy-btn" onclick="copy('${c}')">کپی</button>
-        </div>`;
-    });
-
-    document.getElementById("configs").innerHTML = html;
-}
-
-// برگشت
-function back(){
-    document.getElementById("configs").style.display = "none";
-    document.getElementById("countries").style.display = "block";
-}
-
-showCountries();
+loadConfigs();
 
 </script>
 
