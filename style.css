@@ -1,86 +1,135 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    background: linear-gradient(135deg, #dfe9f3, #ffffff);
-    direction: rtl;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: white;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 900px;
     margin: auto;
-    padding: 15px;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #22c55e, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#lastUpdate {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+    opacity: 0.8;
 }
 
 /* سرچ */
 #search {
     width: 100%;
     padding: 14px;
-    border-radius: 20px;
+    border-radius: 14px;
     border: none;
     margin-bottom: 15px;
     font-size: 16px;
-    outline: none;
 }
 
 /* دکمه‌ها */
 .controls {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .controls button {
     flex: 1;
-    padding: 12px;
+    padding: 14px;
     border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    color: white;
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* آپدیت */
-#lastUpdate {
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 14px;
+.controls button:first-child {
+    background: linear-gradient(45deg, #06b6d4, #22c55e);
+    color: white;
 }
 
-/* کشورها */
-.country {
-    background: linear-gradient(45deg, #ff7e5f, #feb47b);
-    margin: 10px 0;
-    padding: 18px;
-    border-radius: 25px;
-    text-align: center;
-    font-size: 18px;
+#autoBtn {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
     color: white;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* کانفیگ باکس */
-.configBox {
-    background: #3a3a3a;
-    color: white;
+.controls button:hover {
+    transform: scale(1.05);
+}
+
+/* کشور */
+.country-box {
+    margin-bottom: 25px;
     padding: 15px;
-    margin: 10px 0;
-    border-radius: 15px;
-    position: relative;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
 }
 
-.configBox p {
+.country-box h2 {
+    margin-bottom: 15px;
+}
+
+/* کارت کانفیگ */
+.card {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    animation: fadeIn 0.4s ease;
+}
+
+.card pre {
+    white-space: pre-wrap;
+    word-break: break-all;
     font-size: 13px;
 }
 
-/* دکمه کپی */
-.configBox button {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
+.card button {
+    margin-top: 10px;
+    padding: 8px 14px;
     border: none;
-    padding: 8px 12px;
     border-radius: 10px;
-    background: linear-gradient(45deg, #ff7e5f, #feb47b);
+    background: linear-gradient(45deg, #22c55e, #06b6d4);
     color: white;
+    cursor: pointer;
 }
+
+/* انیمیشن */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* فوتر */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #020617;
+    text-align: center;
+    padding: 12px;
+}
+
+.footer a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 16px;
+    }
