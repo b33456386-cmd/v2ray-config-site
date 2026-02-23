@@ -1,73 +1,25 @@
-<!DOCTYPE html><html lang="fa">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>کانفیگ ها</title><style>
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:#0b132b;
-    color:#fff;
-    direction: rtl;
-}
-.container{
-    padding:15px;
-    max-width:500px;
-    margin:auto;
-}
-h1{text-align:center;}
-
-input{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    margin-bottom:10px;
-    color:#fff;
-}
-
-.update{background:linear-gradient(45deg,#00c6ff,#0072ff);}
-.country{background:linear-gradient(45deg,#ff7e5f,#feb47b);}
-.telegram{background:linear-gradient(45deg,#0088cc,#00aced);}
-.card{
-    display:flex;
-    justify-content:space-between;
-    background:#1c2541;
-    margin:8px 0;
-    padding:10px;
-    border-radius:15px;
-    font-size:12px;
-}
-.copy{background:linear-gradient(45deg,#7f00ff,#e100ff);}
-
-.list{
-    max-height:0;
-    overflow:hidden;
-    transition:0.4s;
-}
-.list.open{max-height:1000px;}
-</style></head><body><div class="container">
-<h1>🌍 کانفیگ ها</h1><button class="telegram" onclick="window.open('https://t.me/V2raying_config')">
-📢 کانال تلگرام
-</button><input id="search" placeholder="🔍 جستجو..." oninput="searchConfigs()"><button class="update" onclick="loadConfigs()">🔄 آپدیت</button>
-
-<div id="lastUpdate"></div>
-<div id="countries"></div>
-</div><script>
+<script>
 
 let data=[];
 let opened=null;
 
 function getTime(){
 return new Date().toLocaleTimeString("fa-IR",{timeZone:"Asia/Tehran"});
+}
+
+// کپی سازگار با همه گوشی‌ها
+function copyText(text){
+if(navigator.clipboard){
+navigator.clipboard.writeText(text);
+}else{
+let t=document.createElement("textarea");
+t.value=text;
+document.body.appendChild(t);
+t.select();
+document.execCommand("copy");
+document.body.removeChild(t);
+}
+alert("کپی شد ✅");
 }
 
 function safeDecode(t){
@@ -116,16 +68,19 @@ document.getElementById("lastUpdate").innerText="آخرین آپدیت: "+getTim
 show();
 
 }catch(e){
-document.getElementById("countries").innerHTML="❌ خطا";
+document.getElementById("countries").innerHTML="❌ خطا در دریافت";
 console.log(e);
 }
 }
 
-function show(){
+function show(filteredData=null){
+
 let div=document.getElementById("countries");
 div.innerHTML="";
 
-data.forEach(c=>{
+let listData = filteredData || data;
+
+listData.forEach(c=>{
 let wrap=document.createElement("div");
 
 let btn=document.createElement("button");
@@ -141,12 +96,14 @@ list.classList.toggle("open");
 opened=list;
 };
 
+// کپی همه
 let allBtn=document.createElement("button");
 allBtn.className="update";
 allBtn.innerText="📋 کپی همه";
-allBtn.onclick=()=>navigator.clipboard.writeText(c.configs.join("\n"));
+allBtn.onclick=()=>copyText(c.configs.join("\n"));
 list.appendChild(allBtn);
 
+// هر کانفیگ
 c.configs.forEach(cfg=>{
 let card=document.createElement("div");
 card.className="card";
@@ -157,7 +114,7 @@ t.innerText=cfg;
 let copy=document.createElement("button");
 copy.className="copy";
 copy.innerText="کپی";
-copy.onclick=()=>navigator.clipboard.writeText(cfg);
+copy.onclick=()=>copyText(cfg);
 
 card.appendChild(t);
 card.appendChild(copy);
@@ -170,14 +127,36 @@ div.appendChild(wrap);
 });
 }
 
+// جستجوی حرفه‌ای (کشور + کانفیگ)
 function searchConfigs(){
+
 let v=document.getElementById("search").value.toLowerCase();
-document.querySelectorAll("#countries > div").forEach(w=>{
-w.style.display=w.innerText.toLowerCase().includes(v)?"block":"none";
-});
+
+if(!v){
+show();
+return;
+}
+
+let result = data.map(c=>{
+
+// اگر اسم کشور مچ شد → همه رو نشون بده
+if(c.name.toLowerCase().includes(v)){
+return c;
+}
+
+// فیلتر کانفیگ‌ها
+let filtered = c.configs.filter(cfg=>cfg.toLowerCase().includes(v));
+
+return {
+name:c.name,
+configs:filtered
+};
+
+}).filter(c=>c.configs.length>0);
+
+show(result);
 }
 
 loadConfigs();
 
-</script></body>
-</html>
+</script>
