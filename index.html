@@ -38,6 +38,13 @@ button{
     border-radius:10px;
     background:#3a86ff;
     color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.85;
+    transform:scale(1.03);
+    transition:0.2s;
 }
 
 .toggle-theme{
@@ -64,7 +71,7 @@ button{
 
 .guide.open{
     padding:15px;
-    max-height:300px;
+    max-height:500px;
 }
 
 .box{
@@ -119,12 +126,24 @@ body.light .config{background:#eee;}
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
-📘 آموزش:<br>
-1️⃣ آپدیت بزن<br>
-2️⃣ کشور انتخاب کن<br>
-3️⃣ نمایش کانفیگ‌ها<br>
-4️⃣ کپی کن<br>
-⚡ هر ۳۰ دقیقه آپدیت
+📘 آموزش کامل استفاده:<br><br>
+
+1️⃣ روی "آپدیت" بزن تا جدیدترین کانفیگ‌ها دریافت شود<br><br>
+
+2️⃣ کشور مورد نظر (🇺🇸 آمریکا یا 🇩🇪 آلمان) را انتخاب کن<br><br>
+
+3️⃣ روی "📂 نمایش کانفیگ‌ها" بزن<br><br>
+
+4️⃣ یکی از کانفیگ‌ها را کپی کن<br><br>
+
+5️⃣ وارد یکی از این برنامه‌ها شو و Import کن:<br>
+- V2RayNG (اندروید)<br>
+- V2RayN (ویندوز)<br>
+- Streisand (آیفون)<br><br>
+
+6️⃣ یا روی "📡 سابسکریپشن" بزن تا همه کانفیگ‌ها یکجا اضافه شود<br><br>
+
+⚡ اگر وصل نشد، چند کانفیگ مختلف تست کن
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchData()">
@@ -152,21 +171,6 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
-// 🔥 تشخیص کشور ساده (درست و پر تعداد)
-function detectCountry(line){
-    const l = line.toLowerCase();
-
-    if(l.includes("us")){
-        return "🇺🇸 آمریکا";
-    }
-
-    if(l.includes("de")){
-        return "🇩🇪 آلمان";
-    }
-
-    return null;
-}
-
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
@@ -183,8 +187,10 @@ async function loadConfigs(){
         let germany = [];
 
         lines.forEach(line=>{
-            if(line.toLowerCase().includes("us")) usa.push(line);
-            if(line.toLowerCase().includes("de")) germany.push(line);
+            const l = line.toLowerCase();
+
+            if(l.includes("us")) usa.push(line);
+            if(l.includes("de")) germany.push(line);
         });
 
         data = [
@@ -200,20 +206,32 @@ async function loadConfigs(){
     }
 }
 
-// ⏱ هر دقیقه آپدیت متن زمان
 setInterval(updateClock,60000);
 
 function updateClock(){
-    if(!lastUpdateTime) return;
+    const el = document.getElementById("lastUpdate");
 
-    const diff = Math.floor((new Date() - lastUpdateTime)/1000);
+    if(!lastUpdateTime){
+        el.innerText="⏳ در حال دریافت...";
+        return;
+    }
+
+    const now = new Date();
+    const diff = Math.floor((now - lastUpdateTime)/1000);
 
     let t="";
-    if(diff<60) t="الان";
-    else if(diff<3600) t=Math.floor(diff/60)+" دقیقه پیش";
-    else t=Math.floor(diff/3600)+" ساعت پیش";
 
-    document.getElementById("lastUpdate").innerText="🕒 آخرین آپدیت: "+t;
+    if(diff < 10){
+        t = "چند لحظه پیش";
+    }else if(diff < 60){
+        t = diff + " ثانیه پیش";
+    }else if(diff < 3600){
+        t = Math.floor(diff/60) + " دقیقه پیش";
+    }else{
+        t = Math.floor(diff/3600) + " ساعت پیش";
+    }
+
+    el.innerText = "🕒 آخرین آپدیت: " + t;
 }
 
 function showCountries(){
@@ -224,7 +242,7 @@ function showCountries(){
         <div class="box">
             <h3>${c.name} (${c.configs.length})</h3>
 
-            <button onclick="toggleConfigs(${i})">نمایش</button>
+            <button onclick="toggleConfigs(${i})">📂 نمایش کانفیگ‌ها</button>
             <button class="sub" onclick="copySub(${i})">📡 سابسکریپشن</button>
 
             <div id="list${i}"></div>
@@ -275,7 +293,7 @@ function searchData(){
     }
 
     data=originalData.map(c=>{
-        if(c.name.includes(v)) return c;
+        if(c.name.toLowerCase().includes(v)) return c;
 
         return{
             name:c.name,
