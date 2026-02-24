@@ -121,7 +121,7 @@ button{
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
-<p id="lastUpdate">🕒 آخرین آپدیت: -</p>
+<p id="lastUpdate">⏳ آخرین آپدیت: -</p>
 
 <div id="countries">در حال دریافت...</div>
 
@@ -135,18 +135,17 @@ let originalData = [];
 let lastUpdateTime = null;
 
 function toggleGuide(){
-    const box = document.getElementById("guideBox");
-    box.classList.toggle("open");
+    document.getElementById("guideBox").classList.toggle("open");
 }
 
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(l.includes("united states") || l.includes("us") || l.includes("🇺🇸")){
+    if(l.includes("🇺🇸") || l.includes("united states") || l.includes("us")){
         return "🇺🇸 آمریکا";
     }
 
-    if(l.includes("germany") || l.includes("de") || l.includes("🇩🇪")){
+    if(l.includes("🇩🇪") || l.includes("germany") || l.includes("de")){
         return "🇩🇪 آلمان";
     }
 
@@ -160,12 +159,11 @@ async function loadConfigs(){
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
         const lastModified = res.headers.get("Last-Modified");
-
         if(lastModified){
             lastUpdateTime = new Date(lastModified);
-        } else {
-            lastUpdateTime = new Date(); // fallback
         }
+
+        updateClock();
 
         const text = await res.text();
         const lines = text.split("\n");
@@ -190,8 +188,6 @@ async function loadConfigs(){
         originalData = JSON.parse(JSON.stringify(data));
         showCountries();
 
-        updateClock();
-
     }catch(e){
         document.getElementById("countries").innerHTML="❌ خطا";
     }
@@ -199,7 +195,7 @@ async function loadConfigs(){
 
 function updateClock(){
     if(!lastUpdateTime){
-        document.getElementById("lastUpdate").innerText = "🕒 آخرین آپدیت: الان";
+        document.getElementById("lastUpdate").innerText = "⏳ آخرین آپدیت: نامشخص";
         return;
     }
 
@@ -269,24 +265,54 @@ function copySub(index){
     alert("📡 کپی شد");
 }
 
+/* 🔥 جستجوی حرفه‌ای */
 function searchData(){
-    let value = document.getElementById("search").value.toLowerCase();
+    let value = document.getElementById("search").value.toLowerCase().trim();
+
+    if(value === ""){
+        data = JSON.parse(JSON.stringify(originalData));
+        showCountries();
+        return;
+    }
 
     data = originalData.map(country=>{
+        let matchCountry = false;
+
+        if(
+            (value.includes("آمریکا") || value.includes("us") || value.includes("united") || value.includes("🇺🇸")) 
+            && country.name.includes("آمریکا")
+        ){
+            matchCountry = true;
+        }
+
+        if(
+            (value.includes("آلمان") || value.includes("germany") || value.includes("de") || value.includes("🇩🇪")) 
+            && country.name.includes("آلمان")
+        ){
+            matchCountry = true;
+        }
+
+        let filteredConfigs = matchCountry
+            ? country.configs
+            : country.configs.filter(c => c.toLowerCase().includes(value));
+
         return {
             name: country.name,
-            configs: country.configs.filter(c => 
-                c.toLowerCase().includes(value) || country.name.toLowerCase().includes(value)
-            )
+            configs: filteredConfigs
         };
     });
+
+    const isEmpty = data.every(c => c.configs.length === 0);
+
+    if(isEmpty){
+        document.getElementById("countries").innerHTML = "❌ نتیجه‌ای پیدا نشد";
+        return;
+    }
 
     showCountries();
 }
 
 setInterval(loadConfigs, 1800000);
-setInterval(updateClock, 10000);
-
 loadConfigs();
 </script>
 
