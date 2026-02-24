@@ -106,13 +106,8 @@ async function loadConfigs(){
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
-        // ✅ گرفتن زمان واقعی آپدیت فایل
-        const lastModified = res.headers.get("Last-Modified");
-        if(lastModified){
-            lastUpdateTime = new Date(lastModified);
-        }
-
-        updateClock();
+        // ⏰ زمان آپدیت همین پنل
+        lastUpdateTime = new Date();
 
         const text = await res.text();
         const lines = text.split("\n");
@@ -147,6 +142,9 @@ async function loadConfigs(){
         originalData = JSON.parse(JSON.stringify(data));
         showCountries();
 
+        // ⬅️ این مهمه: بعد از لود، تایمر شروع بشه
+        updateClock();
+
     }catch(e){
         document.getElementById("countries").innerHTML="❌ خطا در دریافت";
     }
@@ -172,21 +170,27 @@ function updateClock(){
     let text = "";
 
     if(diff < 60){
-        text = "همین الان";
+        text = "الان";
     }
     else if(diff < 3600){
-        text = Math.floor(diff / 60) + " دقیقه پیش";
+        const min = Math.floor(diff / 60);
+        text = min + " دقیقه پیش";
     }
     else if(diff < 86400){
-        text = Math.floor(diff / 3600) + " ساعت پیش";
+        const hour = Math.floor(diff / 3600);
+        text = hour + " ساعت پیش";
     }
     else{
-        text = Math.floor(diff / 86400) + " روز پیش";
+        const day = Math.floor(diff / 86400);
+        text = day + " روز پیش";
     }
 
     document.getElementById("lastUpdate").innerText =
         "🕒 آخرین آپدیت: " + text;
 }
+
+// ⏱ هر ۱۰ ثانیه متن زمان آپدیت میشه (خیلی مهم)
+setInterval(updateClock, 10000);
 
 function showCountries(){
     let html="";
@@ -262,7 +266,7 @@ function searchData(){
     showCountries();
 }
 
-// ⏱ هر ۳۰ دقیقه
+// ⏱ هر ۳۰ دقیقه آپدیت
 setInterval(loadConfigs, 1800000);
 
 loadConfigs();
