@@ -160,8 +160,11 @@ async function loadConfigs(){
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
         const lastModified = res.headers.get("Last-Modified");
+
         if(lastModified){
             lastUpdateTime = new Date(lastModified);
+        }else{
+            lastUpdateTime = new Date();
         }
 
         updateClock();
@@ -214,18 +217,22 @@ function updateClock(){
 function showCountries(){
     let html="";
 
-    data.forEach((country,index)=>{
-        html+=`
-        <div class="box">
-            <h3>${country.name} (${country.configs.length})</h3>
+    if(data.every(c => c.configs.length === 0)){
+        html = "❌ نتیجه‌ای پیدا نشد";
+    }else{
+        data.forEach((country,index)=>{
+            html+=`
+            <div class="box">
+                <h3>${country.name} (${country.configs.length})</h3>
 
-            <button onclick="toggleConfigs(${index})">نمایش کانفیگ‌ها</button>
-            <button class="sub" onclick="copySub(${index})">📡 کپی سابسکریپشن</button>
+                <button onclick="toggleConfigs(${index})">نمایش کانفیگ‌ها</button>
+                <button class="sub" onclick="copySub(${index})">📡 کپی سابسکریپشن</button>
 
-            <div id="list${index}"></div>
-        </div>
-        `;
-    });
+                <div id="list${index}"></div>
+            </div>
+            `;
+        });
+    }
 
     document.getElementById("countries").innerHTML=html;
 }
@@ -263,49 +270,28 @@ function copySub(index){
     alert("📡 کپی شد");
 }
 
-/* 🔥 جستجوی درست‌شده */
 function searchData(){
-    let value = document.getElementById("search").value.toLowerCase().trim();
+    let value = document.getElementById("search").value.toLowerCase();
 
-    if(value === ""){
+    if(!value){
         data = JSON.parse(JSON.stringify(originalData));
         showCountries();
         return;
     }
 
-    let newData = [];
+    data = originalData.map(country=>{
+        if(country.name.toLowerCase().includes(value)){
+            return country;
+        }
 
-    originalData.forEach(country => {
-        let configs = [];
-
-        if(
-            country.name.toLowerCase().includes(value) ||
-            (value.includes("آمریکا") && country.name.includes("آمریکا")) ||
-            (value.includes("آلمان") && country.name.includes("آلمان")) ||
-            (value.includes("us") && country.name.includes("آمریکا")) ||
-            (value.includes("de") && country.name.includes("آلمان"))
-        ){
-            configs = country.configs;
-        }else{
-            configs = country.configs.filter(c => 
+        return {
+            name: country.name,
+            configs: country.configs.filter(c => 
                 c.toLowerCase().includes(value)
-            );
-        }
-
-        if(configs.length > 0){
-            newData.push({
-                name: country.name,
-                configs: configs
-            });
-        }
+            )
+        };
     });
 
-    if(newData.length === 0){
-        document.getElementById("countries").innerHTML = "❌ نتیجه‌ای پیدا نشد";
-        return;
-    }
-
-    data = newData;
     showCountries();
 }
 
