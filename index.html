@@ -8,16 +8,10 @@
 <style>
 body{
     font-family:tahoma;
-    background:#f5f5f5;
-    color:#222;
-    text-align:center;
-    margin:0;
-    transition:0.3s;
-}
-
-.dark{
     background:#0b132b;
     color:white;
+    text-align:center;
+    margin:0;
 }
 
 h1{margin:20px;}
@@ -42,28 +36,47 @@ button{
     color:white;
 }
 
+/* 🎯 دکمه راهنما */
+.guide-btn{
+    background:#ffbe0b;
+    color:black;
+}
+
+/* 📘 باکس راهنما */
+.guide{
+    background:#14213d;
+    margin:0 15px;
+    padding:0 15px;
+    border-radius:15px;
+    text-align:right;
+    font-size:14px;
+    line-height:2;
+
+    max-height:0;
+    overflow:hidden;
+    transition: all 0.4s ease;
+}
+
+/* وقتی باز شد */
+.guide.open{
+    padding:15px;
+    max-height:300px;
+}
+
 .box{
-    background:#e0e0e0;
+    background:#1c2541;
     margin:10px;
     padding:15px;
     border-radius:15px;
 }
 
-.dark .box{
-    background:#1c2541;
-}
-
 .config{
-    background:#dcdcdc;
+    background:#0f1b3d;
     margin:8px 0;
     padding:10px;
     border-radius:10px;
     font-size:12px;
     word-break:break-all;
-}
-
-.dark .config{
-    background:#0f1b3d;
 }
 
 .copy{
@@ -89,15 +102,6 @@ button{
     font-size:18px;
     text-decoration:none;
 }
-
-.toggle{
-    background:#222;
-}
-
-.dark .toggle{
-    background:#ddd;
-    color:black;
-}
 </style>
 </head>
 
@@ -105,9 +109,21 @@ button{
 
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
 
-<button class="toggle" onclick="toggleDark()">🌙 تغییر حالت</button>
+<!-- 🎯 دکمه راهنما -->
+<button class="guide-btn" onclick="toggleGuide()">📘 نمایش راهنما</button>
 
-<input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchData()">
+<!-- 📘 راهنما -->
+<div id="guideBox" class="guide">
+<b>📘 راهنمای استفاده:</b><br>
+1️⃣ روی «آپدیت» بزن<br>
+2️⃣ کشور رو انتخاب کن<br>
+3️⃣ «نمایش کانفیگ‌ها» رو بزن<br>
+4️⃣ روی «کپی» بزن<br>
+5️⃣ داخل VPN پیست کن<br>
+⚡ هر ۳۰ دقیقه آپدیت میشه
+</div>
+
+<input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchData()">
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
@@ -123,11 +139,26 @@ button{
 let data = [];
 let originalData = [];
 let lastUpdateTime = null;
-let lastCounts = { usa: 0, germany: 0 };
 
-// 🌙 دارک مود
-function toggleDark(){
-    document.body.classList.toggle("dark");
+/* 📘 باز و بسته کردن راهنما */
+function toggleGuide(){
+    const box = document.getElementById("guideBox");
+    box.classList.toggle("open");
+}
+
+/* 🌍 تشخیص کشور */
+function detectCountry(line){
+    const l = line.toLowerCase();
+
+    if(l.includes("🇺🇸") || l.includes("united states") || l.includes("us")){
+        return "🇺🇸 آمریکا";
+    }
+
+    if(l.includes("🇩🇪") || l.includes("germany") || l.includes("de")){
+        return "🇩🇪 آلمان";
+    }
+
+    return null;
 }
 
 async function loadConfigs(){
@@ -136,60 +167,41 @@ async function loadConfigs(){
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
-        // ⏰ زمان آپدیت واقعی (الان)
-        lastUpdateTime = new Date();
+        const lastModified = res.headers.get("Last-Modified");
+        if(lastModified){
+            lastUpdateTime = new Date(lastModified);
+        }
+
         updateClock();
 
         const text = await res.text();
         const lines = text.split("\n");
 
-        let usa = [];
-        let germany = [];
+        let grouped = {
+            "🇺🇸 آمریکا": [],
+            "🇩🇪 آلمان": []
+        };
 
         lines.forEach(line=>{
-            if(line.includes("US") || line.includes("United States")){
-                usa.push(line);
-            }
-            if(line.includes("DE") || line.includes("Germany")){
-                germany.push(line);
+            const country = detectCountry(line);
+            if(country){
+                grouped[country].push(line);
             }
         });
 
-        // 🚀 تشخیص کانفیگ جدید
-        if(lastCounts.usa !== 0){
-            if(usa.length > lastCounts.usa || germany.length > lastCounts.germany){
-                showNewBadge();
-            }
-        }
-
-        lastCounts.usa = usa.length;
-        lastCounts.germany = germany.length;
-
         data = [
-            {name:"🇺🇸 آمریکا", configs: usa.slice(0,10)},
-            {name:"🇩🇪 آلمان", configs: germany.slice(0,10)}
+            {name:"🇺🇸 آمریکا", configs: grouped["🇺🇸 آمریکا"].slice(0,10)},
+            {name:"🇩🇪 آلمان", configs: grouped["🇩🇪 آلمان"].slice(0,10)}
         ];
 
         originalData = JSON.parse(JSON.stringify(data));
         showCountries();
 
     }catch(e){
-        document.getElementById("countries").innerHTML="❌ خطا در دریافت";
+        document.getElementById("countries").innerHTML="❌ خطا";
     }
 }
 
-function showNewBadge(){
-    const el = document.getElementById("lastUpdate");
-    el.innerText = "🚀 کانفیگ جدید اضافه شد";
-    el.style.color = "#06d6a0";
-
-    setTimeout(()=>{
-        updateClock();
-        el.style.color = "";
-    }, 4000);
-}
-
-// ⏱ نمایش "چند دقیقه پیش"
 function updateClock(){
     if(!lastUpdateTime) return;
 
@@ -198,25 +210,14 @@ function updateClock(){
 
     let text = "";
 
-    if(diff < 60){
-        text = "الان";
-    }
-    else if(diff < 3600){
-        text = Math.floor(diff / 60) + " دقیقه پیش";
-    }
-    else if(diff < 86400){
-        text = Math.floor(diff / 3600) + " ساعت پیش";
-    }
-    else{
-        text = Math.floor(diff / 86400) + " روز پیش";
-    }
+    if(diff < 60) text = "الان";
+    else if(diff < 3600) text = Math.floor(diff/60)+" دقیقه پیش";
+    else if(diff < 86400) text = Math.floor(diff/3600)+" ساعت پیش";
+    else text = Math.floor(diff/86400)+" روز پیش";
 
     document.getElementById("lastUpdate").innerText =
         "🕒 آخرین آپدیت: " + text;
 }
-
-// ⏱ هر ۱ دقیقه متن رو آپدیت کنه
-setInterval(updateClock, 60000);
 
 function showCountries(){
     let html="";
@@ -226,13 +227,8 @@ function showCountries(){
         <div class="box">
             <h3>${country.name} (${country.configs.length})</h3>
 
-            <button onclick="toggleConfigs(${index})">
-                نمایش کانفیگ‌ها
-            </button>
-
-            <button class="sub" onclick="copySub(${index})">
-                📡 کپی سابسکریپشن
-            </button>
+            <button onclick="toggleConfigs(${index})">نمایش کانفیگ‌ها</button>
+            <button class="sub" onclick="copySub(${index})">📡 کپی سابسکریپشن</button>
 
             <div id="list${index}"></div>
         </div>
@@ -250,10 +246,9 @@ function toggleConfigs(index){
         return;
     }
 
-    let configs = data[index].configs;
     let html="";
 
-    configs.forEach(c=>{
+    data[index].configs.forEach(c=>{
         html+=`
         <div class="config">
             ${c}
@@ -272,9 +267,8 @@ function copyConfig(text){
 }
 
 function copySub(index){
-    let list = data[index].configs.join("\n");
-    navigator.clipboard.writeText(list);
-    alert("📡 سابسکریپشن کپی شد");
+    navigator.clipboard.writeText(data[index].configs.join("\n"));
+    alert("📡 کپی شد");
 }
 
 function searchData(){
@@ -292,9 +286,7 @@ function searchData(){
     showCountries();
 }
 
-// ⏱ هر ۳۰ دقیقه آپدیت
 setInterval(loadConfigs, 1800000);
-
 loadConfigs();
 </script>
 
