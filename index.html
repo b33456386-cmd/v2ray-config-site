@@ -135,7 +135,8 @@ let originalData = [];
 let lastUpdateTime = null;
 
 function toggleGuide(){
-    document.getElementById("guideBox").classList.toggle("open");
+    const box = document.getElementById("guideBox");
+    box.classList.toggle("open");
 }
 
 function detectCountry(line){
@@ -194,10 +195,7 @@ async function loadConfigs(){
 }
 
 function updateClock(){
-    if(!lastUpdateTime){
-        document.getElementById("lastUpdate").innerText = "⏳ آخرین آپدیت: نامشخص";
-        return;
-    }
+    if(!lastUpdateTime) return;
 
     const now = new Date();
     const diff = Math.floor((now - lastUpdateTime) / 1000);
@@ -265,7 +263,7 @@ function copySub(index){
     alert("📡 کپی شد");
 }
 
-/* 🔥 جستجوی حرفه‌ای */
+/* 🔥 جستجوی درست‌شده */
 function searchData(){
     let value = document.getElementById("search").value.toLowerCase().trim();
 
@@ -275,40 +273,39 @@ function searchData(){
         return;
     }
 
-    data = originalData.map(country=>{
-        let matchCountry = false;
+    let newData = [];
+
+    originalData.forEach(country => {
+        let configs = [];
 
         if(
-            (value.includes("آمریکا") || value.includes("us") || value.includes("united") || value.includes("🇺🇸")) 
-            && country.name.includes("آمریکا")
+            country.name.toLowerCase().includes(value) ||
+            (value.includes("آمریکا") && country.name.includes("آمریکا")) ||
+            (value.includes("آلمان") && country.name.includes("آلمان")) ||
+            (value.includes("us") && country.name.includes("آمریکا")) ||
+            (value.includes("de") && country.name.includes("آلمان"))
         ){
-            matchCountry = true;
+            configs = country.configs;
+        }else{
+            configs = country.configs.filter(c => 
+                c.toLowerCase().includes(value)
+            );
         }
 
-        if(
-            (value.includes("آلمان") || value.includes("germany") || value.includes("de") || value.includes("🇩🇪")) 
-            && country.name.includes("آلمان")
-        ){
-            matchCountry = true;
+        if(configs.length > 0){
+            newData.push({
+                name: country.name,
+                configs: configs
+            });
         }
-
-        let filteredConfigs = matchCountry
-            ? country.configs
-            : country.configs.filter(c => c.toLowerCase().includes(value));
-
-        return {
-            name: country.name,
-            configs: filteredConfigs
-        };
     });
 
-    const isEmpty = data.every(c => c.configs.length === 0);
-
-    if(isEmpty){
+    if(newData.length === 0){
         document.getElementById("countries").innerHTML = "❌ نتیجه‌ای پیدا نشد";
         return;
     }
 
+    data = newData;
     showCountries();
 }
 
