@@ -104,8 +104,18 @@ async function loadConfigs(){
 
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
-        const text = await res.text();
 
+        // ⬇️ زمان واقعی آپدیت فایل
+        const lastModified = res.headers.get("Last-Modified");
+        if(lastModified){
+            lastUpdateTime = new Date(lastModified);
+        } else {
+            lastUpdateTime = new Date();
+        }
+
+        updateClock();
+
+        const text = await res.text();
         const lines = text.split("\n");
 
         let usa = [];
@@ -126,8 +136,6 @@ async function loadConfigs(){
         ];
 
         originalData = JSON.parse(JSON.stringify(data));
-
-        updateTime();
         showCountries();
 
     }catch(e){
@@ -135,27 +143,16 @@ async function loadConfigs(){
     }
 }
 
-function updateTime(){
-    lastUpdateTime = new Date();
-    updateClock();
-}
-
-function getIranTime(date){
-    return date.toLocaleTimeString("fa-IR", {
-        timeZone: "Asia/Tehran",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    });
-}
-
 function updateClock(){
     if(!lastUpdateTime) return;
 
-    const iranTime = getIranTime(lastUpdateTime);
+    const time = lastUpdateTime.toLocaleTimeString("fa-IR", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت کانفیگ: " + iranTime;
+        "🕒 آخرین آپدیت کانفیگ: ساعت " + time;
 }
 
 function showCountries(){
@@ -232,6 +229,7 @@ function searchData(){
     showCountries();
 }
 
+// ⏱ هر ۳ ساعت آپدیت خودکار
 setInterval(loadConfigs, 10800000);
 
 loadConfigs();
