@@ -36,13 +36,11 @@ button{
     color:white;
 }
 
-/* 🎯 دکمه راهنما */
 .guide-btn{
     background:#ffbe0b;
     color:black;
 }
 
-/* 📘 باکس راهنما */
 .guide{
     background:#14213d;
     margin:0 15px;
@@ -51,13 +49,11 @@ button{
     text-align:right;
     font-size:14px;
     line-height:2;
-
     max-height:0;
     overflow:hidden;
     transition: all 0.4s ease;
 }
 
-/* وقتی باز شد */
 .guide.open{
     padding:15px;
     max-height:300px;
@@ -109,10 +105,8 @@ button{
 
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
 
-<!-- 🎯 دکمه راهنما -->
 <button class="guide-btn" onclick="toggleGuide()">📘 نمایش راهنما</button>
 
-<!-- 📘 راهنما -->
 <div id="guideBox" class="guide">
 <b>📘 راهنمای استفاده:</b><br>
 1️⃣ روی «آپدیت» بزن<br>
@@ -127,7 +121,7 @@ button{
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
-<p id="lastUpdate">⏳ آخرین آپدیت: -</p>
+<p id="lastUpdate">🕒 آخرین آپدیت: -</p>
 
 <div id="countries">در حال دریافت...</div>
 
@@ -140,21 +134,19 @@ let data = [];
 let originalData = [];
 let lastUpdateTime = null;
 
-/* 📘 باز و بسته کردن راهنما */
 function toggleGuide(){
     const box = document.getElementById("guideBox");
     box.classList.toggle("open");
 }
 
-/* 🌍 تشخیص کشور */
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(l.includes("🇺🇸") || l.includes("united states") || l.includes("us")){
+    if(l.includes("united states") || l.includes("us") || l.includes("🇺🇸")){
         return "🇺🇸 آمریکا";
     }
 
-    if(l.includes("🇩🇪") || l.includes("germany") || l.includes("de")){
+    if(l.includes("germany") || l.includes("de") || l.includes("🇩🇪")){
         return "🇩🇪 آلمان";
     }
 
@@ -168,11 +160,12 @@ async function loadConfigs(){
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
         const lastModified = res.headers.get("Last-Modified");
+
         if(lastModified){
             lastUpdateTime = new Date(lastModified);
+        } else {
+            lastUpdateTime = new Date(); // fallback
         }
-
-        updateClock();
 
         const text = await res.text();
         const lines = text.split("\n");
@@ -197,13 +190,18 @@ async function loadConfigs(){
         originalData = JSON.parse(JSON.stringify(data));
         showCountries();
 
+        updateClock();
+
     }catch(e){
         document.getElementById("countries").innerHTML="❌ خطا";
     }
 }
 
 function updateClock(){
-    if(!lastUpdateTime) return;
+    if(!lastUpdateTime){
+        document.getElementById("lastUpdate").innerText = "🕒 آخرین آپدیت: الان";
+        return;
+    }
 
     const now = new Date();
     const diff = Math.floor((now - lastUpdateTime) / 1000);
@@ -287,6 +285,8 @@ function searchData(){
 }
 
 setInterval(loadConfigs, 1800000);
+setInterval(updateClock, 10000);
+
 loadConfigs();
 </script>
 
