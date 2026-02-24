@@ -44,7 +44,6 @@ button{
 button:hover{
     opacity:0.85;
     transform:scale(1.03);
-    transition:0.2s;
 }
 
 .toggle-theme{
@@ -128,22 +127,17 @@ body.light .config{background:#eee;}
 <div id="guideBox" class="guide">
 📘 آموزش کامل استفاده:<br><br>
 
-1️⃣ روی "آپدیت" بزن تا جدیدترین کانفیگ‌ها دریافت شود<br><br>
+1️⃣ روی "آپدیت" بزن<br><br>
+2️⃣ کشور (🇺🇸 یا 🇩🇪) انتخاب کن<br><br>
+3️⃣ "نمایش کانفیگ‌ها"<br><br>
+4️⃣ کپی کن<br><br>
 
-2️⃣ کشور مورد نظر (🇺🇸 آمریکا یا 🇩🇪 آلمان) را انتخاب کن<br><br>
-
-3️⃣ روی "📂 نمایش کانفیگ‌ها" بزن<br><br>
-
-4️⃣ یکی از کانفیگ‌ها را کپی کن<br><br>
-
-5️⃣ وارد یکی از این برنامه‌ها شو و Import کن:<br>
+📱 برنامه‌ها:<br>
 - V2RayNG (اندروید)<br>
 - V2RayN (ویندوز)<br>
 - Streisand (آیفون)<br><br>
 
-6️⃣ یا روی "📡 سابسکریپشن" بزن تا همه کانفیگ‌ها یکجا اضافه شود<br><br>
-
-⚡ اگر وصل نشد، چند کانفیگ مختلف تست کن
+⚡ اگر وصل نشد چندتا تست کن
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchData()">
@@ -171,6 +165,39 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
+// 🔥 تشخیص حرفه‌ای کشور
+function detectCountry(line){
+    const l = line.toLowerCase();
+
+    if(
+        l.includes("🇺🇸") ||
+        l.includes("united states") ||
+        l.includes("america") ||
+        l.includes(" usa ") ||
+        l.includes("-us") ||
+        l.includes("_us") ||
+        l.includes(".us") ||
+        l.includes("us-")
+    ){
+        return "🇺🇸 آمریکا";
+    }
+
+    if(
+        l.includes("🇩🇪") ||
+        l.includes("germany") ||
+        l.includes("deutschland") ||
+        l.includes(" de ") ||
+        l.includes("-de") ||
+        l.includes("_de") ||
+        l.includes(".de") ||
+        l.includes("de-")
+    ){
+        return "🇩🇪 آلمان";
+    }
+
+    return null;
+}
+
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
@@ -187,10 +214,10 @@ async function loadConfigs(){
         let germany = [];
 
         lines.forEach(line=>{
-            const l = line.toLowerCase();
+            const country = detectCountry(line);
 
-            if(l.includes("us")) usa.push(line);
-            if(l.includes("de")) germany.push(line);
+            if(country === "🇺🇸 آمریکا") usa.push(line);
+            if(country === "🇩🇪 آلمان") germany.push(line);
         });
 
         data = [
@@ -216,22 +243,16 @@ function updateClock(){
         return;
     }
 
-    const now = new Date();
-    const diff = Math.floor((now - lastUpdateTime)/1000);
+    const diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
     let t="";
 
-    if(diff < 10){
-        t = "چند لحظه پیش";
-    }else if(diff < 60){
-        t = diff + " ثانیه پیش";
-    }else if(diff < 3600){
-        t = Math.floor(diff/60) + " دقیقه پیش";
-    }else{
-        t = Math.floor(diff/3600) + " ساعت پیش";
-    }
+    if(diff < 10) t="چند لحظه پیش";
+    else if(diff < 60) t=diff+" ثانیه پیش";
+    else if(diff < 3600) t=Math.floor(diff/60)+" دقیقه پیش";
+    else t=Math.floor(diff/3600)+" ساعت پیش";
 
-    el.innerText = "🕒 آخرین آپدیت: " + t;
+    el.innerText="🕒 آخرین آپدیت: "+t;
 }
 
 function showCountries(){
