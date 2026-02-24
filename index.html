@@ -12,6 +12,12 @@ body{
     color:white;
     text-align:center;
     margin:0;
+    transition:0.3s;
+}
+
+body.light{
+    background:#f5f5f5;
+    color:#111;
 }
 
 h1{margin:20px;}
@@ -34,6 +40,12 @@ button{
     font-size:16px;
     background:#3a86ff;
     color:white;
+}
+
+.toggle-theme{
+    width:auto;
+    padding:8px 15px;
+    background:#222;
 }
 
 .guide-btn{
@@ -66,6 +78,8 @@ button{
     border-radius:15px;
 }
 
+body.light .box{background:#fff;}
+
 .config{
     background:#0f1b3d;
     margin:8px 0;
@@ -75,6 +89,8 @@ button{
     word-break:break-all;
 }
 
+body.light .config{background:#eee;}
+
 .copy{
     margin-top:5px;
     background:#8338ec;
@@ -83,9 +99,7 @@ button{
     font-size:12px;
 }
 
-.sub{
-    background:#06d6a0;
-}
+.sub{background:#06d6a0;}
 
 .telegram-btn{
     display:block;
@@ -105,6 +119,8 @@ button{
 
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
 
+<button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
+
 <button class="guide-btn" onclick="toggleGuide()">📘 نمایش راهنما</button>
 
 <div id="guideBox" class="guide">
@@ -121,7 +137,7 @@ button{
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
-<p id="lastUpdate">⏳ آخرین آپدیت: -</p>
+<p id="lastUpdate">⏳ آخرین آپدیت: در حال دریافت...</p>
 
 <div id="countries">در حال دریافت...</div>
 
@@ -134,9 +150,12 @@ let data = [];
 let originalData = [];
 let lastUpdateTime = null;
 
+function toggleTheme(){
+    document.body.classList.toggle("light");
+}
+
 function toggleGuide(){
-    const box = document.getElementById("guideBox");
-    box.classList.toggle("open");
+    document.getElementById("guideBox").classList.toggle("open");
 }
 
 function detectCountry(line){
@@ -161,13 +180,10 @@ async function loadConfigs(){
 
         const lastModified = res.headers.get("Last-Modified");
 
-        if(lastModified){
-            lastUpdateTime = new Date(lastModified);
-        }else{
-            lastUpdateTime = new Date();
-        }
+        lastUpdateTime = lastModified ? new Date(lastModified) : new Date();
 
         updateClock();
+        setInterval(updateClock, 60000);
 
         const text = await res.text();
         const lines = text.split("\n");
