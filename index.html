@@ -98,6 +98,7 @@ button{
 let data = [];
 let originalData = [];
 let lastUpdateTime = null;
+let lastCounts = { usa: 0, germany: 0 };
 
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
@@ -105,14 +106,8 @@ async function loadConfigs(){
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
-        // ⬇️ زمان واقعی آپدیت فایل
-        const lastModified = res.headers.get("Last-Modified");
-        if(lastModified){
-            lastUpdateTime = new Date(lastModified);
-        } else {
-            lastUpdateTime = new Date();
-        }
-
+        // ⏰ فقط زمان آپدیت خود پنل
+        lastUpdateTime = new Date();
         updateClock();
 
         const text = await res.text();
@@ -130,6 +125,16 @@ async function loadConfigs(){
             }
         });
 
+        // 🚀 اگر کانفیگ جدید اومد
+        if(lastCounts.usa !== 0){
+            if(usa.length > lastCounts.usa || germany.length > lastCounts.germany){
+                showNewBadge();
+            }
+        }
+
+        lastCounts.usa = usa.length;
+        lastCounts.germany = germany.length;
+
         data = [
             {name:"🇺🇸 آمریکا", configs: usa.slice(0,10)},
             {name:"🇩🇪 آلمان", configs: germany.slice(0,10)}
@@ -143,16 +148,27 @@ async function loadConfigs(){
     }
 }
 
+function showNewBadge(){
+    const el = document.getElementById("lastUpdate");
+    el.innerText = "🚀 کانفیگ جدید اضافه شد";
+    el.style.color = "#06d6a0";
+
+    setTimeout(()=>{
+        updateClock();
+        el.style.color = "white";
+    }, 4000);
+}
+
 function updateClock(){
     if(!lastUpdateTime) return;
 
-    const time = lastUpdateTime.toLocaleTimeString("fa-IR", {
+    const time = lastUpdateTime.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit"
     });
 
     document.getElementById("lastUpdate").innerText =
-        "🕒 آخرین آپدیت کانفیگ: ساعت " + time;
+        "🕒 آخرین آپدیت: ساعت " + time;
 }
 
 function showCountries(){
@@ -229,8 +245,8 @@ function searchData(){
     showCountries();
 }
 
-// ⏱ هر ۳ ساعت آپدیت خودکار
-setInterval(loadConfigs, 10800000);
+// ⏱ هر ۳۰ دقیقه آپدیت
+setInterval(loadConfigs, 1800000);
 
 loadConfigs();
 </script>
