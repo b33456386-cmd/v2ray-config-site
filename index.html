@@ -8,10 +8,16 @@
 <style>
 body{
     font-family:tahoma;
-    background:#0b132b;
-    color:white;
+    background:#f5f5f5;
+    color:#222;
     text-align:center;
     margin:0;
+    transition:0.3s;
+}
+
+.dark{
+    background:#0b132b;
+    color:white;
 }
 
 h1{margin:20px;}
@@ -37,19 +43,27 @@ button{
 }
 
 .box{
-    background:#1c2541;
+    background:#e0e0e0;
     margin:10px;
     padding:15px;
     border-radius:15px;
 }
 
+.dark .box{
+    background:#1c2541;
+}
+
 .config{
-    background:#0f1b3d;
+    background:#dcdcdc;
     margin:8px 0;
     padding:10px;
     border-radius:10px;
     font-size:12px;
     word-break:break-all;
+}
+
+.dark .config{
+    background:#0f1b3d;
 }
 
 .copy{
@@ -75,12 +89,23 @@ button{
     font-size:18px;
     text-decoration:none;
 }
+
+.toggle{
+    background:#222;
+}
+
+.dark .toggle{
+    background:#ddd;
+    color:black;
+}
 </style>
 </head>
 
 <body>
 
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
+
+<button class="toggle" onclick="toggleDark()">🌙 تغییر حالت</button>
 
 <input type="text" id="search" placeholder="🔍 جستجو کشور یا کانفیگ..." oninput="searchData()">
 
@@ -100,14 +125,20 @@ let originalData = [];
 let lastUpdateTime = null;
 let lastCounts = { usa: 0, germany: 0 };
 
+// 🌙 دارک مود
+function toggleDark(){
+    document.body.classList.toggle("dark");
+}
+
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
-        // ⏰ زمان آپدیت همین پنل
+        // ⏰ زمان آپدیت واقعی (الان)
         lastUpdateTime = new Date();
+        updateClock();
 
         const text = await res.text();
         const lines = text.split("\n");
@@ -142,9 +173,6 @@ async function loadConfigs(){
         originalData = JSON.parse(JSON.stringify(data));
         showCountries();
 
-        // ⬅️ این مهمه: بعد از لود، تایمر شروع بشه
-        updateClock();
-
     }catch(e){
         document.getElementById("countries").innerHTML="❌ خطا در دریافت";
     }
@@ -157,10 +185,11 @@ function showNewBadge(){
 
     setTimeout(()=>{
         updateClock();
-        el.style.color = "white";
+        el.style.color = "";
     }, 4000);
 }
 
+// ⏱ نمایش "چند دقیقه پیش"
 function updateClock(){
     if(!lastUpdateTime) return;
 
@@ -173,24 +202,21 @@ function updateClock(){
         text = "الان";
     }
     else if(diff < 3600){
-        const min = Math.floor(diff / 60);
-        text = min + " دقیقه پیش";
+        text = Math.floor(diff / 60) + " دقیقه پیش";
     }
     else if(diff < 86400){
-        const hour = Math.floor(diff / 3600);
-        text = hour + " ساعت پیش";
+        text = Math.floor(diff / 3600) + " ساعت پیش";
     }
     else{
-        const day = Math.floor(diff / 86400);
-        text = day + " روز پیش";
+        text = Math.floor(diff / 86400) + " روز پیش";
     }
 
     document.getElementById("lastUpdate").innerText =
         "🕒 آخرین آپدیت: " + text;
 }
 
-// ⏱ هر ۱۰ ثانیه متن زمان آپدیت میشه (خیلی مهم)
-setInterval(updateClock, 10000);
+// ⏱ هر ۱ دقیقه متن رو آپدیت کنه
+setInterval(updateClock, 60000);
 
 function showCountries(){
     let html="";
