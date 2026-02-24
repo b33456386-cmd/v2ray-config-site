@@ -53,24 +53,6 @@ button{
     color:black;
 }
 
-.guide{
-    background:#14213d;
-    margin:0 15px;
-    padding:0 15px;
-    border-radius:15px;
-    text-align:right;
-    font-size:14px;
-    line-height:2;
-    max-height:0;
-    overflow:hidden;
-    transition: all 0.4s ease;
-}
-
-.guide.open{
-    padding:15px;
-    max-height:300px;
-}
-
 .box{
     background:#1c2541;
     margin:10px;
@@ -121,18 +103,6 @@ body.light .config{background:#eee;}
 
 <button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
 
-<button class="guide-btn" onclick="toggleGuide()">📘 نمایش راهنما</button>
-
-<div id="guideBox" class="guide">
-<b>📘 راهنمای استفاده:</b><br>
-1️⃣ روی «آپدیت» بزن<br>
-2️⃣ کشور رو انتخاب کن<br>
-3️⃣ «نمایش کانفیگ‌ها» رو بزن<br>
-4️⃣ روی «کپی» بزن<br>
-5️⃣ داخل VPN پیست کن<br>
-⚡ هر ۳۰ دقیقه آپدیت میشه
-</div>
-
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchData()">
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
@@ -154,18 +124,29 @@ function toggleTheme(){
     document.body.classList.toggle("light");
 }
 
-function toggleGuide(){
-    document.getElementById("guideBox").classList.toggle("open");
-}
-
+// ✅ تشخیص کشور دقیق (اصلاح شده)
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(l.includes("🇺🇸") || l.includes("united states") || l.includes("us")){
+    // 🇺🇸 آمریکا
+    if(
+        l.includes("🇺🇸") ||
+        l.includes("united states") ||
+        l.includes(" us ") ||
+        l.includes("-us") ||
+        l.includes("_us")
+    ){
         return "🇺🇸 آمریکا";
     }
 
-    if(l.includes("🇩🇪") || l.includes("germany") || l.includes("de")){
+    // 🇩🇪 آلمان (دیگه قاطی نمیشه)
+    if(
+        l.includes("🇩🇪") ||
+        l.includes("germany") ||
+        l.includes(" de ") ||
+        l.includes("-de") ||
+        l.includes("_de")
+    ){
         return "🇩🇪 آلمان";
     }
 
@@ -179,11 +160,9 @@ async function loadConfigs(){
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
 
         const lastModified = res.headers.get("Last-Modified");
-
         lastUpdateTime = lastModified ? new Date(lastModified) : new Date();
 
         updateClock();
-        setInterval(updateClock, 60000);
 
         const text = await res.text();
         const lines = text.split("\n");
@@ -212,6 +191,9 @@ async function loadConfigs(){
         document.getElementById("countries").innerHTML="❌ خطا";
     }
 }
+
+// ⏱ آپدیت زمان (هر دقیقه)
+setInterval(updateClock, 60000);
 
 function updateClock(){
     if(!lastUpdateTime) return;
@@ -311,6 +293,7 @@ function searchData(){
     showCountries();
 }
 
+// ⏱ هر ۳۰ دقیقه
 setInterval(loadConfigs, 1800000);
 loadConfigs();
 </script>
