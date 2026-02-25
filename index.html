@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="fa">
+<!DOCTYPE html><html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>پنل کانفیگ حرفه‌ای</title>
-
-<style>
+<title>پنل کانفیگ حرفه‌ای</title><style>
 body{
     font-family:tahoma;
     background:#0b132b;
@@ -70,7 +67,7 @@ button:hover{
 
 .guide.open{
     padding:15px;
-    max-height:900px;
+    max-height:1200px;
 }
 
 .box{
@@ -113,71 +110,43 @@ body.light .config{background:#eee;}
     color:white;
     text-decoration:none;
 }
-</style>
-</head>
-
-<body>
-
-<h1>🌍 پنل کانفیگ حرفه‌ای</h1>
-
-<button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
+</style></head><body><h1>🌍 پنل کانفیگ حرفه‌ای</h1><button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
-📘 آموزش کامل استفاده:<br><br>
-
-1️⃣ روی «آپدیت» بزن<br>
+📘 آموزش کامل:<br><br>1️⃣ آپدیت بزن<br>
 2️⃣ کشور انتخاب کن<br>
-3️⃣ «نمایش کانفیگ‌ها» رو بزن<br>
-4️⃣ کپی کن و استفاده کن<br><br>
+3️⃣ نمایش کانفیگ‌ها<br>
+4️⃣ کپی و استفاده<br><br>
 
-🧠 فیلتر حرفه‌ای:<br>
-- VMESS / VLESS / SS / Trojan<br>
-- جستجو + فیلتر همزمان<br><br>
+🎯 فیلتر حرفه‌ای:<br>
+VMESS / VLESS / SS / Trojan<br>
+جستجو + فیلتر همزمان<br><br>
 
 📱 برنامه‌ها:<br><br>
 
-🤖 اندروید:<br>
-V2rayNG<br>
-https://github.com/2dust/v2rayNG/releases<br><br>
+🤖 اندروید: V2rayNG<br>
+🍏 آیفون: Shadowrocket / Streisand<br>
+💻 ویندوز: V2rayN<br><br>
 
-🍏 آیفون:<br>
-Shadowrocket (پولی)<br>
-Streisand<br>
-https://apps.apple.com/<br><br>
-
-💻 ویندوز:<br>
-V2rayN<br>
+⬇️ دانلود:<br>
+https://github.com/2dust/v2rayNG/releases<br>
 https://github.com/2dust/v2rayN/releases<br><br>
 
-🧪 نحوه استفاده:<br>
-Import ➜ Paste ➜ Connect 🚀<br><br>
+🚀 روش استفاده:<br>
+Import ➜ Paste ➜ Connect<br>
 
-⚡ اگر وصل نشد:<br>
-چند کانفیگ تست کن
-</div>
-
-<input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
-
-<select id="typeFilter" onchange="applyFilters()">
+</div><input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()"><select id="typeFilter" onchange="applyFilters()">
     <option value="all">🌐 همه</option>
     <option value="vmess">🟣 VMESS</option>
     <option value="vless">🟢 VLESS</option>
     <option value="ss">🟡 SS</option>
     <option value="trojan">🔴 Trojan</option>
-</select>
+</select><button onclick="loadConfigs()">🔄 آپدیت</button>
 
-<button onclick="loadConfigs()">🔄 آپدیت</button>
-
-<p id="lastUpdate">⏳ در حال دریافت...</p>
-
-<div id="countries">در حال دریافت...</div>
-
-<a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
+<p id="lastUpdate">⏳ در حال دریافت...</p><div id="countries">در حال دریافت...</div><a class="telegram-btn" href="https://t.me/V2raying_config" target="_blank">
 🚀 عضویت در کانال
-</a>
-
-<script>
+</a><script>
 let data = [];
 let originalData = [];
 let lastUpdateTime = null;
@@ -190,19 +159,17 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
-function detectType(config){
-    const c = config.toLowerCase();
-
-    if(c.startsWith("vmess://")) return "vmess";
-    if(c.startsWith("vless://")) return "vless";
-    if(c.startsWith("ss://")) return "ss";
-    if(c.startsWith("trojan://")) return "trojan";
-
+function detectType(c){
+    c = c.toLowerCase();
+    if(c.includes("vmess://")) return "vmess";
+    if(c.includes("vless://")) return "vless";
+    if(c.includes("ss://")) return "ss";
+    if(c.includes("trojan://")) return "trojan";
     return "other";
 }
 
-function detectCountry(line){
-    const l = line.toLowerCase();
+function detectCountry(l){
+    l = l.toLowerCase();
 
     if(l.includes("us") || l.includes("america") || l.includes("🇺🇸"))
         return "🇺🇸 آمریکا";
@@ -217,24 +184,49 @@ async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
-        const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
-        const text = await res.text();
+        const urls = [
+            "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
+            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vless",
+            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vmess"
+        ];
 
-        const lines = text.split("\n");
+        let all = "";
 
-        let usa = [];
-        let germany = [];
+        for(let u of urls){
+            try{
+                let r = await fetch(u + "?" + Date.now());
+                let t = await r.text();
+                all += t + "\n";
+            }catch(e){}
+        }
 
-        lines.forEach(line=>{
-            const country = detectCountry(line);
+        let lines = all.split("\n");
 
-            if(country === "🇺🇸 آمریکا") usa.push(line);
-            if(country === "🇩🇪 آلمان") germany.push(line);
+        let us = [];
+        let de = [];
+
+        lines.forEach(l=>{
+            let c = l.trim();
+            if(!c) return;
+
+            let lower = c.toLowerCase();
+
+            if(
+                !lower.includes("vmess://") &&
+                !lower.includes("vless://") &&
+                !lower.includes("ss://") &&
+                !lower.includes("trojan://")
+            ) return;
+
+            let country = detectCountry(c);
+
+            if(country === "🇺🇸 آمریکا") us.push(c);
+            if(country === "🇩🇪 آلمان") de.push(c);
         });
 
         data = [
-            {name:"🇺🇸 آمریکا", configs: usa.slice(0,20)},
-            {name:"🇩🇪 آلمان", configs: germany.slice(0,20)}
+            {name:"🇺🇸 آمریکا", configs: us.slice(0,20)},
+            {name:"🇩🇪 آلمان", configs: de.slice(0,20)}
         ];
 
         originalData = JSON.parse(JSON.stringify(data));
@@ -249,45 +241,39 @@ async function loadConfigs(){
     }
 }
 
-setInterval(updateClock,60000);
-
 function updateClock(){
-    const el = document.getElementById("lastUpdate");
+    let el = document.getElementById("lastUpdate");
 
     if(!lastUpdateTime){
         el.innerText="⏳ در حال دریافت...";
         return;
     }
 
-    const diff = Math.floor((new Date() - lastUpdateTime)/1000);
+    let diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
     let t="";
-    if(diff < 60) t=diff+" ثانیه پیش";
+    if(diff < 10) t="چند لحظه پیش";
+    else if(diff < 60) t=diff+" ثانیه پیش";
     else if(diff < 3600) t=Math.floor(diff/60)+" دقیقه پیش";
     else t=Math.floor(diff/3600)+" ساعت پیش";
 
     el.innerText="🕒 آخرین آپدیت: "+t;
 }
 
+setInterval(updateClock,60000);
+
 function applyFilters(){
-    let searchValue = document.getElementById("search").value.toLowerCase();
-    let typeValue = document.getElementById("typeFilter").value;
+    let s = document.getElementById("search").value.toLowerCase();
+    let type = document.getElementById("typeFilter").value;
 
-    data = originalData.map(country => {
-
-        let filtered = country.configs.filter(c => {
-
-            let matchSearch = c.toLowerCase().includes(searchValue);
-            let type = detectType(c);
-            let matchType = (typeValue === "all") || (type === typeValue);
-
-            return matchSearch && matchType;
+    data = originalData.map(c=>{
+        let f = c.configs.filter(x=>{
+            let m1 = x.toLowerCase().includes(s) || c.name.toLowerCase().includes(s);
+            let m2 = (type==="all") || detectType(x)===type;
+            return m1 && m2;
         });
 
-        return {
-            name: country.name,
-            configs: filtered
-        };
+        return {name:c.name, configs:f};
     });
 
     showCountries();
@@ -313,7 +299,7 @@ function showCountries(){
 }
 
 function toggleConfigs(i){
-    let el=document.getElementById("list"+i);
+    let el = document.getElementById("list"+i);
 
     if(el.innerHTML!=""){
         el.innerHTML="";
@@ -344,7 +330,5 @@ function copySub(i){
 
 setInterval(loadConfigs,1800000);
 loadConfigs();
-</script>
-
-</body>
+</script></body>
 </html>
