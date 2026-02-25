@@ -22,7 +22,7 @@ body.light{
 
 h1{margin:20px;}
 
-input{
+input, select{
     width:85%;
     padding:12px;
     border-radius:10px;
@@ -121,15 +121,13 @@ body.light .config{background:#eee;}
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
 
 <button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
-
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
-📘 آموزش کامل استفاده:<br><br>
-
-1️⃣ روی "آپدیت" بزن<br><br>
-2️⃣ کشور (🇺🇸 یا 🇩🇪) انتخاب کن<br><br>
-3️⃣ "نمایش کانفیگ‌ها"<br><br>
+📘 آموزش کامل:<br><br>
+1️⃣ آپدیت بزن<br>
+2️⃣ کشور انتخاب کن<br>
+3️⃣ نمایش کانفیگ‌ها<br>
 4️⃣ کپی کن<br><br>
 
 📱 برنامه‌ها:<br>
@@ -140,7 +138,15 @@ body.light .config{background:#eee;}
 ⚡ اگر وصل نشد چندتا تست کن
 </div>
 
-<input type="text" id="search" placeholder="🔍 جستجو..." oninput="searchData()">
+<input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
+
+<select id="typeFilter" onchange="applyFilters()">
+    <option value="all">🌐 همه</option>
+    <option value="vmess">🟣 VMESS</option>
+    <option value="vless">🟢 VLESS</option>
+    <option value="ss">🟡 SS</option>
+    <option value="trojan">🔴 Trojan</option>
+</select>
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
@@ -165,35 +171,22 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
-// 🔥 تشخیص حرفه‌ای کشور
+function detectType(config){
+    if(config.startsWith("vmess://")) return "vmess";
+    if(config.startsWith("vless://")) return "vless";
+    if(config.startsWith("ss://")) return "ss";
+    if(config.startsWith("trojan://")) return "trojan";
+    return "other";
+}
+
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(
-        l.includes("🇺🇸") ||
-        l.includes("united states") ||
-        l.includes("america") ||
-        l.includes(" usa ") ||
-        l.includes("-us") ||
-        l.includes("_us") ||
-        l.includes(".us") ||
-        l.includes("us-")
-    ){
+    if(l.includes("us") || l.includes("united") || l.includes("america"))
         return "🇺🇸 آمریکا";
-    }
 
-    if(
-        l.includes("🇩🇪") ||
-        l.includes("germany") ||
-        l.includes("deutschland") ||
-        l.includes(" de ") ||
-        l.includes("-de") ||
-        l.includes("_de") ||
-        l.includes(".de") ||
-        l.includes("de-")
-    ){
+    if(l.includes("de") || l.includes("germany"))
         return "🇩🇪 آلمان";
-    }
 
     return null;
 }
@@ -221,8 +214,8 @@ async function loadConfigs(){
         });
 
         data = [
-            {name:"🇺🇸 آمریکا", configs: usa.slice(0,20)},
-            {name:"🇩🇪 آلمان", configs: germany.slice(0,20)}
+            {name:"🇺🇸 آمریکا", configs: usa.slice(0,50)},
+            {name:"🇩🇪 آلمان", configs: germany.slice(0,50)}
         ];
 
         originalData = JSON.parse(JSON.stringify(data));
@@ -236,23 +229,42 @@ async function loadConfigs(){
 setInterval(updateClock,60000);
 
 function updateClock(){
-    const el = document.getElementById("lastUpdate");
-
-    if(!lastUpdateTime){
-        el.innerText="⏳ در حال دریافت...";
-        return;
-    }
+    if(!lastUpdateTime) return;
 
     const diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
     let t="";
-
-    if(diff < 10) t="چند لحظه پیش";
-    else if(diff < 60) t=diff+" ثانیه پیش";
+    if(diff < 60) t="الان";
     else if(diff < 3600) t=Math.floor(diff/60)+" دقیقه پیش";
     else t=Math.floor(diff/3600)+" ساعت پیش";
 
-    el.innerText="🕒 آخرین آپدیت: "+t;
+    document.getElementById("lastUpdate").innerText="🕒 آخرین آپدیت: "+t;
+}
+
+function applyFilters(){
+    let searchValue = document.getElementById("search").value.toLowerCase();
+    let typeValue = document.getElementById("typeFilter").value;
+
+    data = originalData.map(country => {
+
+        let filtered = country.configs.filter(c => {
+
+            let matchSearch = c.toLowerCase().includes(searchValue) || 
+                              country.name.toLowerCase().includes(searchValue);
+
+            let type = detectType(c);
+            let matchType = (typeValue === "all") || (type === typeValue);
+
+            return matchSearch && matchType;
+        });
+
+        return {
+            name: country.name,
+            configs: filtered
+        };
+    });
+
+    showCountries();
 }
 
 function showCountries(){
@@ -302,27 +314,6 @@ function copyConfig(t){
 function copySub(i){
     navigator.clipboard.writeText(data[i].configs.join("\n"));
     alert("کپی شد");
-}
-
-function searchData(){
-    let v=document.getElementById("search").value.toLowerCase();
-
-    if(!v){
-        data=JSON.parse(JSON.stringify(originalData));
-        showCountries();
-        return;
-    }
-
-    data=originalData.map(c=>{
-        if(c.name.toLowerCase().includes(v)) return c;
-
-        return{
-            name:c.name,
-            configs:c.configs.filter(x=>x.toLowerCase().includes(v))
-        };
-    });
-
-    showCountries();
 }
 
 setInterval(loadConfigs,1800000);
