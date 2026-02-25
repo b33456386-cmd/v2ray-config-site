@@ -70,7 +70,7 @@ button:hover{
 
 .guide.open{
     padding:15px;
-    max-height:500px;
+    max-height:600px;
 }
 
 .box{
@@ -125,17 +125,25 @@ body.light .config{background:#eee;}
 
 <div id="guideBox" class="guide">
 📘 آموزش کامل:<br><br>
+
 1️⃣ آپدیت بزن<br>
 2️⃣ کشور انتخاب کن<br>
 3️⃣ نمایش کانفیگ‌ها<br>
 4️⃣ کپی کن<br><br>
 
-📱 برنامه‌ها:<br>
-- V2RayNG (اندروید)<br>
-- V2RayN (ویندوز)<br>
-- Streisand (آیفون)<br><br>
+🧠 فیلتر حرفه‌ای:<br>
+با منو بالا میتونی انتخاب کنی:<br>
+- VMESS<br>
+- VLESS<br>
+- SS<br>
+- Trojan<br><br>
 
-⚡ اگر وصل نشد چندتا تست کن
+💻 برنامه‌ها:<br>
+- ویندوز: V2RayN<br>
+- اندروید: V2RayNG<br>
+- آیفون: Streisand / Shadowrocket<br><br>
+
+⚡ اگر وصل نشد چندتا کانفیگ تست کن
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
@@ -172,21 +180,45 @@ function toggleGuide(){
 }
 
 function detectType(config){
-    if(config.startsWith("vmess://")) return "vmess";
-    if(config.startsWith("vless://")) return "vless";
-    if(config.startsWith("ss://")) return "ss";
-    if(config.startsWith("trojan://")) return "trojan";
+    const c = config.toLowerCase();
+
+    if(c.startsWith("vmess://")) return "vmess";
+    if(c.startsWith("vless://")) return "vless";
+    if(c.startsWith("ss://")) return "ss";
+    if(c.startsWith("trojan://")) return "trojan";
+
     return "other";
 }
 
+// 🔥 تشخیص کشور دقیق‌تر
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(l.includes("us") || l.includes("united") || l.includes("america"))
+    if(
+        l.includes("🇺🇸") ||
+        l.includes("united states") ||
+        l.includes("america") ||
+        l.includes("us.") ||
+        l.includes(".us") ||
+        l.includes("-us") ||
+        l.includes("_us") ||
+        l.includes("us-")
+    ){
         return "🇺🇸 آمریکا";
+    }
 
-    if(l.includes("de") || l.includes("germany"))
+    if(
+        l.includes("🇩🇪") ||
+        l.includes("germany") ||
+        l.includes("deutschland") ||
+        l.includes("de.") ||
+        l.includes(".de") ||
+        l.includes("-de") ||
+        l.includes("_de") ||
+        l.includes("de-")
+    ){
         return "🇩🇪 آلمان";
+    }
 
     return null;
 }
@@ -196,11 +228,8 @@ async function loadConfigs(){
 
     try{
         const res = await fetch("https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt?" + Date.now());
-
-        lastUpdateTime = new Date();
-        updateClock();
-
         const text = await res.text();
+
         const lines = text.split("\n");
 
         let usa = [];
@@ -214,12 +243,16 @@ async function loadConfigs(){
         });
 
         data = [
-            {name:"🇺🇸 آمریکا", configs: usa.slice(0,50)},
-            {name:"🇩🇪 آلمان", configs: germany.slice(0,50)}
+            {name:"🇺🇸 آمریکا", configs: usa.slice(0,20)},
+            {name:"🇩🇪 آلمان", configs: germany.slice(0,20)}
         ];
 
         originalData = JSON.parse(JSON.stringify(data));
-        showCountries();
+
+        lastUpdateTime = new Date(); // ✅ فیکس شد
+        updateClock();
+
+        applyFilters();
 
     }catch(e){
         document.getElementById("countries").innerHTML="❌ خطا";
@@ -229,16 +262,22 @@ async function loadConfigs(){
 setInterval(updateClock,60000);
 
 function updateClock(){
-    if(!lastUpdateTime) return;
+    const el = document.getElementById("lastUpdate");
+
+    if(!lastUpdateTime){
+        el.innerText="⏳ در حال دریافت...";
+        return;
+    }
 
     const diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
     let t="";
-    if(diff < 60) t="الان";
+    if(diff < 10) t="چند لحظه پیش";
+    else if(diff < 60) t=diff+" ثانیه پیش";
     else if(diff < 3600) t=Math.floor(diff/60)+" دقیقه پیش";
     else t=Math.floor(diff/3600)+" ساعت پیش";
 
-    document.getElementById("lastUpdate").innerText="🕒 آخرین آپدیت: "+t;
+    el.innerText="🕒 آخرین آپدیت: "+t;
 }
 
 function applyFilters(){
@@ -249,7 +288,7 @@ function applyFilters(){
 
         let filtered = country.configs.filter(c => {
 
-            let matchSearch = c.toLowerCase().includes(searchValue) || 
+            let matchSearch = c.toLowerCase().includes(searchValue) ||
                               country.name.toLowerCase().includes(searchValue);
 
             let type = detectType(c);
