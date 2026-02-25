@@ -70,7 +70,7 @@ button:hover{
 
 .guide.open{
     padding:15px;
-    max-height:600px;
+    max-height:900px;
 }
 
 .box{
@@ -124,26 +124,37 @@ body.light .config{background:#eee;}
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
-📘 آموزش کامل:<br><br>
+📘 آموزش کامل استفاده:<br><br>
 
-1️⃣ آپدیت بزن<br>
+1️⃣ روی «آپدیت» بزن<br>
 2️⃣ کشور انتخاب کن<br>
-3️⃣ نمایش کانفیگ‌ها<br>
-4️⃣ کپی کن<br><br>
+3️⃣ «نمایش کانفیگ‌ها» رو بزن<br>
+4️⃣ کپی کن و استفاده کن<br><br>
 
 🧠 فیلتر حرفه‌ای:<br>
-با منو بالا میتونی انتخاب کنی:<br>
-- VMESS<br>
-- VLESS<br>
-- SS<br>
-- Trojan<br><br>
+- VMESS / VLESS / SS / Trojan<br>
+- جستجو + فیلتر همزمان<br><br>
 
-💻 برنامه‌ها:<br>
-- ویندوز: V2RayN<br>
-- اندروید: V2RayNG<br>
-- آیفون: Streisand / Shadowrocket<br><br>
+📱 برنامه‌ها:<br><br>
 
-⚡ اگر وصل نشد چندتا کانفیگ تست کن
+🤖 اندروید:<br>
+V2rayNG<br>
+https://github.com/2dust/v2rayNG/releases<br><br>
+
+🍏 آیفون:<br>
+Shadowrocket (پولی)<br>
+Streisand<br>
+https://apps.apple.com/<br><br>
+
+💻 ویندوز:<br>
+V2rayN<br>
+https://github.com/2dust/v2rayN/releases<br><br>
+
+🧪 نحوه استفاده:<br>
+Import ➜ Paste ➜ Connect 🚀<br><br>
+
+⚡ اگر وصل نشد:<br>
+چند کانفیگ تست کن
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
@@ -190,35 +201,14 @@ function detectType(config){
     return "other";
 }
 
-// 🔥 تشخیص کشور دقیق‌تر
 function detectCountry(line){
     const l = line.toLowerCase();
 
-    if(
-        l.includes("🇺🇸") ||
-        l.includes("united states") ||
-        l.includes("america") ||
-        l.includes("us.") ||
-        l.includes(".us") ||
-        l.includes("-us") ||
-        l.includes("_us") ||
-        l.includes("us-")
-    ){
+    if(l.includes("us") || l.includes("america") || l.includes("🇺🇸"))
         return "🇺🇸 آمریکا";
-    }
 
-    if(
-        l.includes("🇩🇪") ||
-        l.includes("germany") ||
-        l.includes("deutschland") ||
-        l.includes("de.") ||
-        l.includes(".de") ||
-        l.includes("-de") ||
-        l.includes("_de") ||
-        l.includes("de-")
-    ){
+    if(l.includes("de") || l.includes("germany") || l.includes("🇩🇪"))
         return "🇩🇪 آلمان";
-    }
 
     return null;
 }
@@ -249,7 +239,7 @@ async function loadConfigs(){
 
         originalData = JSON.parse(JSON.stringify(data));
 
-        lastUpdateTime = new Date(); // ✅ فیکس شد
+        lastUpdateTime = new Date();
         updateClock();
 
         applyFilters();
@@ -272,8 +262,7 @@ function updateClock(){
     const diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
     let t="";
-    if(diff < 10) t="چند لحظه پیش";
-    else if(diff < 60) t=diff+" ثانیه پیش";
+    if(diff < 60) t=diff+" ثانیه پیش";
     else if(diff < 3600) t=Math.floor(diff/60)+" دقیقه پیش";
     else t=Math.floor(diff/3600)+" ساعت پیش";
 
@@ -288,9 +277,7 @@ function applyFilters(){
 
         let filtered = country.configs.filter(c => {
 
-            let matchSearch = c.toLowerCase().includes(searchValue) ||
-                              country.name.toLowerCase().includes(searchValue);
-
+            let matchSearch = c.toLowerCase().includes(searchValue);
             let type = detectType(c);
             let matchType = (typeValue === "all") || (type === typeValue);
 
