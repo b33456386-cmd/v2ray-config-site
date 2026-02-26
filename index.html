@@ -39,17 +39,22 @@ button{
 .toggle-theme{width:auto;padding:8px 15px;background:#222;}
 .guide-btn{background:#ffbe0b;color:black;}
 
+/* ✅ راهنما بهتر شده */
 .guide{
     background:#14213d;
-    margin:0 15px;
+    margin:15px;
     border-radius:15px;
     text-align:right;
     line-height:2;
     max-height:0;
     overflow:hidden;
     transition:0.4s;
+    font-size:14px;
 }
-.guide.open{padding:15px;max-height:1200px;}
+.guide.open{
+    padding:20px;
+    max-height:2000px;
+}
 
 .box{background:#1c2541;margin:10px;padding:15px;border-radius:15px;}
 body.light .box{background:#fff;}
@@ -73,6 +78,7 @@ body.light .config{background:#eee;}
 }
 
 .sub{background:#06d6a0;}
+
 .telegram-btn{
     display:block;
     width:85%;
@@ -93,9 +99,56 @@ body.light .config{background:#eee;}
 <button class="toggle-theme" onclick="toggleTheme()">🌙 / ☀️</button>
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
+<!-- ✅ راهنمای کامل و درست -->
 <div id="guideBox" class="guide">
-📘 آموزش:<br>
-آپدیت ➜ نمایش ➜ کپی ➜ استفاده 🚀
+
+<b>📘 آموزش کامل:</b><br><br>
+
+1️⃣ روی 🔄 آپدیت بزن<br>
+2️⃣ کشور رو انتخاب کن<br>
+3️⃣ روی نمایش بزن<br>
+4️⃣ کانفیگ رو کپی کن<br>
+5️⃣ داخل برنامه Import کن 🚀<br><br>
+
+<hr>
+
+<b>🔎 فیلتر حرفه‌ای:</b><br>
+✔️ جستجو + فیلتر همزمان<br>
+✔️ انتخاب نوع:<br>
+🟣 VMESS<br>
+🟢 VLESS<br>
+⚪️ SS<br>
+🔴 Trojan<br><br>
+
+<hr>
+
+<b>📱 برنامه‌ها:</b><br><br>
+
+🤖 اندروید:<br>
+V2rayNG / NekoBox<br><br>
+
+🍏 آیفون:<br>
+Shadowrocket / Streisand<br><br>
+
+💻 ویندوز:<br>
+v2rayN / Nekoray<br><br>
+
+<hr>
+
+<b>⬇️ دانلود:</b><br>
+https://github.com/2dust/v2rayNG/releases<br>
+https://github.com/2dust/v2rayN/releases<br><br>
+
+<hr>
+
+<b>⚠️ نکات مهم:</b><br>
+✔️ اگر VLESS صفر بود یعنی فعلا از منبع نیومده<br>
+✔️ بعضی کانفیگ‌ها موقتی هستن<br>
+✔️ چندتا تست کن<br><br>
+
+🔥 بهترین انتخاب:<br>
+🇺🇸 آمریکا / 🇩🇪 آلمان
+
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
@@ -131,32 +184,24 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
-// ✅ پروتکل + رنگ
+// پروتکل
 function detectType(c){
     c=c.toLowerCase();
-
     if(c.startsWith("vmess://")) return {type:"vmess", icon:"🟣"};
     if(c.startsWith("vless://")) return {type:"vless", icon:"🟢"};
     if(c.startsWith("ss://")) return {type:"ss", icon:"⚪️"};
     if(c.startsWith("trojan://")) return {type:"trojan", icon:"🔴"};
-
     return {type:"other", icon:"⚫"};
 }
 
-// ✅ کشور
+// کشور
 function detectCountry(l){
     l=l.toLowerCase();
-
-    if(l.includes("us")||l.includes("america")||l.includes("🇺🇸"))
-        return "🇺🇸 آمریکا";
-
-    if(l.includes("de")||l.includes("germany")||l.includes("🇩🇪"))
-        return "🇩🇪 آلمان";
-
+    if(l.includes("us")||l.includes("america")||l.includes("🇺🇸")) return "🇺🇸 آمریکا";
+    if(l.includes("de")||l.includes("germany")||l.includes("🇩🇪")) return "🇩🇪 آلمان";
     return null;
 }
 
-// ✅ چند منبع برای اینکه VLESS بیاد
 async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳...";
 
@@ -233,7 +278,6 @@ function updateClock(){
 
 setInterval(updateClock,60000);
 
-// ✅ فیلتر
 function applyFilters(){
     let s=document.getElementById("search").value.toLowerCase();
     let type=document.getElementById("typeFilter").value;
@@ -295,9 +339,7 @@ function copySub(i){
     alert("کپی شد");
 }
 
-// هر 5 دقیقه
 setInterval(loadConfigs,300000);
-
 loadConfigs();
 </script>
 
