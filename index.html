@@ -14,12 +14,7 @@ body{
     margin:0;
     transition:0.3s;
 }
-
-body.light{
-    background:#f5f5f5;
-    color:#111;
-}
-
+body.light{background:#f5f5f5;color:#111;}
 h1{margin:20px;}
 
 input, select{
@@ -41,16 +36,8 @@ button{
     cursor:pointer;
 }
 
-.toggle-theme{
-    width:auto;
-    padding:8px 15px;
-    background:#222;
-}
-
-.guide-btn{
-    background:#ffbe0b;
-    color:black;
-}
+.toggle-theme{width:auto;padding:8px 15px;background:#222;}
+.guide-btn{background:#ffbe0b;color:black;}
 
 .guide{
     background:#14213d;
@@ -62,18 +49,10 @@ button{
     overflow:hidden;
     transition:0.4s;
 }
+.guide.open{padding:15px;max-height:1200px;}
 
-.guide.open{
-    padding:15px;
-    max-height:1200px;
-}
-
-.box{
-    background:#1c2541;
-    margin:10px;
-    padding:15px;
-    border-radius:15px;
-}
+.box{background:#1c2541;margin:10px;padding:15px;border-radius:15px;}
+body.light .box{background:#fff;}
 
 .config{
     background:#0f1b3d;
@@ -83,16 +62,17 @@ button{
     font-size:12px;
     word-break:break-all;
 }
+body.light .config{background:#eee;}
 
 .copy{
     margin-top:5px;
     background:#8338ec;
     padding:6px;
     border-radius:6px;
+    font-size:12px;
 }
 
 .sub{background:#06d6a0;}
-
 .telegram-btn{
     display:block;
     width:85%;
@@ -114,34 +94,23 @@ button{
 <button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
-📘 آموزش:<br><br>
-1️⃣ آپدیت<br>
-2️⃣ انتخاب کشور<br>
-3️⃣ نمایش کانفیگ<br>
-4️⃣ کپی<br><br>
-
-🎯 فیلتر:<br>
-VMESS / VLESS / SS / Trojan<br><br>
-
-📱 برنامه‌ها:<br>
-اندروید: V2rayNG<br>
-ویندوز: V2rayN<br>
-آیفون: Shadowrocket<br>
+📘 آموزش:<br>
+آپدیت ➜ نمایش ➜ کپی ➜ استفاده 🚀
 </div>
 
 <input type="text" id="search" placeholder="🔍 جستجو..." oninput="applyFilters()">
 
 <select id="typeFilter" onchange="applyFilters()">
-    <option value="all">🌐 همه</option>
-    <option value="vmess">VMESS</option>
-    <option value="vless">VLESS</option>
-    <option value="ss">SS</option>
-    <option value="trojan">Trojan</option>
+<option value="all">🌐 همه</option>
+<option value="vmess">🟣 VMESS</option>
+<option value="vless">🟢 VLESS</option>
+<option value="ss">⚪️ SS</option>
+<option value="trojan">🔴 Trojan</option>
 </select>
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
 
-<p id="lastUpdate">⏳</p>
+<p id="lastUpdate">⏳ در حال دریافت...</p>
 
 <div id="countries"></div>
 
@@ -150,9 +119,9 @@ VMESS / VLESS / SS / Trojan<br><br>
 </a>
 
 <script>
-let data=[];
-let originalData=[];
-let lastUpdateTime=null;
+let data = [];
+let originalData = [];
+let lastUpdateTime = null;
 
 function toggleTheme(){
     document.body.classList.toggle("light");
@@ -162,16 +131,19 @@ function toggleGuide(){
     document.getElementById("guideBox").classList.toggle("open");
 }
 
+// ✅ پروتکل + رنگ
 function detectType(c){
     c=c.toLowerCase();
-    if(c.startsWith("vmess://")) return "vmess";
-    if(c.startsWith("vless://")) return "vless";
-    if(c.startsWith("ss://")) return "ss";
-    if(c.startsWith("trojan://")) return "trojan";
-    return "other";
+
+    if(c.startsWith("vmess://")) return {type:"vmess", icon:"🟣"};
+    if(c.startsWith("vless://")) return {type:"vless", icon:"🟢"};
+    if(c.startsWith("ss://")) return {type:"ss", icon:"⚪️"};
+    if(c.startsWith("trojan://")) return {type:"trojan", icon:"🔴"};
+
+    return {type:"other", icon:"⚫"};
 }
 
-// تشخیص کشور بهتر
+// ✅ کشور
 function detectCountry(l){
     l=l.toLowerCase();
 
@@ -184,18 +156,15 @@ function detectCountry(l){
     return null;
 }
 
+// ✅ چند منبع برای اینکه VLESS بیاد
 async function loadConfigs(){
-    document.getElementById("countries").innerHTML="⏳";
+    document.getElementById("countries").innerHTML="⏳...";
 
     try{
-
-        // 🔥 منابع قوی اضافه شد
         const urls=[
             "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
             "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vless",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vmess",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/trojan",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/shadowsocks"
+            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vmess"
         ];
 
         let all="";
@@ -210,15 +179,14 @@ async function loadConfigs(){
 
         let lines=all.split("\n");
 
-        let us=[];
-        let de=[];
+        let us=[],de=[];
 
-        lines.forEach(l=>{
-            let c=l.trim();
+        lines.forEach(c=>{
+            c=c.trim();
             if(!c) return;
 
-            let type=detectType(c);
-            if(type==="other") return;
+            let obj=detectType(c);
+            if(obj.type==="other") return;
 
             let country=detectCountry(c);
 
@@ -235,6 +203,7 @@ async function loadConfigs(){
 
         lastUpdateTime=new Date();
         updateClock();
+        setTimeout(updateClock,1000);
 
         applyFilters();
 
@@ -247,14 +216,15 @@ function updateClock(){
     let el=document.getElementById("lastUpdate");
 
     if(!lastUpdateTime){
-        el.innerText="⏳";
+        el.innerText="⏳...";
         return;
     }
 
     let diff=Math.floor((new Date()-lastUpdateTime)/1000);
 
     let t="";
-    if(diff<60) t=diff+" ثانیه پیش";
+    if(diff<10) t="چند لحظه پیش";
+    else if(diff<60) t=diff+" ثانیه پیش";
     else if(diff<3600) t=Math.floor(diff/60)+" دقیقه پیش";
     else t=Math.floor(diff/3600)+" ساعت پیش";
 
@@ -263,17 +233,17 @@ function updateClock(){
 
 setInterval(updateClock,60000);
 
+// ✅ فیلتر
 function applyFilters(){
     let s=document.getElementById("search").value.toLowerCase();
     let type=document.getElementById("typeFilter").value;
 
     data=originalData.map(c=>{
         let f=c.configs.filter(x=>{
-            let m1=x.toLowerCase().includes(s);
-            let m2=(type==="all")||detectType(x)===type;
+            let m1=x.toLowerCase().includes(s)||c.name.toLowerCase().includes(s);
+            let m2=(type==="all")||detectType(x).type===type;
             return m1&&m2;
         });
-
         return {name:c.name,configs:f};
     });
 
@@ -286,12 +256,12 @@ function showCountries(){
     data.forEach((c,i)=>{
         html+=`
         <div class="box">
-            <h3>${c.name} (${c.configs.length})</h3>
+        <h3>${c.name} (${c.configs.length})</h3>
 
-            <button onclick="toggleConfigs(${i})">📂 نمایش</button>
-            <button class="sub" onclick="copySub(${i})">📡 ساب</button>
+        <button onclick="toggleConfigs(${i})">📂 نمایش</button>
+        <button class="sub" onclick="copySub(${i})">📡 ساب</button>
 
-            <div id="list${i}"></div>
+        <div id="list${i}"></div>
         </div>`;
     });
 
@@ -301,16 +271,13 @@ function showCountries(){
 function toggleConfigs(i){
     let el=document.getElementById("list"+i);
 
-    if(el.innerHTML!=""){
-        el.innerHTML="";
-        return;
-    }
+    if(el.innerHTML!=""){el.innerHTML="";return;}
 
     let html="";
     data[i].configs.forEach(c=>{
         html+=`
         <div class="config">
-        ${c}
+        ${detectType(c).icon} ${c}
         <button class="copy" onclick="copyConfig('${c}')">کپی</button>
         </div>`;
     });
@@ -328,7 +295,9 @@ function copySub(i){
     alert("کپی شد");
 }
 
-setInterval(loadConfigs,1800000);
+// هر 5 دقیقه
+setInterval(loadConfigs,300000);
+
 loadConfigs();
 </script>
 
