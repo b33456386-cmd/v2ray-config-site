@@ -14,6 +14,7 @@ body{
     margin:0;
 }
 h1{margin:20px;}
+
 input, select{
     width:85%;
     padding:12px;
@@ -21,6 +22,7 @@ input, select{
     border:none;
     margin:10px;
 }
+
 button{
     width:90%;
     padding:15px;
@@ -30,6 +32,12 @@ button{
     background:#3a86ff;
     color:white;
 }
+
+.guide-btn{
+    background:#ffbe0b !important;
+    color:black;
+}
+
 .guide{
     background:#14213d;
     margin:10px;
@@ -44,12 +52,14 @@ button{
     padding:15px;
     max-height:2000px;
 }
+
 .box{
     background:#1c2541;
     margin:10px;
     padding:15px;
     border-radius:15px;
 }
+
 .config{
     background:#0f1b3d;
     margin:8px 0;
@@ -58,6 +68,7 @@ button{
     font-size:12px;
     word-break:break-all;
 }
+
 .copy{
     margin-top:5px;
     background:#8338ec;
@@ -65,6 +76,7 @@ button{
     border-radius:6px;
     font-size:12px;
 }
+
 .sub{background:#06d6a0;}
 </style>
 </head>
@@ -73,59 +85,30 @@ button{
 
 <h1>🌍 پنل کانفیگ حرفه‌ای</h1>
 
-<button onclick="toggleGuide()">📘 راهنما</button>
+<button class="guide-btn" onclick="toggleGuide()">📘 راهنما</button>
 
 <div id="guideBox" class="guide">
 
-<b>📘 آموزش کامل و ساده استفاده از پنل</b><br><br>
+<b>📘 آموزش کامل استفاده:</b><br><br>
 
-<b>🚀 مراحل اتصال:</b><br>
-1️⃣ روی دکمه «🔄 آپدیت» بزن<br>
-2️⃣ چند ثانیه صبر کن تا کانفیگ‌ها بیاد<br>
-3️⃣ کشور مورد نظر رو انتخاب کن (🇺🇸 یا 🇩🇪)<br>
-4️⃣ روی «📂 نمایش کانفیگ‌ها» بزن<br>
-5️⃣ یکی از کانفیگ‌ها رو کپی کن<br>
-6️⃣ داخل برنامه Paste کن و Connect بزن ✅<br><br>
+1️⃣ روی دکمه <b>🔄 آپدیت</b> بزن<br>
+2️⃣ کشور مورد نظر رو انتخاب کن (🇺🇸 یا 🇩🇪)<br>
+3️⃣ روی <b>📂 نمایش کانفیگ‌ها</b> بزن<br>
+4️⃣ کانفیگ دلخواه رو <b>کپی</b> کن<br>
+5️⃣ داخل برنامه Paste → Connect ✅<br><br>
 
-━━━━━━━━━━━━━━━<br>
+<b>📡 ساب:</b><br>
+با دکمه "ساب" میتونی همه کانفیگ‌های یک کشور رو یکجا کپی کنی<br><br>
 
-<b>🎯 فیلتر حرفه‌ای:</b><br>
-🟣 VMESS → معمولی و سریع<br>
-🟢 VLESS → بهترین و پایدار ⭐<br>
-🟡 SS → سبک<br>
-🔴 Trojan → قوی و امن<br><br>
+<b>⏱ زمان آپدیت:</b><br>
+✔ پنل هر <b>۱۰ دقیقه</b> خودکار آپدیت میشه<br>
+✔ زمان آخرین آپدیت بالا نمایش داده میشه<br><br>
 
-✔ میتونی جستجو هم انجام بدی 🔍<br><br>
+<b>🔔 نوتیفیکیشن:</b><br>
+✔ اگر کانفیگ جدید بیاد، خودکار بهت اطلاع میده<br><br>
 
-━━━━━━━━━━━━━━━<br>
-
-<b>📱 برنامه‌های مورد نیاز:</b><br>
-🤖 اندروید → V2rayNG<br>
-🍏 آیفون → Shadowrocket / Streisand<br>
-💻 ویندوز → V2rayN<br><br>
-
-━━━━━━━━━━━━━━━<br>
-
-<b>⬇️ دانلود برنامه‌ها:</b><br>
-V2rayNG (اندروید):<br>
-https://github.com/2dust/v2rayNG/releases<br><br>
-
-V2rayN (ویندوز):<br>
-https://github.com/2dust/v2rayN/releases<br><br>
-
-━━━━━━━━━━━━━━━<br>
-
-<b>⚡ نکات مهم:</b><br>
-✔ اگر وصل نشد → کانفیگ دیگه تست کن<br>
-✔ بعضی کانفیگ‌ها سریع از کار میفتن<br>
-✔ هر ۵ تا ۱۰ دقیقه آپدیت بزن<br>
-✔ بهترین انتخاب: VLESS و Trojan<br><br>
-
-━━━━━━━━━━━━━━━<br>
-
-<b>🔔 آپدیت خودکار:</b><br>
-✔ پنل هر ۱۰ دقیقه آپدیت میشه<br>
-✔ اگر کانفیگ جدید بیاد → نوتیفیکیشن میگیری<br>
+<b>⚠ نکته:</b><br>
+✔ فقط کانفیگ‌های واقعی (US / DE) نمایش داده میشه<br>
 
 </div>
 
@@ -133,10 +116,10 @@ https://github.com/2dust/v2rayN/releases<br><br>
 
 <select id="typeFilter" onchange="applyFilters()">
 <option value="all">🌐 همه</option>
-<option value="vmess">🟣 VMESS</option>
-<option value="vless">🟢 VLESS</option>
-<option value="ss">🟡 SS</option>
-<option value="trojan">🔴 Trojan</option>
+<option value="vmess">VMESS 🟣</option>
+<option value="vless">VLESS ⚪️</option>
+<option value="ss">SS 🟢</option>
+<option value="trojan">Trojan 🔴</option>
 </select>
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
@@ -163,14 +146,22 @@ function detectType(c){
     return "other";
 }
 
+function getTypeEmoji(type){
+    if(type==="vmess") return "🟣";
+    if(type==="vless") return "⚪️";
+    if(type==="ss") return "🟢";
+    if(type==="trojan") return "🔴";
+    return "";
+}
+
 function detectCountry(c){
-    let l = c.toLowerCase();
+    let t = c.toLowerCase();
 
-    if(l.includes("us") || l.includes("united states") || l.includes("🇺🇸"))
-        return "🇺🇸 آمریکا";
+    if(t.includes("us") || t.includes("united states") || t.includes("america"))
+        return "US";
 
-    if(l.includes("de") || l.includes("germany") || l.includes("🇩🇪"))
-        return "🇩🇪 آلمان";
+    if(t.includes("de") || t.includes("germany") || t.includes("frankfurt"))
+        return "DE";
 
     return null;
 }
@@ -192,8 +183,8 @@ function generateHash(arr){
 
 function notifyNewConfigs(){
     if (Notification.permission === "granted"){
-        new Notification("🚀 کانفیگ جدید اومد!",{
-            body:"برو داخل پنل 😎"
+        new Notification("🚀 کانفیگ جدید!",{
+            body:"کانفیگ‌های جدید اضافه شدن 😎"
         });
     }
 }
@@ -203,38 +194,36 @@ async function loadConfigs(){
 
     const urls = [
         "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/us/vless",
+        "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/us/vmess",
         "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/de/vless",
-        "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt"
+        "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/de/vmess"
     ];
 
-    let all = "";
+    let us = [];
+    let de = [];
 
     for(let u of urls){
         try{
             let r = await fetch(u + "?" + Date.now());
             let t = await r.text();
             t = decodeBase64IfNeeded(t);
-            all += t + "\n";
+
+            t.split("\n").forEach(l=>{
+                let c = l.trim();
+                if(!c) return;
+
+                let type = detectType(c);
+                if(type === "other") return;
+
+                let country = detectCountry(c);
+
+                if(country === "US") us.push(c);
+                if(country === "DE") de.push(c);
+
+            });
+
         }catch(e){}
     }
-
-    let lines = all.split("\n");
-
-    let us = [];
-    let de = [];
-
-    lines.forEach(l=>{
-        let c = l.trim();
-        if(!c) return;
-
-        let type = detectType(c);
-        if(type === "other") return;
-
-        let country = detectCountry(c);
-
-        if(country === "🇺🇸 آمریکا") us.push(c);
-        if(country === "🇩🇪 آلمان") de.push(c);
-    });
 
     us = [...new Set(us)];
     de = [...new Set(de)];
@@ -249,8 +238,8 @@ async function loadConfigs(){
     lastConfigHash = newHash;
 
     data = [
-        {name:"🇺🇸 آمریکا", configs: us.slice(0,20)},
-        {name:"🇩🇪 آلمان", configs: de.slice(0,20)}
+        {name:"🇺🇸 آمریکا", configs: us.slice(0,30)},
+        {name:"🇩🇪 آلمان", configs: de.slice(0,30)}
     ];
 
     originalData = JSON.parse(JSON.stringify(data));
@@ -271,11 +260,16 @@ function updateClock(){
 
     let diff = Math.floor((new Date() - lastUpdateTime)/1000);
 
-    if(diff < 60) el.innerText="🕒 "+diff+" ثانیه پیش";
-    else el.innerText="🕒 "+Math.floor(diff/60)+" دقیقه پیش";
+    if(diff < 60){
+        el.innerText="🕒 "+diff+" ثانیه پیش";
+    }else if(diff < 3600){
+        el.innerText="🕒 "+Math.floor(diff/60)+" دقیقه پیش";
+    }else{
+        el.innerText="🕒 "+Math.floor(diff/3600)+" ساعت پیش";
+    }
 }
 
-setInterval(updateClock,60000);
+setInterval(updateClock,1000);
 
 function applyFilters(){
     let s = document.getElementById("search").value.toLowerCase();
@@ -302,7 +296,7 @@ function showCountries(){
         <div class="box">
             <h3>${c.name} (${c.configs.length})</h3>
             <button onclick="toggleConfigs(${i})">📂 نمایش کانفیگ‌ها</button>
-            <button class="sub" onclick="copySub(${i})">📡 سابسکریپشن</button>
+            <button class="sub" onclick="copySub(${i})">📡 ساب</button>
             <div id="list${i}"></div>
         </div>`;
     });
@@ -320,9 +314,11 @@ function toggleConfigs(i){
 
     let html="";
     data[i].configs.forEach(c=>{
+        let emoji = getTypeEmoji(detectType(c));
+
         html+=`
         <div class="config">
-        ${c}
+        ${emoji} ${c}
         <button class="copy" onclick="copyConfig('${c}')">کپی</button>
         </div>`;
     });
@@ -332,12 +328,12 @@ function toggleConfigs(i){
 
 function copyConfig(t){
     navigator.clipboard.writeText(t);
-    alert("کپی شد");
+    alert("کپی شد ✅");
 }
 
 function copySub(i){
     navigator.clipboard.writeText(data[i].configs.join("\n"));
-    alert("ساب کپی شد");
+    alert("ساب کپی شد ✅");
 }
 
 if (Notification.permission !== "granted"){
@@ -345,6 +341,7 @@ if (Notification.permission !== "granted"){
 }
 
 setInterval(loadConfigs,600000);
+
 loadConfigs();
 </script>
 
