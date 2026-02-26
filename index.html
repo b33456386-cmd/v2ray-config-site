@@ -184,6 +184,7 @@ Import ➜ Paste ➜ Connect<br><br>
 let data = [];
 let originalData = [];
 let lastUpdateTime = null;
+let lastConfigHash = "";
 
 function toggleTheme(){
     document.body.classList.toggle("light");
@@ -222,6 +223,18 @@ function decodeBase64IfNeeded(text){
         return text;
     }catch{
         return text;
+    }
+}
+
+function generateHash(arr){
+    return btoa(arr.join("")).slice(0,50);
+}
+
+function notifyNewConfigs(){
+    if (Notification.permission === "granted"){
+        new Notification("🚀 کانفیگ جدید رسید!",{
+            body:"برو داخل پنل و استفاده کن 😎"
+        });
     }
 }
 
@@ -268,6 +281,15 @@ async function loadConfigs(){
 
         us = [...new Set(us)];
         de = [...new Set(de)];
+
+        let flatConfigs = [...us, ...de];
+        let newHash = generateHash(flatConfigs);
+
+        if(lastConfigHash && newHash !== lastConfigHash){
+            notifyNewConfigs();
+        }
+
+        lastConfigHash = newHash;
 
         data = [
             {name:"🇺🇸 آمریکا", configs: us.slice(0,20)},
@@ -369,6 +391,10 @@ function copyConfig(t){
 function copySub(i){
     navigator.clipboard.writeText(data[i].configs.join("\n"));
     alert("سابسکریپشن کپی شد");
+}
+
+if (Notification.permission !== "granted"){
+    Notification.requestPermission();
 }
 
 setInterval(loadConfigs,1800000);
