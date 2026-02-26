@@ -109,6 +109,7 @@ button{
 
 <b>⚠ نکته:</b><br>
 ✔ فقط کانفیگ‌های واقعی (US / DE) نمایش داده میشه<br>
+✔ اگر چیزی نیومد، چند دقیقه بعد دوباره آپدیت کن<br>
 
 </div>
 
@@ -116,10 +117,10 @@ button{
 
 <select id="typeFilter" onchange="applyFilters()">
 <option value="all">🌐 همه</option>
-<option value="vmess">VMESS 🟣</option>
-<option value="vless">VLESS ⚪️</option>
-<option value="ss">SS 🟢</option>
-<option value="trojan">Trojan 🔴</option>
+<option value="vmess">🟣 VMESS</option>
+<option value="vless">🟢 VLESS</option>
+<option value="ss">⚪ SS</option>
+<option value="trojan">🔴 Trojan</option>
 </select>
 
 <button onclick="loadConfigs()">🔄 آپدیت</button>
@@ -146,22 +147,21 @@ function detectType(c){
     return "other";
 }
 
-function getTypeEmoji(type){
-    if(type==="vmess") return "🟣";
-    if(type==="vless") return "⚪️";
-    if(type==="ss") return "🟢";
-    if(type==="trojan") return "🔴";
-    return "";
-}
-
-function detectCountry(c){
+// تشخیص کشور دقیق + fallback
+function detectCountry(c, url){
     let t = c.toLowerCase();
 
-    if(t.includes("us") || t.includes("united states") || t.includes("america"))
+    if(t.includes("us") || t.includes("america") || t.includes("aws")){
         return "US";
+    }
 
-    if(t.includes("de") || t.includes("germany") || t.includes("frankfurt"))
+    if(t.includes("de") || t.includes("germany") || t.includes("frankfurt")){
         return "DE";
+    }
+
+    // fallback از لینک
+    if(url.includes("/us/")) return "US";
+    if(url.includes("/de/")) return "DE";
 
     return null;
 }
@@ -184,7 +184,7 @@ function generateHash(arr){
 function notifyNewConfigs(){
     if (Notification.permission === "granted"){
         new Notification("🚀 کانفیگ جدید!",{
-            body:"کانفیگ‌های جدید اضافه شدن 😎"
+            body:"کانفیگ جدید اضافه شد 😎"
         });
     }
 }
@@ -214,8 +214,9 @@ async function loadConfigs(){
 
                 let type = detectType(c);
                 if(type === "other") return;
+                if(c.length < 20) return;
 
-                let country = detectCountry(c);
+                let country = detectCountry(c, u);
 
                 if(country === "US") us.push(c);
                 if(country === "DE") de.push(c);
@@ -244,7 +245,7 @@ async function loadConfigs(){
 
     originalData = JSON.parse(JSON.stringify(data));
 
-    lastUpdateTime = new Date();
+    lastUpdateTime = new Date(); // حل مشکل ۰
     updateClock();
 
     applyFilters();
@@ -314,11 +315,9 @@ function toggleConfigs(i){
 
     let html="";
     data[i].configs.forEach(c=>{
-        let emoji = getTypeEmoji(detectType(c));
-
         html+=`
         <div class="config">
-        ${emoji} ${c}
+        ${c}
         <button class="copy" onclick="copyConfig('${c}')">کپی</button>
         </div>`;
     });
@@ -340,6 +339,7 @@ if (Notification.permission !== "granted"){
     Notification.requestPermission();
 }
 
+// هر ۱۰ دقیقه
 setInterval(loadConfigs,600000);
 
 loadConfigs();
