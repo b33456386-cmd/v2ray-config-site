@@ -109,30 +109,29 @@ body.light .config{background:#eee;}
 
 <div id="guideBox" class="guide">
 
-<b>📘 آموزش کامل استفاده:</b><br><br>
+<b>📘 آموزش استفاده خیلی ساده:</b><br><br>
 
-1️⃣ روی دکمه <b>🔄 آپدیت</b> بزن<br>
-2️⃣ کشور مورد نظر رو انتخاب کن (🇺🇸 آمریکا / 🇩🇪 آلمان)<br>
-3️⃣ روی <b>📂 نمایش کانفیگ‌ها</b> بزن<br>
-4️⃣ کانفیگ دلخواه رو <b>کپی</b> کن<br>
+1️⃣ روی <b>🔄 آپدیت</b> بزن<br>
+2️⃣ کشور رو انتخاب کن (🇺🇸 / 🇩🇪)<br>
+3️⃣ بزن روی <b>📂 نمایش کانفیگ‌ها</b><br>
+4️⃣ روی <b>کپی</b> بزن<br>
 5️⃣ داخل برنامه Paste → Connect ✅<br><br>
 
 <b>📡 سابسکریپشن:</b><br>
-با دکمه "سابسکریپشن" میتونی همه کانفیگ‌های یک کشور رو یکجا کپی کنی<br><br>
+با دکمه سابسکریپشن همه کانفیگ‌ها یکجا کپی میشه<br><br>
 
 <b>🎯 فیلتر:</b><br>
-✔ انتخاب نوع کانفیگ (VMESS / VLESS / SS / Trojan)<br>
-✔ جستجو سریع 🔍<br><br>
+🟣 VMESS &nbsp; 🟢 VLESS &nbsp; 🟡 SS &nbsp; 🔴 Trojan<br><br>
 
-<b>⏱ آپدیت پنل:</b><br>
-✔ هر <b>۳۰ دقیقه</b> خودکار آپدیت میشه<br>
-✔ زمان آخرین آپدیت بالا نمایش داده میشه<br><br>
+<b>⏱ آپدیت:</b><br>
+هر ۳۰ دقیقه خودکار آپدیت میشه<br>
+زمان آخرین آپدیت بالا نمایش داده میشه<br><br>
 
 <b>🔔 نوتیفیکیشن:</b><br>
-✔ با اومدن کانفیگ جدید بهت اطلاع میده<br><br>
+اگه کانفیگ جدید بیاد بهت اطلاع میده<br><br>
 
 <b>⚠ نکته:</b><br>
-✔ فقط کانفیگ‌های واقعی US و DE نمایش داده میشه<br>
+فقط US و DE واقعی نمایش داده میشه (قاطی نیست)
 
 </div>
 
@@ -161,16 +160,11 @@ let originalData = [];
 let lastUpdateTime = null;
 let lastHash = "";
 
-function toggleTheme(){
-    document.body.classList.toggle("light");
-}
-
-function toggleGuide(){
-    document.getElementById("guideBox").classList.toggle("open");
-}
+function toggleTheme(){ document.body.classList.toggle("light"); }
+function toggleGuide(){ document.getElementById("guideBox").classList.toggle("open"); }
 
 function detectType(c){
-    c = c.toLowerCase();
+    c=c.toLowerCase();
     if(c.startsWith("vmess://")) return "vmess";
     if(c.startsWith("vless://")) return "vless";
     if(c.startsWith("ss://")) return "ss";
@@ -178,34 +172,20 @@ function detectType(c){
     return "other";
 }
 
-function detectCountry(c){
-    let l = c.toLowerCase();
-
-    if(l.includes("us") || l.includes("united states") || l.includes("america") || l.includes("🇺🇸"))
-        return "🇺🇸 آمریکا";
-
-    if(l.includes("de") || l.includes("germany") || l.includes("🇩🇪"))
-        return "🇩🇪 آلمان";
-
-    return null;
-}
+// 🔥 فقط لینک‌های مخصوص هر کشور
+function isUS(url){ return url.includes("/us/"); }
+function isDE(url){ return url.includes("/de/"); }
 
 function decodeBase64IfNeeded(text){
     try{
-        if(!text.includes("://")){
-            return atob(text);
-        }
+        if(!text.includes("://")) return atob(text);
         return text;
-    }catch{
-        return text;
-    }
+    }catch{ return text; }
 }
 
 function notify(){
-    if(Notification.permission === "granted"){
-        new Notification("🚀 کانفیگ جدید!",{
-            body:"کانفیگ‌های جدید اضافه شدن 😎"
-        });
+    if(Notification.permission==="granted"){
+        new Notification("🚀 کانفیگ جدید!",{body:"کانفیگ جدید اضافه شد 😎"});
     }
 }
 
@@ -213,61 +193,49 @@ async function loadConfigs(){
     document.getElementById("countries").innerHTML="⏳ در حال دریافت...";
 
     try{
-        const urls = [
-            "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vmess",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/protocols/vless",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/us/vless",
-            "https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/de/vless"
+        const sources = [
+            {url:"https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/us/vless", type:"us"},
+            {url:"https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/us/vmess", type:"us"},
+            {url:"https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/de/vless", type:"de"},
+            {url:"https://raw.githubusercontent.com/soroushmirzaei/telegram-configs-collector/main/countries/de/vmess", type:"de"}
         ];
 
-        let all = "";
+        let us=[], de=[];
 
-        for(let u of urls){
+        for(let s of sources){
             try{
-                let r = await fetch(u + "?" + Date.now());
-                let t = await r.text();
-                t = decodeBase64IfNeeded(t);
-                all += t + "\n";
+                let r=await fetch(s.url+"?"+Date.now());
+                let t=await r.text();
+                t=decodeBase64IfNeeded(t);
+
+                t.split("\n").forEach(l=>{
+                    let c=l.trim();
+                    if(!c) return;
+                    if(detectType(c)==="other") return;
+
+                    if(s.type==="us") us.push(c);
+                    if(s.type==="de") de.push(c);
+                });
+
             }catch(e){}
         }
 
-        let lines = all.split("\n");
+        us=[...new Set(us)];
+        de=[...new Set(de)];
 
-        let us = [];
-        let de = [];
+        // 🔔 نوتیفیکیشن
+        let newHash=btoa(us.join("")+de.join("")).slice(0,50);
+        if(lastHash && newHash!==lastHash) notify();
+        lastHash=newHash;
 
-        lines.forEach(l=>{
-            let c = l.trim();
-            if(!c) return;
-
-            let type = detectType(c);
-            if(type === "other") return;
-
-            let country = detectCountry(c);
-
-            if(country === "🇺🇸 آمریکا") us.push(c);
-            if(country === "🇩🇪 آلمان") de.push(c);
-        });
-
-        us = [...new Set(us)];
-        de = [...new Set(de)];
-
-        // 🔔 بررسی تغییر
-        let newHash = btoa((us.join("") + de.join(""))).slice(0,50);
-        if(lastHash && newHash !== lastHash){
-            notify();
-        }
-        lastHash = newHash;
-
-        data = [
-            {name:"🇺🇸 آمریکا", configs: us.slice(0,20)},
-            {name:"🇩🇪 آلمان", configs: de.slice(0,20)}
+        data=[
+            {name:"🇺🇸 آمریکا",configs:us},
+            {name:"🇩🇪 آلمان",configs:de}
         ];
 
-        originalData = JSON.parse(JSON.stringify(data));
+        originalData=JSON.parse(JSON.stringify(data));
 
-        lastUpdateTime = new Date();
+        lastUpdateTime=new Date();
         updateClock();
 
         applyFilters();
@@ -278,38 +246,35 @@ async function loadConfigs(){
 }
 
 function updateClock(){
-    let el = document.getElementById("lastUpdate");
+    let el=document.getElementById("lastUpdate");
 
     if(!lastUpdateTime){
         el.innerText="⏳";
         return;
     }
 
-    let diff = Math.floor((new Date() - lastUpdateTime)/1000);
+    let diff=Math.floor((new Date()-lastUpdateTime)/1000);
 
-    if(diff < 60){
-        el.innerText="🕒 "+diff+" ثانیه پیش";
-    }else if(diff < 3600){
-        el.innerText="🕒 "+Math.floor(diff/60)+" دقیقه پیش";
-    }else{
-        el.innerText="🕒 "+Math.floor(diff/3600)+" ساعت پیش";
-    }
+    let t="";
+    if(diff<10) t="چند لحظه پیش";
+    else if(diff<60) t=diff+" ثانیه پیش";
+    else if(diff<3600) t=Math.floor(diff/60)+" دقیقه پیش";
+    else t=Math.floor(diff/3600)+" ساعت پیش";
+
+    el.innerText="🕒 آخرین آپدیت: "+t;
 }
 
-setInterval(updateClock,60000);
+setInterval(updateClock,1000);
 
 function applyFilters(){
-    let s = document.getElementById("search").value.toLowerCase();
-    let type = document.getElementById("typeFilter").value;
+    let s=document.getElementById("search").value.toLowerCase();
+    let type=document.getElementById("typeFilter").value;
 
-    data = originalData.map(c=>{
-        let f = c.configs.filter(x=>{
-            let m1 = x.toLowerCase().includes(s);
-            let m2 = (type==="all") || detectType(x)===type;
-            return m1 && m2;
+    data=originalData.map(c=>{
+        let f=c.configs.filter(x=>{
+            return x.toLowerCase().includes(s) && (type==="all" || detectType(x)===type);
         });
-
-        return {name:c.name, configs:f};
+        return {name:c.name,configs:f};
     });
 
     showCountries();
@@ -333,7 +298,7 @@ function showCountries(){
 }
 
 function toggleConfigs(i){
-    let el = document.getElementById("list"+i);
+    let el=document.getElementById("list"+i);
 
     if(el.innerHTML!=""){
         el.innerHTML="";
@@ -362,7 +327,7 @@ function copySub(i){
     alert("سابسکریپشن کپی شد");
 }
 
-if(Notification.permission !== "granted"){
+if(Notification.permission!=="granted"){
     Notification.requestPermission();
 }
 
